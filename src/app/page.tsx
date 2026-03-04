@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -77,6 +78,20 @@ export default function Home() {
               <Input id="name" type="text" placeholder="Enter your name" />
             </div>
             <Button className="w-full">Get Started</Button>
+          </CardContent>
+        </Card>
+
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Kanban Board Demo</CardTitle>
+            <CardDescription>
+              Try out our interactive task management board
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/kanban">
+              <Button className="w-full">Open Kanban Board</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
