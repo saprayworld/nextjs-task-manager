@@ -1,4 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js + shadcn/ui Starter
+
+A modern Next.js application with TypeScript, Tailwind CSS, and shadcn/ui components ready to use.
+
+## Features
+
+- ⚡ **Next.js 15** with App Router
+- 🎨 **Tailwind CSS** for styling
+- 🧩 **shadcn/ui** components
+- 📝 **TypeScript** for type safety
+- 🗂️ **Organized project structure**
+- 🌙 **Dark mode support**
+- 📱 **Responsive design**
+
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/
+│   ├── ui/             # shadcn/ui components
+│   ├── layout/         # Layout components
+│   └── forms/          # Form components
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+├── types/              # TypeScript type definitions
+└── constants/          # Application constants
+```
 
 ## Getting Started
 
@@ -16,9 +43,27 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Adding shadcn/ui Components
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To add new shadcn/ui components:
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+For example:
+```bash
+npx shadcn@latest add button
+npx shadcn@latest add card
+npx shadcn@latest add input
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
 ## Learn More
 
