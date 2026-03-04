@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Moon, Sun, Plus, MoreHorizontal, Edit2, Paperclip, MessageSquare, Clock, LayoutDashboard } from 'lucide-react';
+import TaskDialog, { Task as TaskDialogType } from '@/components/TaskDialog';
 import {
   DndContext,
   DragOverlay,
@@ -108,6 +109,9 @@ export default function KanbanBoard() {
   ]);
   
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -249,6 +253,89 @@ export default function KanbanBoard() {
     return columns.find(column => column.id === id);
   };
 
+  const handleCreateTask = () => {
+    setDialogMode('create');
+    setSelectedTask(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setDialogMode('edit');
+    setSelectedTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const handleViewTask = (task: Task) => {
+    setDialogMode('view');
+    setSelectedTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveTask = (taskData: TaskDialogType) => {
+    if (dialogMode === 'create') {
+      // Create new task
+      const newTask: Task = {
+        ...taskData,
+        id: Date.now().toString(),
+        categoryColor: getCategoryColor(taskData.category),
+        categoryBg: getCategoryBg(taskData.category),
+        assignees: taskData.assignees || [],
+        attachments: taskData.attachments || 0,
+        comments: taskData.comments || 0,
+        priority: taskData.priority === 'urgent' ? 'urgent' : 'normal'
+      };
+      
+      setColumns(prevColumns => 
+        prevColumns.map(column => 
+          column.id === 'todo' 
+            ? { ...column, tasks: [...column.tasks, newTask] }
+            : column
+        )
+      );
+    } else if (dialogMode === 'edit' && selectedTask) {
+      // Update existing task
+      const updatedTask: Task = {
+        ...taskData,
+        id: selectedTask.id,
+        categoryColor: getCategoryColor(taskData.category),
+        categoryBg: getCategoryBg(taskData.category),
+        assignees: taskData.assignees || selectedTask.assignees,
+        attachments: taskData.attachments || selectedTask.attachments,
+        comments: taskData.comments || selectedTask.comments,
+        priority: taskData.priority === 'urgent' ? 'urgent' : 'normal'
+      };
+      
+      setColumns(prevColumns => 
+        prevColumns.map(column => ({
+          ...column,
+          tasks: column.tasks.map(task => 
+            task.id === selectedTask.id ? updatedTask : task
+          )
+        }))
+      );
+    }
+  };
+
+  const getCategoryColor = (category: string): string => {
+    const colors: Record<string, string> = {
+      design: 'text-blue-600',
+      development: 'text-emerald-600',
+      research: 'text-amber-600',
+      marketing: 'text-purple-600'
+    };
+    return colors[category.toLowerCase()] || 'text-slate-600';
+  };
+
+  const getCategoryBg = (category: string): string => {
+    const backgrounds: Record<string, string> = {
+      design: 'bg-blue-50 dark:bg-blue-900/30',
+      development: 'bg-emerald-50 dark:bg-emerald-900/30',
+      research: 'bg-amber-50 dark:bg-amber-900/30',
+      marketing: 'bg-purple-50 dark:bg-purple-900/30'
+    };
+    return backgrounds[category.toLowerCase()] || 'bg-slate-50 dark:bg-slate-900/30';
+  };
+
   const getTaskCount = (columnId: string) => {
     const column = columns.find(col => col.id === columnId);
     return column ? column.tasks.length : 0;
@@ -282,9 +369,22 @@ export default function KanbanBoard() {
           <Badge className={`text-[10px] font-semibold tracking-wider uppercase ${task.categoryColor} ${task.categoryBg} px-2 py-1 rounded-md border-none`}>
             {task.category}
           </Badge>
-          <button className="text-slate-300 hover:text-slate-500 opacity-0 hover:opacity-100 transition-colors">
-            <Edit2 className="w-3 h-3" />
-          </button>
+          <div className="flex gap-1">
+            <button 
+              onClick={() => handleViewTask(task)}
+              className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1"
+              title="ดูรายละเอียด"
+            >
+              <Search className="w-3 h-3" />
+            </button>
+            <button 
+              onClick={() => handleEditTask(task)}
+              className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1"
+              title="แก้ไข"
+            >
+              <Edit2 className="w-3 h-3" />
+            </button>
+          </div>
         </div>
         
         <h3 className="font-medium text-sm mb-1 text-slate-900 dark:text-slate-100">{task.title}</h3>
@@ -424,7 +524,10 @@ export default function KanbanBoard() {
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
             
-            <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95">
+            <Button 
+              onClick={handleCreateTask}
+              className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95"
+            >
               <Plus className="w-4 h-4" />
               สร้างงานใหม่
             </Button>
@@ -454,6 +557,14 @@ export default function KanbanBoard() {
           </div>
         ) : null}
       </DragOverlay>
+      
+      <TaskDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        mode={dialogMode}
+        task={selectedTask || undefined}
+        onSave={handleSaveTask}
+      />
     </DndContext>
   );
 }
