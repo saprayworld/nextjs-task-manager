@@ -265,6 +265,11 @@ export default function KanbanBoard() {
     setIsDialogOpen(true);
   };
 
+  const getCurrentColumn = (taskId: string): string | undefined => {
+    const column = findColumnOfTask(taskId);
+    return column?.id;
+  };
+
   const handleViewTask = (task: Task) => {
     setDialogMode('view');
     setSelectedTask(task);
@@ -293,6 +298,11 @@ export default function KanbanBoard() {
         )
       );
     } else if (dialogMode === 'edit' && selectedTask) {
+      // Check if column status changed
+      const currentColumn = findColumnOfTask(selectedTask.id);
+      const targetColumnId = taskData.column;
+      const columnChanged = currentColumn && currentColumn.id !== targetColumnId;
+      
       // Update existing task
       const updatedTask: Task = {
         ...taskData,
@@ -305,14 +315,39 @@ export default function KanbanBoard() {
         priority: taskData.priority === 'urgent' ? 'urgent' : 'normal'
       };
       
-      setColumns(prevColumns => 
-        prevColumns.map(column => ({
-          ...column,
-          tasks: column.tasks.map(task => 
-            task.id === selectedTask.id ? updatedTask : task
-          )
-        }))
-      );
+      if (columnChanged && currentColumn) {
+        // Move task to different column
+        setColumns(prevColumns => {
+          const newColumns = prevColumns.map(column => {
+            // Remove task from current column
+            if (column.id === currentColumn.id) {
+              return {
+                ...column,
+                tasks: column.tasks.filter(task => task.id !== selectedTask.id)
+              };
+            }
+            // Add task to target column
+            if (column.id === targetColumnId) {
+              return {
+                ...column,
+                tasks: [...column.tasks, updatedTask]
+              };
+            }
+            return column;
+          });
+          return newColumns;
+        });
+      } else {
+        // Just update task data without moving
+        setColumns(prevColumns => 
+          prevColumns.map(column => ({
+            ...column,
+            tasks: column.tasks.map(task => 
+              task.id === selectedTask.id ? updatedTask : task
+            )
+          }))
+        );
+      }
     }
   };
 
@@ -562,8 +597,12 @@ export default function KanbanBoard() {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         mode={dialogMode}
-        task={selectedTask || undefined}
+        task={selectedTask ? {
+          ...selectedTask,
+          column: getCurrentColumn(selectedTask.id) || 'todo'
+        } : undefined}
         onSave={handleSaveTask}
+        columns={columns.map(col => ({ id: col.id, title: col.title }))}
       />
     </DndContext>
   );

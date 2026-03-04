@@ -10,6 +10,7 @@ export interface Task {
   category: string
   dueDate?: string
   priority?: string
+  column?: string
   assignees?: Array<{ name: string; avatar?: string; initials?: string }>
   attachments?: number
   comments?: number
@@ -21,6 +22,7 @@ interface TaskDialogProps {
   mode: 'create' | 'edit' | 'view'
   task?: Task
   onSave?: (task: Task) => void
+  columns?: Array<{ id: string; title: string }>
 }
 
 const categories = [
@@ -37,13 +39,14 @@ const priorities = [
   { value: 'urgent', label: 'Urgent' }
 ]
 
-export default function TaskDialog({ isOpen, onClose, mode, task, onSave }: TaskDialogProps) {
+export default function TaskDialog({ isOpen, onClose, mode, task, onSave, columns = [] }: TaskDialogProps) {
   const [formData, setFormData] = useState<Task>({
     title: '',
     description: '',
     category: 'development',
     dueDate: '',
-    priority: 'medium'
+    priority: 'medium',
+    column: 'todo'
   })
 
   useEffect(() => {
@@ -55,7 +58,8 @@ export default function TaskDialog({ isOpen, onClose, mode, task, onSave }: Task
         description: '',
         category: 'development',
         dueDate: '',
-        priority: 'medium'
+        priority: 'medium',
+        column: 'todo'
       })
     }
   }, [task, mode])
@@ -151,6 +155,23 @@ export default function TaskDialog({ isOpen, onClose, mode, task, onSave }: Task
               ))}
             </select>
           </div>
+
+          {/* Status/Column - Only show in edit mode */}
+          {mode === 'edit' && columns.length > 0 && (
+            <div className="space-y-1.5">
+              <label htmlFor="task-column" className="text-sm font-medium">สถานะ</label>
+              <select 
+                id="task-column" 
+                value={formData.column}
+                onChange={(e) => handleChange('column', e.target.value)}
+                className="w-full px-3 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:text-slate-100 [&>option]:text-slate-900 transition-shadow cursor-pointer"
+              >
+                {columns.map(column => (
+                  <option key={column.id} value={column.id}>{column.title}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Description */}
           <div className="space-y-1.5">
