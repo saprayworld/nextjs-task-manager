@@ -30,28 +30,28 @@ const sampleTasks: CalendarTask[] = [
     id: '1',
     title: 'วิเคราะห์คู่แข่งในตลาด',
     category: 'research',
-    date: 3,
+    date: new Date().getDate() + 2, // 2 days from today
     status: 'todo'
   },
   {
     id: '2',
     title: 'สร้าง Wireframe หน้าแรก',
     category: 'design',
-    date: 5,
+    date: new Date().getDate() - 1, // Yesterday
     status: 'done'
   },
   {
     id: '3',
     title: 'ออกแบบ UI About Us',
     category: 'design',
-    date: 6,
+    date: new Date().getDate(), // Today
     status: 'todo'
   },
   {
     id: '4',
     title: 'พัฒนาระบบ Drag & Drop',
     category: 'development',
-    date: 10,
+    date: new Date().getDate() + 4, // 4 days from today
     status: 'inprogress',
     isSpanning: true,
     isSpanStart: true
@@ -60,7 +60,7 @@ const sampleTasks: CalendarTask[] = [
     id: '5',
     title: 'พัฒนาระบบ Drag & Drop',
     category: 'development',
-    date: 11,
+    date: new Date().getDate() + 5, // 5 days from today
     status: 'inprogress',
     isSpanning: true
   },
@@ -68,7 +68,7 @@ const sampleTasks: CalendarTask[] = [
     id: '6',
     title: 'พัฒนาระบบ Drag & Drop',
     category: 'development',
-    date: 12,
+    date: new Date().getDate() + 6, // 6 days from today
     status: 'inprogress',
     isSpanning: true,
     isSpanEnd: true
@@ -77,7 +77,7 @@ const sampleTasks: CalendarTask[] = [
 
 export default function CalendarPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentDate] = useState(new Date(2026, 2, 6)); // March 6, 2026
+  const [currentDate, setCurrentDate] = useState(new Date()); // Current date (dynamic)
   const [tasks] = useState<CalendarTask[]>(sampleTasks);
 
   useEffect(() => {
@@ -101,6 +101,36 @@ export default function CalendarPage() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+  };
+
+  const getToday = () => {
+    const today = new Date();
+    return today.getDate();
+  };
+
+  const isTodayDate = (day: number) => {
+    const today = new Date();
+    return (
+      day === today.getDate() &&
+      currentDate.getMonth() === today.getMonth() &&
+      currentDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setCurrentDate(prevDate => {
+      const newDate = new Date(prevDate);
+      if (direction === 'prev') {
+        newDate.setMonth(prevDate.getMonth() - 1);
+      } else {
+        newDate.setMonth(prevDate.getMonth() + 1);
+      }
+      return newDate;
+    });
   };
 
   const getMonthName = (date: Date) => {
@@ -168,14 +198,14 @@ export default function CalendarPage() {
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
-    const today = 6; // March 6, 2026
+    const today = getToday(); // Dynamic today
 
-    // Previous month padding
+    // Previous month padding (faded dates)
     for (let i = 0; i < firstDay; i++) {
       const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
       const day = prevMonthDays - firstDay + i + 1;
       days.push(
-        <div key={`prev-${i}`} className="bg-slate-50/50 dark:bg-slate-900/20 p-1.5 min-h-[120px] calendar-cell group">
+        <div key={`prev-${i}`} className="bg-slate-50/50 dark:bg-slate-900/20 p-1.5 min-h-[120px] calendar-cell group opacity-60">
           <div className="flex justify-between items-start mb-1">
             <span className="text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full text-slate-400 dark:text-slate-600">
               {day}
@@ -185,10 +215,17 @@ export default function CalendarPage() {
       );
     }
 
-    // Current month days
+    // Current month days (only show tasks for this month)
     for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = day === today;
-      const dayTasks = tasks.filter(task => task.date === day);
+      const isToday = isTodayDate(day);
+      // Only show tasks that belong to the current month and year
+      const dayTasks = tasks.filter(task => {
+        const taskDate = new Date();
+        taskDate.setDate(task.date);
+        return task.date === day && 
+               taskDate.getMonth() === currentDate.getMonth() && 
+               taskDate.getFullYear() === currentDate.getFullYear();
+      });
       
       days.push(
         <div 
@@ -206,7 +243,7 @@ export default function CalendarPage() {
             )}
           </div>
           
-          {/* Tasks for this day */}
+          {/* Tasks for this day (only current month) */}
           {dayTasks.map((task) => (
             <div 
               key={task.id}
@@ -228,13 +265,13 @@ export default function CalendarPage() {
       );
     }
 
-    // Next month padding
+    // Next month padding (faded dates)
     const totalCells = days.length;
     const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
     
     for (let i = 1; i <= remainingCells; i++) {
       days.push(
-        <div key={`next-${i}`} className="bg-slate-50/50 dark:bg-slate-900/20 p-1.5 min-h-[120px] calendar-cell group">
+        <div key={`next-${i}`} className="bg-slate-50/50 dark:bg-slate-900/20 p-1.5 min-h-[120px] calendar-cell group opacity-60">
           <div className="flex justify-between items-start mb-1">
             <span className="text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full text-slate-400 dark:text-slate-600">
               {i}
@@ -242,6 +279,25 @@ export default function CalendarPage() {
           </div>
         </div>
       );
+    }
+
+    // Add extra rows for months that need 6 rows (like months with 31 days starting on Saturday)
+    const totalRows = Math.ceil(days.length / 7);
+    const neededRows = 6; // Always show 6 rows for consistency
+    
+    if (totalRows < neededRows) {
+      const cellsNeeded = (neededRows - totalRows) * 7;
+      for (let i = 1; i <= cellsNeeded; i++) {
+        days.push(
+          <div key={`extra-${i}`} className="bg-slate-50/50 dark:bg-slate-900/20 p-1.5 min-h-[120px] calendar-cell group opacity-60">
+            <div className="flex justify-between items-start mb-1">
+              <span className="text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full text-slate-400 dark:text-slate-600">
+                {' '}
+              </span>
+            </div>
+          </div>
+        );
+      }
     }
 
     return days;
@@ -304,29 +360,45 @@ export default function CalendarPage() {
           {/* Calendar Toolbar */}
           <div className="px-6 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shrink-0">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-semibold tracking-tight w-36">{getMonthName(currentDate)}</h2>
-              
-              <div className="flex items-center rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm overflow-hidden">
-                <Button variant="ghost" size="sm" className="p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none border-r border-slate-200 dark:border-slate-800">
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none border-r border-slate-200 dark:border-slate-800">
-                  วันนี้
-                </Button>
-                <Button variant="ghost" size="sm" className="p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+              <h2 className="text-xl font-semibold tracking-tight w-40">{getMonthName(currentDate)}</h2>
             </div>
 
-            {/* Filters */}
             <div className="flex items-center gap-3">
+              {/* Filters */}
               <select className="appearance-none pl-3 pr-8 py-1.5 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md focus:ring-2 focus:ring-primary outline-none transition-shadow text-slate-700 dark:text-slate-200 cursor-pointer">
                 <option>หมวดหมู่ทั้งหมด</option>
                 <option>Design</option>
                 <option>Development</option>
                 <option>Research</option>
               </select>
+              
+              {/* Navigation Controls */}
+              <div className="flex items-center rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm overflow-hidden">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none border-r border-slate-200 dark:border-slate-800"
+                  onClick={() => navigateMonth('prev')}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none border-r border-slate-200 dark:border-slate-800"
+                  onClick={goToToday}
+                >
+                  วันนี้
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50 transition-colors rounded-none"
+                  onClick={() => navigateMonth('next')}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -342,7 +414,7 @@ export default function CalendarPage() {
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-px bg-slate-200 dark:bg-slate-800 flex-1 overflow-y-auto">
+          <div className="grid grid-cols-7 gap-px bg-slate-200 dark:bg-slate-800 grid-rows-6 overflow-hidden">
             {renderCalendarDays()}
           </div>
         </div>
