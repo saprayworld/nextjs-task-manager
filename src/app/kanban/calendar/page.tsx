@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import TaskDialog, { Task as TaskDialogType } from '@/components/TaskDialog';
 
 interface CalendarTask {
   id: string;
@@ -23,6 +24,11 @@ interface CalendarTask {
   isSpanning?: boolean;
   isSpanStart?: boolean;
   isSpanEnd?: boolean;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  attachments?: number;
+  comments?: number;
+  assignees?: Array<{ name: string; avatar?: string; initials?: string }>;
+  description?: string;
 }
 
 const sampleTasks: CalendarTask[] = [
@@ -78,7 +84,11 @@ const sampleTasks: CalendarTask[] = [
 export default function CalendarPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // Current date (dynamic)
-  const [tasks] = useState<CalendarTask[]>(sampleTasks);
+  const [tasks, setTasks] = useState<CalendarTask[]>(sampleTasks);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedTask, setSelectedTask] = useState<CalendarTask | null>(null);
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -101,6 +111,69 @@ export default function CalendarPage() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+  };
+
+  const handleCreateTask = (date?: number) => {
+    setDialogMode('create');
+    setSelectedTask(null);
+    setSelectedDate(date || getToday());
+    setIsDialogOpen(true);
+  };
+
+  const handleEditTask = (task: CalendarTask) => {
+    setDialogMode('edit');
+    setSelectedTask(task);
+    setSelectedDate(task.date);
+    setIsDialogOpen(true);
+  };
+
+  const handleViewTask = (task: CalendarTask) => {
+    setDialogMode('view');
+    setSelectedTask(task);
+    setSelectedDate(task.date);
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveTask = (taskData: TaskDialogType) => {
+    if (dialogMode === 'create') {
+      // Create new task
+      const newTask: CalendarTask = {
+        ...taskData,
+        id: Date.now().toString(),
+        date: selectedDate || getToday(),
+        category: taskData.category as CalendarTask['category'],
+        status: 'todo',
+        priority: taskData.priority as CalendarTask['priority'],
+        attachments: taskData.attachments || 0,
+        comments: taskData.comments || 0,
+        assignees: taskData.assignees || [],
+        description: taskData.description
+      };
+      
+      setTasks(prevTasks => [...prevTasks, newTask]);
+    } else if (dialogMode === 'edit' && selectedTask) {
+      // Update existing task
+      const updatedTask: CalendarTask = {
+        ...taskData,
+        id: selectedTask.id,
+        date: selectedDate || selectedTask.date,
+        category: taskData.category as CalendarTask['category'],
+        status: taskData.column as CalendarTask['status'] || selectedTask.status,
+        priority: taskData.priority as CalendarTask['priority'],
+        attachments: taskData.attachments || selectedTask.attachments,
+        comments: taskData.comments || selectedTask.comments,
+        assignees: taskData.assignees || selectedTask.assignees,
+        description: taskData.description || selectedTask.description
+      };
+      
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === selectedTask.id ? updatedTask : task
+        )
+      );
+    }
+    setIsDialogOpen(false);
+    setSelectedDate(null);
   };
 
   const getToday = () => {
@@ -237,7 +310,10 @@ export default function CalendarPage() {
               {day}
             </span>
             {isToday && (
-              <button className="add-task-btn opacity-0 text-primary hover:bg-primary/10 p-1 rounded transition-all">
+              <button 
+                className="add-task-btn opacity-0 text-primary hover:bg-primary/10 p-1 rounded transition-all"
+                onClick={() => handleCreateTask(day)}
+              >
                 <Plus className="w-3.5 h-3.5" />
               </button>
             )}
@@ -249,6 +325,7 @@ export default function CalendarPage() {
               key={task.id}
               className={`px-2 py-1 mb-1 ${getTaskBorderRadius(task)} ${getTaskBorder(task)} text-xs font-medium ${getTaskColor(task.category, task.status)} truncate cursor-pointer hover:opacity-80 transition-opacity ${task.status === 'done' ? 'line-through' : ''}`}
               title={`${task.category.charAt(0).toUpperCase() + task.category.slice(1)}: ${task.title}`}
+              onClick={() => handleEditTask(task)}
             >
               {!task.isSpanning && (
                 <span className={`w-1.5 h-1.5 rounded-full ${getDotColor(task.category)} inline-block mr-1`}></span>
@@ -344,7 +421,10 @@ export default function CalendarPage() {
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
           
-          <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95">
+          <Button 
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95"
+            onClick={() => handleCreateTask()}
+          >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">สร้างงานใหม่</span>
           </Button>
@@ -419,6 +499,27 @@ export default function CalendarPage() {
           </div>
         </div>
       </main>
+      
+      <TaskDialog
+        isOpen={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false);
+          setSelectedDate(null);
+        }}
+        mode={dialogMode}
+        task={selectedTask ? {
+          ...selectedTask,
+          column: selectedTask.status,
+          description: selectedTask.description || ''
+        } : undefined}
+        onSave={handleSaveTask}
+        columns={[
+          { id: 'todo', title: 'To Do' },
+          { id: 'inprogress', title: 'In Progress' },
+          { id: 'review', title: 'Review' },
+          { id: 'done', title: 'Done' }
+        ]}
+      />
     </div>
   );
 }
