@@ -14,7 +14,9 @@ import {
   LayoutDashboard,
   ChevronDown,
   Clock,
-  SearchX
+  SearchX,
+  Edit2,
+  Eye
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -24,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import TaskDialog, { Task as TaskDialogType } from '@/components/TaskDialog';
 
 interface Task {
   id: string;
@@ -34,6 +37,9 @@ interface Task {
   assignees: Array<{ name: string; avatar?: string; initials?: string }>;
   dueDate?: string;
   completed?: boolean;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  attachments?: number;
+  comments?: number;
 }
 
 const initialTasks: Task[] = [
@@ -90,6 +96,9 @@ export default function TaskListPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -123,6 +132,62 @@ export default function TaskListPage() {
       return matchesSearch && matchesStatus && matchesCategory;
     });
   }, [tasks, searchTerm, statusFilter, categoryFilter]);
+
+  const handleCreateTask = () => {
+    setDialogMode('create');
+    setSelectedTask(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setDialogMode('edit');
+    setSelectedTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const handleViewTask = (task: Task) => {
+    setDialogMode('view');
+    setSelectedTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveTask = (taskData: TaskDialogType) => {
+    if (dialogMode === 'create') {
+      // Create new task
+      const newTask: Task = {
+        ...taskData,
+        id: Date.now().toString(),
+        status: 'todo',
+        completed: false,
+        category: taskData.category as Task['category'],
+        assignees: taskData.assignees || [],
+        attachments: taskData.attachments || 0,
+        comments: taskData.comments || 0,
+        priority: taskData.priority as Task['priority']
+      };
+      
+      setTasks(prevTasks => [...prevTasks, newTask]);
+    } else if (dialogMode === 'edit' && selectedTask) {
+      // Update existing task
+      const updatedTask: Task = {
+        ...taskData,
+        id: selectedTask.id,
+        status: taskData.column as Task['status'] || selectedTask.status,
+        category: taskData.category as Task['category'],
+        completed: taskData.column === 'done' ? true : selectedTask.completed,
+        assignees: taskData.assignees || selectedTask.assignees,
+        attachments: taskData.attachments || selectedTask.attachments,
+        comments: taskData.comments || selectedTask.comments,
+        priority: taskData.priority as Task['priority']
+      };
+      
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === selectedTask.id ? updatedTask : task
+        )
+      );
+    }
+  };
 
   const getStatusBadge = (status: Task['status']) => {
     const statusConfig = {
@@ -198,16 +263,6 @@ export default function TaskListPage() {
     return <span className="text-slate-500 dark:text-slate-400">{dueDate}</span>;
   };
 
-  const toggleTaskComplete = (taskId: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === taskId 
-          ? { ...task, completed: !task.completed, status: task.completed ? 'todo' as Task['status'] : 'done' as Task['status'] }
-          : task
-      )
-    );
-  };
-
   const todoCount = tasks.filter(t => t.status === 'todo').length;
   const inProgressCount = tasks.filter(t => t.status === 'inprogress').length;
 
@@ -249,7 +304,10 @@ export default function TaskListPage() {
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
           
-          <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95">
+          <Button 
+            onClick={handleCreateTask}
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-sm active:scale-95"
+          >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">สร้างงานใหม่</span>
           </Button>
@@ -333,23 +391,15 @@ export default function TaskListPage() {
                       className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            checked={task.completed}
-                            onChange={() => toggleTaskComplete(task.id)}
-                            className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary dark:bg-slate-900 cursor-pointer"
-                          />
-                          <div>
-                            <p className={`font-medium text-slate-900 dark:text-slate-100 ${task.completed ? 'line-through text-slate-500 dark:text-slate-400' : ''}`}>
-                              {task.title}
+                        <div>
+                          <p className={`font-medium text-slate-900 dark:text-slate-100 ${task.completed ? 'line-through text-slate-500 dark:text-slate-400' : ''}`}>
+                            {task.title}
+                          </p>
+                          {task.description && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px] sm:max-w-xs">
+                              {task.description}
                             </p>
-                            {task.description && (
-                              <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px] sm:max-w-xs">
-                                {task.description}
-                              </p>
-                            )}
-                          </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -381,13 +431,34 @@ export default function TaskListPage() {
                         {getDueDateDisplay(task.dueDate)}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                        >
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleViewTask(task)}
+                            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            title="ดูรายละเอียด"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditTask(task)}
+                            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            title="แก้ไข"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            title="เพิ่มเติม"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -424,6 +495,23 @@ export default function TaskListPage() {
           </div>
         </div>
       </main>
+      
+      <TaskDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        mode={dialogMode}
+        task={selectedTask ? {
+          ...selectedTask,
+          column: selectedTask.status
+        } : undefined}
+        onSave={handleSaveTask}
+        columns={[
+          { id: 'todo', title: 'To Do' },
+          { id: 'inprogress', title: 'In Progress' },
+          { id: 'review', title: 'Review' },
+          { id: 'done', title: 'Done' }
+        ]}
+      />
     </div>
   );
 }
