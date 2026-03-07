@@ -32,10 +32,10 @@ interface TaskDialogProps {
   taskToEdit?: any | null;
   columns: BoardColumn[];
   onSave: (data: TaskFormData) => void;
-  onDelete?: () => void; // เพิ่ม Prop สำหรับฟังก์ชันลบงาน
+  onDelete?: () => void;
 }
 
-export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete  }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete }: TaskDialogProps) {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("design");
   const [columnId, setColumnId] = useState("todo");
@@ -69,7 +69,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
             {isEditMode ? "แก้ไขงาน" : "สร้างงานใหม่"}
@@ -141,29 +141,25 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               placeholder="เพิ่มรายละเอียดของงานนี้..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             />
           </div>
 
-          {/* ปรับแก้ DialogFooter ให้แยกซ้าย-ขวา */}
-          <DialogFooter className="pt-2 flex flex-row items-center justify-between sm:justify-between w-full">
-            {/* ด้านซ้าย: ปุ่มลบ (แสดงเฉพาะเมื่อมีฟังก์ชัน onDelete และอยู่ในโหมดแก้ไข) */}
-            <div>
+          <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row items-center sm:justify-between w-full gap-3 sm:gap-0">
+            <div className="w-full sm:w-auto">
               {isEditMode && onDelete && (
-                <Button type="button" variant="destructive" onClick={onDelete}>
+                <Button type="button" variant="destructive" onClick={onDelete} className="w-full sm:w-auto">
                   ลบงาน
                 </Button>
               )}
             </div>
-
-            {/* ด้านขวา: ปุ่มยกเลิก และ บันทึก */}
-            <div className="flex gap-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
               <DialogClose asChild>
-                <Button type="button" variant="ghost">
+                <Button type="button" variant="ghost" className="w-full sm:w-auto">
                   ยกเลิก
                 </Button>
               </DialogClose>
-              <Button type="submit">
+              <Button type="submit" className="w-full sm:w-auto">
                 {isEditMode ? "บันทึกการเปลี่ยนแปลง" : "สร้างงาน"}
               </Button>
             </div>

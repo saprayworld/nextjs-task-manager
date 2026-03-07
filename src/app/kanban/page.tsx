@@ -22,23 +22,20 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
-  Plus, 
   MoreHorizontal, 
-  LayoutDashboard, 
-  Search, 
-  Moon, 
   Edit2, 
   Paperclip, 
   MessageSquare, 
   Clock
 } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-// Import จาก TaskDialog.tsx
+// Imports Components ของเรา
+import { Navbar } from "@/components/kanban/Navbar";
 import { TaskDialog, TaskFormData, BoardColumn } from "@/components/kanban/TaskDialog";
 
+// ==========================================
+// Types & Interfaces
+// ==========================================
 export type Id = string | number;
 
 export interface Tag {
@@ -62,6 +59,9 @@ export interface Task {
   progress?: number;
 }
 
+// ==========================================
+// Initial Data
+// ==========================================
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 
 const defaultColumns: BoardColumn[] = [
@@ -79,7 +79,7 @@ const defaultTasks: Task[] = [
     tag: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
     title: "ออกแบบ UI หน้า About Us",
     description: "จัดวางโครงสร้างหน้าเพจใหม่ให้เข้ากับธีมของธุรกิจ เน้นความเรียบหรู",
-    avatars: ["[https://i.pravatar.cc/150?img=11](https://i.pravatar.cc/150?img=11)", "[https://i.pravatar.cc/150?img=32](https://i.pravatar.cc/150?img=32)"],
+    avatars: ["https://i.pravatar.cc/150?img=11", "https://i.pravatar.cc/150?img=32"],
     attachments: 2,
     comments: 4
   },
@@ -102,7 +102,7 @@ const defaultTasks: Task[] = [
     title: "พัฒนาระบบ Drag & Drop",
     description: "เขียนสคริปต์ให้สามารถย้ายการ์ดข้ามคอลัมน์ได้ด้วย dnd-kit",
     progress: 65,
-    avatars: ["[https://i.pravatar.cc/150?img=33](https://i.pravatar.cc/150?img=33)"],
+    avatars: ["https://i.pravatar.cc/150?img=33"],
     comments: 1
   },
 ];
@@ -117,6 +117,9 @@ const formatDateDisplay = (dateString?: string) => {
   }
 }
 
+// ==========================================
+// Sub-Components (Card & Column)
+// ==========================================
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
@@ -261,6 +264,9 @@ function Column({ column, tasks, onEditTask }: ColumnProps) {
   );
 }
 
+// ==========================================
+// Main Page Component
+// ==========================================
 export default function KanbanBoard() {
   const [columns] = useState<BoardColumn[]>(defaultColumns);
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -284,11 +290,10 @@ export default function KanbanBoard() {
     setIsDialogOpen(true);
   };
 
-  // ฟังก์ชันลบงาน
   const handleDeleteTask = () => {
     if (editingTask) {
       setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
-      setIsDialogOpen(false); // ปิดหน้าต่างเมื่อลบสำเร็จ
+      setIsDialogOpen(false); 
     }
   };
 
@@ -393,41 +398,10 @@ export default function KanbanBoard() {
   return (
     <div className="h-screen flex flex-col bg-background text-foreground font-sans">
       
-      <header className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-md shrink-0 sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <div className="p-2 bg-primary/10 text-primary rounded-lg">
-            <LayoutDashboard className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight">Project Board</h1>
-            <p className="text-xs text-muted-foreground">จัดการงานและโปรเจกต์ (Next.js + shadcn)</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="hidden md:flex relative items-center">
-            <Search className="w-4 h-4 absolute left-3 text-muted-foreground" />
-            <Input 
-              type="text" 
-              placeholder="ค้นหางาน..." 
-              className="pl-9 pr-4 h-9 w-64 bg-muted/50 border-transparent focus-visible:ring-primary"
-            />
-          </div>
+      {/* ใช้ Navbar Component ตรงนี้ */}
+      <Navbar onOpenCreateDialog={handleOpenCreateDialog} />
 
-          <div className="w-px h-6 bg-border mx-1"></div>
-
-          <Button variant="ghost" size="icon" className="text-muted-foreground" title="สลับโหมดสี">
-            <Moon className="w-5 h-5" />
-          </Button>
-          
-          <Button onClick={handleOpenCreateDialog} className="flex items-center gap-2 h-9 text-sm font-medium shadow-sm">
-            <Plus className="w-4 h-4" />
-            สร้างงานใหม่
-          </Button>
-        </div>
-      </header>
-
-      <main className="flex-1 overflow-x-auto overflow-y-hidden p-6">
+      <main className="flex-1 overflow-x-auto p-4 sm:p-6 pb-6">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -435,7 +409,7 @@ export default function KanbanBoard() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-6 h-full items-start w-max">
+          <div className="flex gap-4 sm:gap-6 h-full items-start w-max">
             {columns.map((col) => (
               <Column
                 key={col.id}
@@ -460,7 +434,7 @@ export default function KanbanBoard() {
         taskToEdit={editingTask}
         columns={columns}
         onSave={handleSaveTask}
-        onDelete={handleDeleteTask} /* ส่งฟังก์ชันลบเข้าไป */
+        onDelete={handleDeleteTask}
       />
     </div>
   );
