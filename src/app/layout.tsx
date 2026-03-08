@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider"; // <-- นำเข้า Provider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,12 +23,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning> 
+    {/* ต้องใส่ suppressHydrationWarning ที่ html เพื่อไม่ให้ Next.js แจ้งเตือน Hydration Mismatch ตอนสลับตีม */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
