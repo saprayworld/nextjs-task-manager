@@ -9,6 +9,8 @@ import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { Task, Tag } from "./kanban-board";
 
+import { createTask, updateTask, deleteTask } from "@/lib/actions/task";
+
 interface KanbanListProps {
   initialColumns: BoardColumn[];
   initialTasks: Task[];
@@ -17,7 +19,7 @@ interface KanbanListProps {
 export default function KanbanList({ initialColumns, initialTasks }: KanbanListProps) {
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
@@ -31,14 +33,18 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
     setIsDialogOpen(true);
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => { // เปลี่ยนเป็น async
     if (editingTask) {
+      // อัปเดตหน้าจอทันที
       setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
-      setIsDialogOpen(false); 
+      setIsDialogOpen(false);
+
+      // สั่งลบข้อมูลใน Database จริงๆ
+      await deleteTask(editingTask.id as string);
     }
   };
 
-  const handleSaveTask = (data: TaskFormData) => {
+  const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
       design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
       development: { text: "Development", classes: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400" },
@@ -50,6 +56,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     if (editingTask) {
+      // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
       setTasks(prevTasks => prevTasks.map(t => {
         if (t.id === editingTask.id) {
           return {
@@ -65,26 +72,45 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         }
         return t;
       }));
-    } else {
-      const newTask: Task = {
-        id: crypto.randomUUID(),
-        columnId: data.columnId || "todo",
+
+      // สั่งอัปเดตลง Database ในแบคกราวด์
+      await updateTask(editingTask.id as string, {
         title: data.title,
         description: data.description,
         categoryId: data.categoryId,
-        tag: tagInfo,
+        columnId: data.columnId,
+        dueDate: data.dueDate
+      });
+
+    } else {
+      // กรณีสร้างงานใหม่: บันทึกลง DB ก่อนเพื่อขอ ID
+      const savedTask = await createTask({
+        title: data.title,
+        description: data.description,
+        categoryId: data.categoryId,
+        columnId: data.columnId || "todo",
         dueDate: data.dueDate,
+      });
+
+      const newTask: Task = {
+        id: savedTask.id, // ใช้ ID ที่ได้จาก Database
+        columnId: savedTask.columnId,
+        title: savedTask.title,
+        description: savedTask.description || undefined,
+        categoryId: savedTask.categoryId || undefined,
+        tag: tagInfo,
+        dueDate: savedTask.dueDate || undefined,
         dueDateClasses: dueDateClasses,
       };
       setTasks([...tasks, newTask]);
     }
-    
+
     setIsDialogOpen(false);
   };
 
   return (
     <div className="flex flex-col h-full">
-      
+
       {/* Header เฉพาะของหน้า List */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0">
         <div>
@@ -99,15 +125,15 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
       </div>
 
       <main className="flex-1 overflow-x-auto p-4 sm:p-6 pt-0 pb-6">
-        <KanbanListView 
-          tasks={tasks} 
-          columns={columns} 
-          onEditTask={handleOpenEditDialog} 
+        <KanbanListView
+          tasks={tasks}
+          columns={columns}
+          onEditTask={handleOpenEditDialog}
         />
       </main>
 
-      <TaskDialog 
-        open={isDialogOpen} 
+      <TaskDialog
+        open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         taskToEdit={editingTask}
         columns={columns}

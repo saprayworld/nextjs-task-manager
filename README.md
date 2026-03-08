@@ -1,81 +1,118 @@
-# Next.js + shadcn/ui Starter
+# Next.js Full-Stack Kanban Board
 
-A modern Next.js application with TypeScript, Tailwind CSS, and shadcn/ui components ready to use.
+A modern, feature-rich Kanban board application built with Next.js 16 (App Router), TypeScript, Tailwind CSS, and shadcn/ui. This project includes a complete backend with SQLite, Drizzle ORM, and secure authentication via Better Auth.
 
-## Features
+## ✨ Features
 
-- ⚡ **Next.js 15** with App Router
-- 🎨 **Tailwind CSS** for styling
-- 🧩 **shadcn/ui** components
-- 📝 **TypeScript** for type safety
-- 🗂️ **Organized project structure**
-- 🌙 **Dark mode support**
-- 📱 **Responsive design**
+- 🔐 Authentication: Secure Email/Password login and registration using Better Auth.
 
-## Project Structure
+- 🗄️ Database: Local SQLite database integrated with Drizzle ORM for type-safe queries.
+
+- 📋 Kanban Board: Interactive drag-and-drop task management powered by `@dnd-kit`.
+
+- 📊 List View: Alternative table view for tasks with faceted status filtering.
+
+- ⚡ Server Actions: Secure, server-side CRUD operations without traditional API endpoints.
+
+- 🎨 Modern UI: Beautiful, accessible components from shadcn/ui.
+
+- 🌙 Dark Mode: One-click dark/light mode toggle with system preference support.
+
+- 📱 Responsive Design: Works seamlessly on mobile, tablet, and desktop.
+
+## 🛠️ Tech Stack
+
+- Framework: Next.js 16 (App Router)
+
+- Language: TypeScript
+
+- Styling: Tailwind CSS
+
+- UI Components: shadcn/ui, Lucide Icons
+
+- Drag & Drop: @dnd-kit
+
+- Database: SQLite (better-sqlite3)
+
+- ORM: Drizzle ORM
+
+- Authentication: Better Auth
+
+## 📂 Project Structure
 
 ```
-src/
-├── app/                 # Next.js app router pages
+.
+├── app/                  # Next.js App Router (Pages & Layouts)
+│   ├── api/auth/         # Better Auth API catch-all routes
+│   ├── kanban/           # Protected Kanban board & list routes
+│   ├── login/            # Login page
+│   └── register/         # Registration page
 ├── components/
-│   ├── ui/             # shadcn/ui components
-│   ├── layout/         # Layout components
-│   └── forms/          # Form components
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions
-├── types/              # TypeScript type definitions
-└── constants/          # Application constants
+│   ├── kanban/           # Kanban specific components (Board, List, Card, Dialog)
+│   ├── ui/               # shadcn/ui reusable components
+│   └── theme-toggle.tsx  # Dark/Light mode toggle button
+├── db/                   # Database configuration
+│   ├── index.ts          # Database connection
+│   └── schema.ts         # Drizzle schema (User, Session, Task, etc.)
+├── lib/                  # Utilities and Actions
+│   ├── actions/          # Next.js Server Actions (CRUD for tasks)
+│   ├── auth.ts           # Better Auth server configuration
+│   ├── auth-client.ts    # Better Auth client SDK
+│   └── utils.ts          # Tailwind merge utilities
+└── drizzle.config.ts     # Drizzle ORM configuration
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-First, run the development server:
+Follow these steps to run the project locally.
+
+1. Install Dependencies
+
+```bash
+npm install
+# or yarn install / pnpm install
+```
+
+2. Setup Database
+
+Since this project uses SQLite and Drizzle ORM, you need to create the database file and apply the schema before running the app:
+
+```bash
+npx drizzle-kit push
+```
+
+(This command will create a `sqlite.db` file in the root directory and generate all necessary tables).
+
+3. Start the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# or yarn dev / pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 with your browser. You will be redirected to the login page. Create a new account to access your personal Kanban board!
 
-## Adding shadcn/ui Components
+## 🧩 Adding More shadcn/ui Components
 
-To add new shadcn/ui components:
+If you want to extend the UI, you can add more shadcn components using the CLI:
 
 ```bash
 npx shadcn@latest add [component-name]
+# Example: npx shadcn@latest add date-picker
 ```
 
-For example:
-```bash
-npx shadcn@latest add button
-npx shadcn@latest add card
-npx shadcn@latest add input
-```
-
-## Available Scripts
+## 📜 Available Scripts
 
 - `npm run dev` - Start development server
+
 - `npm run build` - Build for production
+
 - `npm run start` - Start production server
+
+- `npx drizzle-kit studio` - Open Drizzle Studio to view and edit database visually
+
 - `npm run lint` - Run ESLint
 
-## Learn More
+## 🤝 Contribution
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feel free to open issues or submit pull requests if you want to improve this starter template!

@@ -1,0 +1,12 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/db"; // อ้างอิงจากโฟลเดอร์ db ที่เราสร้างไว้
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "sqlite",
+  }),
+  emailAndPassword: {
+    enabled: true, // เปิดใช้งานระบบ Email / Password
+  },
+});

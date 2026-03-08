@@ -128,3 +128,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# SQLite database
+sqlite.db
