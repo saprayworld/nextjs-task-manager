@@ -1,5 +1,8 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
+// ==========================================
+// ส่วนที่ 1: ตารางสำหรับระบบ Authentication (Better Auth)
+// ==========================================
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -42,6 +45,25 @@ export const verification = sqliteTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+});
+
+// ==========================================
+// ส่วนที่ 2: ตารางสำหรับระบบ Kanban Board
+// ==========================================
+export const task = sqliteTable("task", {
+  id: text("id").primaryKey(), // รหัสงาน (จะใช้ crypto.randomUUID() ตอนสร้าง)
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }), // ผูกกับผู้ใช้ (ถ้าลบ User ให้ลบ Task ทิ้งด้วย)
+  columnId: text("columnId").notNull(), // สถานะ (เช่น 'todo', 'inprogress')
+  title: text("title").notNull(), // ชื่องาน
+  description: text("description"), // รายละเอียดงาน
+  categoryId: text("categoryId"), // หมวดหมู่ (เช่น 'design', 'development')
+  progress: integer("progress").default(0), // ความคืบหน้า 0-100
+  dueDate: text("dueDate"), // วันครบกำหนด (เก็บเป็น YYYY-MM-DD string)
+  order: integer("order").notNull().default(0), // ลำดับการ์ดในคอลัมน์ (สำหรับ Drag & Drop)
   createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
 });
