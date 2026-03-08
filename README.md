@@ -1,6 +1,6 @@
 # Next.js Full-Stack Kanban Board
 
-A modern, feature-rich Kanban board application built with Next.js 15 (App Router), TypeScript, Tailwind CSS, and shadcn/ui. This project includes a complete backend with SQLite, Drizzle ORM, and secure authentication via Better Auth.
+A modern, feature-rich Kanban board application built with Next.js 16 (App Router), TypeScript, Tailwind CSS, and shadcn/ui. This project includes a complete backend with SQLite, Drizzle ORM, and secure authentication via Better Auth.
 
 ## ✨ Features
 
@@ -22,7 +22,7 @@ A modern, feature-rich Kanban board application built with Next.js 15 (App Route
 
 ## 🛠️ Tech Stack
 
-- Framework: Next.js 15 (App Router)
+- Framework: Next.js 16 (App Router)
 
 - Language: TypeScript
 
