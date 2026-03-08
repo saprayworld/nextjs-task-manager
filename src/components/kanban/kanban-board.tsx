@@ -24,6 +24,8 @@ import { LayoutDashboard, Search, Moon, Plus, MoreHorizontal } from 'lucide-reac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import { createTask, updateTask, deleteTask } from "@/lib/actions/task";
+
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
@@ -41,7 +43,7 @@ export interface Tag {
 export interface Task {
   id: Id;
   columnId: Id;
-  categoryId?: string; 
+  categoryId?: string;
   title: string;
   description?: string;
   tag?: Tag;
@@ -49,7 +51,7 @@ export interface Task {
   attachments?: number;
   comments?: number;
   initials?: string;
-  dueDate?: string; 
+  dueDate?: string;
   dueDateClasses?: string;
   progress?: number;
 }
@@ -129,14 +131,18 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     setIsDialogOpen(true);
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (editingTask) {
+      // อัปเดตหน้าจอทันที (ให้ดูลื่นไหล)
       setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
-      setIsDialogOpen(false); 
+      setIsDialogOpen(false);
+
+      // ลบข้อมูลใน Database จริงๆ
+      await deleteTask(editingTask.id as string);
     }
   };
 
-  const handleSaveTask = (data: TaskFormData) => {
+  const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
       design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
       development: { text: "Development", classes: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400" },
@@ -148,6 +154,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     if (editingTask) {
+      // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
       setTasks(prevTasks => prevTasks.map(t => {
         if (t.id === editingTask.id) {
           const updatedTask: Task = {
@@ -159,29 +166,46 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
             dueDate: data.dueDate,
             dueDateClasses: dueDateClasses
           };
-
           if (editingTask.columnId !== data.columnId) {
             updatedTask.columnId = data.columnId;
           }
-
           return updatedTask;
         }
         return t;
       }));
-    } else {
-      const newTask: Task = {
-        id: crypto.randomUUID(),
-        columnId: data.columnId || "todo",
+
+      // สั่งอัปเดตลง Database ในแบคกราวด์
+      await updateTask(editingTask.id as string, {
         title: data.title,
         description: data.description,
         categoryId: data.categoryId,
-        tag: tagInfo,
+        columnId: data.columnId,
+        dueDate: data.dueDate
+      });
+
+    } else {
+      // กรณีสร้างงานใหม่: ต้องบันทึกลง DB ก่อนเพื่อขอ ID จริงๆ
+      const savedTask = await createTask({
+        title: data.title,
+        description: data.description,
+        categoryId: data.categoryId,
+        columnId: data.columnId || "todo",
         dueDate: data.dueDate,
+      });
+
+      const newTask: Task = {
+        id: savedTask.id, // ใช้ ID ที่ได้จาก Database
+        columnId: savedTask.columnId,
+        title: savedTask.title,
+        description: savedTask.description || undefined,
+        categoryId: savedTask.categoryId || undefined,
+        tag: tagInfo,
+        dueDate: savedTask.dueDate || undefined,
         dueDateClasses: dueDateClasses,
       };
       setTasks([...tasks, newTask]);
     }
-    
+
     setIsDialogOpen(false);
   };
 
@@ -230,13 +254,24 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => { // เปลี่ยนเป็น async
+    const { active } = event;
     setActiveTask(null);
+
+    // หาว่าการ์ดที่ลากมา ตอนนี้ถูกจับยัดไปอยู่คอลัมน์ไหนใน State แล้ว
+    // (State ถูกอัปเดตไปแล้วใน handleDragOver)
+    const movedTask = tasks.find((t) => t.id === active.id);
+    if (movedTask) {
+      // สั่งเซฟคอลัมน์ใหม่ลง Database
+      await updateTask(movedTask.id as string, {
+        columnId: movedTask.columnId as string,
+      });
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
-      
+
       {/* Header เฉพาะของหน้า Board */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0">
         <div>
@@ -272,14 +307,14 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
 
           <DragOverlay>
             {activeTask ? (
-              <KanbanTaskCard task={activeTask} onEdit={() => {}} />
+              <KanbanTaskCard task={activeTask} onEdit={() => { }} />
             ) : null}
           </DragOverlay>
         </DndContext>
       </main>
 
-      <TaskDialog 
-        open={isDialogOpen} 
+      <TaskDialog
+        open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         taskToEdit={editingTask}
         columns={columns}
