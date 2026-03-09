@@ -54,11 +54,11 @@ export default function LoginPage() {
             )}
             <div className="space-y-2">
               <Label htmlFor="email">อีเมล</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                required 
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -71,16 +71,16 @@ export default function LoginPage() {
                   ลืมรหัสผ่าน?
                 </Link>
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
+              <Input
+                id="password"
+                type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
             </Button>

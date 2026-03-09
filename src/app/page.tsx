@@ -5,13 +5,13 @@ import { Label } from "@/components/ui/label";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 mb-4">
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
             Next.js + shadcn/ui Starter
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto text-muted dark:text-muted-foreground">
             A modern Next.js application with TypeScript, Tailwind CSS, and shadcn/ui components ready to use.
           </p>
         </div>
@@ -25,7 +25,7 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted dark:text-muted-foreground">
                 This starter includes everything you need to build a modern web application.
               </p>
             </CardContent>
@@ -39,7 +39,7 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted dark:text-muted-foreground">
                 Pre-built components that are accessible and customizable.
               </p>
             </CardContent>
@@ -53,7 +53,7 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted dark:text-muted-foreground">
                 Mobile-first design that looks great on all devices.
               </p>
             </CardContent>

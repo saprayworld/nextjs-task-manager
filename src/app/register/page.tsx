@@ -56,37 +56,37 @@ export default function RegisterPage() {
             )}
             <div className="space-y-2">
               <Label htmlFor="name">ชื่อ-นามสกุล</Label>
-              <Input 
-                id="name" 
-                placeholder="John Doe" 
-                required 
+              <Input
+                id="name"
+                placeholder="John Doe"
+                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">อีเมล</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                required 
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">รหัสผ่าน</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
+              <Input
+                id="password"
+                type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
             </Button>
