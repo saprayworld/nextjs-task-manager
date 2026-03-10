@@ -113,6 +113,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -296,20 +297,42 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     }
   };
 
+  const filteredTasks = tasks.filter((task) => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+    return (
+      task.title.toLowerCase().includes(lowerQuery) ||
+      task.description?.toLowerCase().includes(lowerQuery) ||
+      task.tag?.text.toLowerCase().includes(lowerQuery)
+    );
+  });
+
   return (
     <div className="flex flex-col h-full">
 
       {/* Header เฉพาะของหน้า Board */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 sm:px-6 py-4 shrink-0">
         <div>
           <h2 className="text-lg font-semibold tracking-tight">Kanban Board</h2>
-          <p className="text-xs text-muted-foreground hidden sm:block">จัดการและติดตามสถานะงานทั้งหมด</p>
+          <p className="text-xs text-muted-foreground">จัดการและติดตามสถานะงานทั้งหมด</p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="flex items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
-          <Plus className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline">สร้างงานใหม่</span>
-          <span className="inline sm:hidden">สร้าง</span>
-        </Button>
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="ค้นหางาน, ป้ายกำกับ..."
+              className="w-full pl-8 h-9 text-sm bg-background"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleOpenCreateDialog} className="flex items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">สร้างงานใหม่</span>
+            <span className="inline sm:hidden">สร้าง</span>
+          </Button>
+        </div>
       </div>
 
       <main className="flex-1 overflow-x-auto p-4 sm:p-6 pt-0 pb-6">
@@ -326,7 +349,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
               <Column
                 key={col.id}
                 column={col}
-                tasks={tasks.filter((task) => task.columnId === col.id)}
+                tasks={filteredTasks.filter((task) => task.columnId === col.id)}
                 onEditTask={handleOpenEditDialog}
               />
             ))}
