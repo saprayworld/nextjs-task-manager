@@ -10,6 +10,7 @@ import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { Task, Tag } from "./kanban-board";
 
 import { createTask, updateTask, deleteTask } from "@/lib/actions/task";
+import { toast } from "sonner";
 
 interface KanbanListProps {
   initialColumns: BoardColumn[];
@@ -35,12 +36,24 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
 
   const handleDeleteTask = async () => { // เปลี่ยนเป็น async
     if (editingTask) {
+      const previousTasks = tasks;
       // อัปเดตหน้าจอทันที
       setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
       setIsDialogOpen(false);
 
-      // สั่งลบข้อมูลใน Database จริงๆ
-      await deleteTask(editingTask.id as string);
+      try {
+        // สั่งลบข้อมูลใน Database จริงๆ
+        await deleteTask(editingTask.id as string);
+        toast.success('ลบงานสำเร็จ', {
+          description: `"${editingTask.title}" ถูกลบเรียบร้อยแล้ว`,
+        });
+      } catch {
+        // Rollback กลับถ้าลบไม่สำเร็จ
+        setTasks(previousTasks);
+        toast.error('ลบงานไม่สำเร็จ', {
+          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        });
+      }
     }
   };
 
@@ -55,57 +68,71 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
     const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap.design;
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
-    if (editingTask) {
-      // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
-      setTasks(prevTasks => prevTasks.map(t => {
-        if (t.id === editingTask.id) {
-          return {
-            ...t,
-            title: data.title,
-            description: data.description,
-            categoryId: data.categoryId,
-            columnId: data.columnId,
-            tag: tagInfo,
-            dueDate: data.dueDate,
-            dueDateClasses: dueDateClasses
-          };
-        }
-        return t;
-      }));
+    try {
+      if (editingTask) {
+        // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
+        setTasks(prevTasks => prevTasks.map(t => {
+          if (t.id === editingTask.id) {
+            return {
+              ...t,
+              title: data.title,
+              description: data.description,
+              categoryId: data.categoryId,
+              columnId: data.columnId,
+              tag: tagInfo,
+              dueDate: data.dueDate,
+              dueDateClasses: dueDateClasses
+            };
+          }
+          return t;
+        }));
 
-      // สั่งอัปเดตลง Database ในแบคกราวด์
-      await updateTask(editingTask.id as string, {
-        title: data.title,
-        description: data.description,
-        categoryId: data.categoryId,
-        columnId: data.columnId,
-        dueDate: data.dueDate
+        // สั่งอัปเดตลง Database ในแบคกราวด์
+        await updateTask(editingTask.id as string, {
+          title: data.title,
+          description: data.description,
+          categoryId: data.categoryId,
+          columnId: data.columnId,
+          dueDate: data.dueDate
+        });
+
+        toast.success('บันทึกสำเร็จ', {
+          description: `"${data.title}" ถูกอัปเดตเรียบร้อยแล้ว`,
+        });
+
+      } else {
+        // กรณีสร้างงานใหม่: บันทึกลง DB ก่อนเพื่อขอ ID
+        const savedTask = await createTask({
+          title: data.title,
+          description: data.description,
+          categoryId: data.categoryId,
+          columnId: data.columnId || "todo",
+          dueDate: data.dueDate,
+        });
+
+        const newTask: Task = {
+          id: savedTask.id, // ใช้ ID ที่ได้จาก Database
+          columnId: savedTask.columnId,
+          title: savedTask.title,
+          description: savedTask.description || undefined,
+          categoryId: savedTask.categoryId || undefined,
+          tag: tagInfo,
+          dueDate: savedTask.dueDate || undefined,
+          dueDateClasses: dueDateClasses,
+        };
+        setTasks([...tasks, newTask]);
+
+        toast.success('สร้างงานสำเร็จ', {
+          description: `"${data.title}" ถูกเพิ่มเรียบร้อยแล้ว`,
+        });
+      }
+
+      setIsDialogOpen(false);
+    } catch {
+      toast.error('บันทึกไม่สำเร็จ', {
+        description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
       });
-
-    } else {
-      // กรณีสร้างงานใหม่: บันทึกลง DB ก่อนเพื่อขอ ID
-      const savedTask = await createTask({
-        title: data.title,
-        description: data.description,
-        categoryId: data.categoryId,
-        columnId: data.columnId || "todo",
-        dueDate: data.dueDate,
-      });
-
-      const newTask: Task = {
-        id: savedTask.id, // ใช้ ID ที่ได้จาก Database
-        columnId: savedTask.columnId,
-        title: savedTask.title,
-        description: savedTask.description || undefined,
-        categoryId: savedTask.categoryId || undefined,
-        tag: tagInfo,
-        dueDate: savedTask.dueDate || undefined,
-        dueDateClasses: dueDateClasses,
-      };
-      setTasks([...tasks, newTask]);
     }
-
-    setIsDialogOpen(false);
   };
 
   return (
