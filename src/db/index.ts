@@ -1,9 +1,9 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
-// สร้างไฟล์ sqlite ชื่อ sqlite.db ไว้ในโปรเจกต์
-const sqlite = new Database('sqlite.db');
+// กำหนด URL ของ Neon (ปกติอ่านจาก .env เช่น DATABASE_URL="postgresql://...")
+const sql = neon(process.env.DATABASE_URL || 'postgresql://user:pass@localhost/db');
 
 // สร้าง instance ของ db เพื่อเอาไปเรียกใช้งานในแอป
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(sql, { schema });

@@ -78,7 +78,7 @@ const techStack = [
   { name: "Drizzle ORM", description: "Database" },
   { name: "Better Auth", description: "Authentication" },
   { name: "@dnd-kit", description: "Drag & Drop" },
-  { name: "SQLite", description: "Lightweight DB" },
+  { name: "Neon (PostgreSQL)", description: "Serverless Database" },
 ];
 
 export default function Home() {
