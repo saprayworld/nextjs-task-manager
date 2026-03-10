@@ -43,7 +43,9 @@ export function Navbar() {
       {/* ฝั่งขวา: ค้นหา -> เมนูนำทาง -> สลับธีม */}
       <div className="flex items-center gap-2 sm:gap-3">
 
-        {/* 1. ช่องค้นหา */}
+        {/* 1. ช่องค้นหา (Global Search) */}
+        {/* TODO: โดนซ่อนไว้ชั่วคราว รอทำระบบ Command Palette พร้อมฟีเจอร์ถังขยะในอนาคต */}
+        {/* 
         <div className="hidden md:flex relative items-center">
           <Search className="w-4 h-4 absolute left-3 text-muted-foreground" />
           <Input
@@ -55,6 +57,7 @@ export function Navbar() {
         <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground shrink-0" title="ค้นหา">
           <Search className="w-5 h-5" />
         </Button>
+        */}
 
         {/* 2. เมนูนำทาง (อัปเดตเป็น Link และเช็ค Active Route) */}
         <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
