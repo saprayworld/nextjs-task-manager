@@ -75,7 +75,10 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
 
       <h3 className="font-medium text-sm mb-1">{task.title}</h3>
       {task.description && (
-        <p className="text-muted-foreground text-xs line-clamp-2 mb-4">{task.description}</p>
+        <div
+          className="text-muted-foreground text-xs line-clamp-2 mb-4 prose prose-sm dark:prose-invert max-w-none [&>*]:m-0 [&>*]:text-xs [&>*]:text-muted-foreground"
+          dangerouslySetInnerHTML={{ __html: task.description }}
+        />
       )}
       
       {task.progress !== undefined && (

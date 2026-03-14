@@ -62,9 +62,10 @@ export const getKanbanColumns = (
               </span>
             </div>
             {description && (
-              <p className="text-xs text-muted-foreground line-clamp-1 max-w-[250px] sm:max-w-[350px] md:max-w-[450px] lg:max-w-[550px]" title={description}>
-                {description}
-              </p>
+              <div
+                className="text-xs text-muted-foreground line-clamp-1 max-w-[250px] sm:max-w-[350px] md:max-w-[450px] lg:max-w-[550px] prose prose-sm dark:prose-invert [&>*]:m-0 [&>*]:text-xs [&>*]:text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
             )}
           </div>
         );
