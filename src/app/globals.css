@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,7 +121,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* แก้ไข checkbox ไม่ตรงกับตัวอักษร */
+.\[\&_ul\[data-type\=taskList\]_li\]\:items-start ul[data-type="taskList"] li {
+  align-items: first baseline;
 }

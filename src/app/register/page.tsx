@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
+import { signUp, useSession } from "@/lib/auth-client";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,11 +13,31 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // ถ้ามี session อยู่แล้ว (ล็อกอินไว้แล้ว) ให้ redirect ไปหน้า kanban
+  useEffect(() => {
+    if (!isPending && session) {
+      router.replace("/kanban");
+    }
+  }, [session, isPending, router]);
+
+  // แสดง loading ระหว่างตรวจสอบ session
+  if (isPending || session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">กำลังตรวจสอบสถานะ...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -11,6 +11,7 @@ import {
   Zap,
   Smartphone,
   Github,
+  Type,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,13 @@ const features = [
     description:
       "จัดการงานแบบ Drag & Drop ด้วย @dnd-kit ลากย้ายการ์ดได้อย่างลื่นไหล",
     badge: "Interactive",
+  },
+  {
+    icon: Type,
+    title: "Rich Text Editor",
+    description:
+      "เขียนรายละเอียดงานและจัดรูปแบบได้อย่างครบครัน แบบ WYSIWYG ด้วย Tiptap",
+    badge: "Editor",
   },
   {
     icon: LayoutList,
@@ -78,6 +86,7 @@ const techStack = [
   { name: "Drizzle ORM", description: "Database" },
   { name: "Better Auth", description: "Authentication" },
   { name: "@dnd-kit", description: "Drag & Drop" },
+  { name: "Tiptap", description: "Rich Text Editor" },
   { name: "Neon (PostgreSQL)", description: "Serverless Database" },
 ];
 

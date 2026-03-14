@@ -300,9 +300,11 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
   const filteredTasks = tasks.filter((task) => {
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
+    // Strip HTML tags ก่อน search description
+    const plainDescription = task.description?.replace(/<[^>]*>/g, '') || '';
     return (
       task.title.toLowerCase().includes(lowerQuery) ||
-      task.description?.toLowerCase().includes(lowerQuery) ||
+      plainDescription.toLowerCase().includes(lowerQuery) ||
       task.tag?.text.toLowerCase().includes(lowerQuery)
     );
   });

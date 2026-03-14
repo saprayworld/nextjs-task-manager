@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
   DialogContent,
@@ -88,7 +89,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
             {isEditMode ? "แก้ไขงาน" : "สร้างงานใหม่"}
@@ -154,14 +155,12 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="task-desc" className="text-sm font-medium">รายละเอียด</label>
-              <textarea
-                id="task-desc"
-                rows={3}
+              <label className="text-sm font-medium">รายละเอียด</label>
+              <TiptapEditor
+                content={description}
+                onChange={setDescription}
                 placeholder="เพิ่มรายละเอียดของงานนี้..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                disabled={isSaving}
               />
             </div>
           </fieldset>
@@ -184,7 +183,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                   ยกเลิก
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
+              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto"
+                aria-label={isEditMode ? "save-edit-task" : "create-task"}>
                 {isSaving ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}</>
                 ) : (
