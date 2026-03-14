@@ -10,6 +10,8 @@ A modern, feature-rich Kanban board application built with Next.js 16 (App Route
 
 - 📋 Kanban Board: Interactive drag-and-drop task management powered by `@dnd-kit`.
 
+- 📝 Rich Text Editor: Comprehensive WYSIWYG editor for task descriptions powered by Tiptap.
+
 - 📊 List View: Alternative table view for tasks with faceted status filtering.
 
 - ⚡ Server Actions: Secure, server-side CRUD operations without traditional API endpoints.
@@ -31,6 +33,8 @@ A modern, feature-rich Kanban board application built with Next.js 16 (App Route
 - UI Components: shadcn/ui, Lucide Icons
 
 - Drag & Drop: @dnd-kit
+
+- Rich Text Editor: Tiptap & Tailwind Typography
 
 - Database: SQLite (better-sqlite3)
 
