@@ -183,7 +183,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                   ยกเลิก
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
+              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto"
+                aria-label={isEditMode ? "save-edit-task" : "create-task"}>
                 {isSaving ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}</>
                 ) : (

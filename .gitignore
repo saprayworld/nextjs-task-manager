@@ -135,3 +135,9 @@ sqlite.db
 # next-env.d.ts
 # This file is auto generate with run command `yarn dev`
 next-env.d.ts
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/

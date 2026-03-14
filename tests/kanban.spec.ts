@@ -27,16 +27,16 @@ test.describe('Kanban Core Flow', () => {
 
     // กรอกข้อมูลหัวข้อ
     await page.fill('input[id="task-title"]', taskTitle);
-    
+
     // เลือกสถานะ (To Do เป็นค่าเริ่มต้น) หมวดหมู่
     await page.selectOption('select[id="task-category"]', 'development');
 
     // กรอก Tiptap editor
     await page.click('.tiptap');
     await page.keyboard.type('This is a test description inserted by Playwright');
-    
+
     // กดปุ่มเซฟ "สร้างงาน"
-    await page.click('button:has-text("สร้างงาน")');
+    await page.click('button[aria-label="create-task"]');
 
     // ตรวจสอบว่ามี การ์ด โผล่บนหน้าจอ
     const card = page.locator('div.cursor-grab').filter({ has: page.locator('h3', { hasText: taskTitle }) });
@@ -58,7 +58,7 @@ test.describe('Kanban Core Flow', () => {
       // ขยับเล็กน้อยเพื่อให้ Trigger การลาก
       await page.mouse.move(box.x + box.width / 2 + 5, box.y + 20);
       await page.waitForTimeout(300); // จำลองการคลิกค้าง
-      
+
       // ลากไปยังกึ่งกลางคอลัมน์ "In Progress"
       await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 3, { steps: 5 });
       await page.waitForTimeout(200);
@@ -83,11 +83,11 @@ test.describe('Kanban Core Flow', () => {
     // 3. การลบงาน
     // ============================================
     const currentCard = targetColumnAfterReload.locator('div.cursor-grab').filter({ has: page.locator('h3', { hasText: taskTitle }) });
-    
+
     // Hover ดูปุ่ม และคลิกปุ่ม Edit
     await currentCard.hover();
     await currentCard.locator('button[title="แก้ไขงาน"]').click();
-    
+
     // รอ Dialog
     await expect(page.locator('.text-lg', { hasText: 'แก้ไขงาน' })).toBeVisible();
 
