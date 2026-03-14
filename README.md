@@ -73,8 +73,7 @@ Follow these steps to run the project locally.
 1. Install Dependencies
 
 ```bash
-npm install
-# or yarn install / pnpm install
+yarn install
 ```
 
 2. Setup Database
@@ -90,8 +89,7 @@ npx drizzle-kit push
 3. Start the Development Server
 
 ```bash
-npm run dev
-# or yarn dev / pnpm dev
+yarn dev
 ```
 
 Open http://localhost:3000 with your browser. You will be redirected to the login page. Create a new account to access your personal Kanban board!
@@ -107,15 +105,15 @@ npx shadcn@latest add [component-name]
 
 ## 📜 Available Scripts
 
-- `npm run dev` - Start development server
+- `yarn dev` - Start development server
 
-- `npm run build` - Build for production
+- `yarn build` - Build for production
 
-- `npm run start` - Start production server
+- `yarn start` - Start production server
 
 - `npx drizzle-kit studio` - Open Drizzle Studio to view and edit database visually
 
-- `npm run lint` - Run ESLint
+- `yarn lint` - Run ESLint
 
 ## 🤝 Contribution
 
