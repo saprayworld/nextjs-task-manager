@@ -53,17 +53,30 @@ export const verification = pgTable("verification", {
 // ส่วนที่ 2: ตารางสำหรับระบบ Kanban Board
 // ==========================================
 export const task = pgTable("task", {
-  id: text("id").primaryKey(), // รหัสงาน (จะใช้ crypto.randomUUID() ตอนสร้าง)
+  id: text("id").primaryKey(),
   userId: text("userId")
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }), // ผูกกับผู้ใช้ (ถ้าลบ User ให้ลบ Task ทิ้งด้วย)
-  columnId: text("columnId").notNull(), // สถานะ (เช่น 'todo', 'inprogress')
-  title: text("title").notNull(), // ชื่องาน
-  description: text("description"), // รายละเอียดงาน
-  categoryId: text("categoryId"), // หมวดหมู่ (เช่น 'design', 'development')
-  progress: integer("progress").default(0), // ความคืบหน้า 0-100
-  dueDate: text("dueDate"), // วันครบกำหนด (เก็บเป็น YYYY-MM-DD string)
-  order: integer("order").notNull().default(0), // ลำดับการ์ดในคอลัมน์ (สำหรับ Drag & Drop)
+    .references(() => user.id, { onDelete: 'cascade' }),
+  columnId: text("columnId").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  categoryId: text("categoryId"),
+  progress: integer("progress").default(0),
+  dueDate: text("dueDate"),
+  order: integer("order").notNull().default(0),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
+});
+
+// ==========================================
+// ตารางสำหรับ Subtasks (งานย่อย)
+// ==========================================
+export const subtask = pgTable("subtask", {
+  id: text("id").primaryKey(),
+  taskId: text("taskId")
+    .notNull()
+    .references(() => task.id, { onDelete: 'cascade' }), // ลบงานหลัก = งานย่อยโดนลบด้วย
+  title: text("title").notNull(),
+  isCompleted: boolean("isCompleted").notNull().default(false),
+  createdAt: timestamp("createdAt").notNull(),
 });
