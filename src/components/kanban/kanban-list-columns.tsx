@@ -50,14 +50,17 @@ export const getKanbanColumns = (
         const tag = row.original.tag;
         const description = row.original.description;
         return (
-          <div className="flex flex-col gap-1 py-1">
+          <div 
+            className="flex flex-col gap-1 py-1 cursor-pointer group"
+            onClick={() => onEditTask(row.original)}
+          >
             <div className="flex space-x-2 items-center">
               {tag && (
                 <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border bg-muted/50 text-muted-foreground whitespace-nowrap`}>
                   {tag.text}
                 </span>
               )}
-              <span className="max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] truncate font-medium">
+              <span className="max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] truncate font-medium group-hover:text-primary group-hover:underline transition-colors">
                 {row.getValue("title")}
               </span>
             </div>

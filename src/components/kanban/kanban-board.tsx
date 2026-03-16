@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-import { createTask, updateTask, deleteTask } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks } from "@/lib/actions/task";
 
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
@@ -39,6 +39,12 @@ export type Id = string | number;
 export interface Tag {
   text: string;
   classes: string;
+}
+
+export interface Subtask {
+  id?: string;
+  title: string;
+  isCompleted: boolean;
 }
 
 export interface Task {
@@ -55,6 +61,7 @@ export interface Task {
   dueDate?: string;
   dueDateClasses?: string;
   progress?: number;
+  subtasks?: Subtask[];
 }
 
 interface KanbanBoardProps {
@@ -168,6 +175,10 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
+      const subtasks = data.subtasks || [];
+      const completedCount = subtasks.filter(st => st.isCompleted).length;
+      const newProgress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
+
       if (editingTask) {
         // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
         setTasks(prevTasks => prevTasks.map(t => {
@@ -179,6 +190,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
               categoryId: data.categoryId,
               tag: tagInfo,
               dueDate: data.dueDate,
+              subtasks: data.subtasks,
+              progress: newProgress,
               dueDateClasses: dueDateClasses
             };
             if (editingTask.columnId !== data.columnId) {
@@ -198,6 +211,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           dueDate: data.dueDate
         });
 
+        await syncSubtasks(editingTask.id as string, data.subtasks);
+
         toast.success('บันทึกสำเร็จ', {
           description: `"${data.title}" ถูกอัปเดตเรียบร้อยแล้ว`,
         });
@@ -212,6 +227,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           dueDate: data.dueDate,
         });
 
+        await syncSubtasks(savedTask.id, data.subtasks);
+
         const newTask: Task = {
           id: savedTask.id, // ใช้ ID ที่ได้จาก Database
           columnId: savedTask.columnId,
@@ -221,6 +238,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           tag: tagInfo,
           dueDate: savedTask.dueDate || undefined,
           dueDateClasses: dueDateClasses,
+          subtasks: data.subtasks,
+          progress: newProgress,
         };
         setTasks([...tasks, newTask]);
 

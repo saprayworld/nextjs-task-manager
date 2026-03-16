@@ -20,7 +20,8 @@ export default async function ListPage() {
       dueDate: task.dueDate || undefined,
       dueDateClasses: task.dueDate ? "text-destructive bg-destructive/10" : undefined,
       tag: tagInfo,
-      progress: task.progress || undefined,
+      progress: task.progress ?? undefined,
+      subtasks: task.subtasks || [],
     };
   });
 

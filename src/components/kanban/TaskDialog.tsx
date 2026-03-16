@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2 } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -20,12 +20,19 @@ export interface BoardColumn {
   dotColor: string;
 }
 
+export interface SubtaskData {
+  id?: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 export interface TaskFormData {
   title: string;
   categoryId: string;
   columnId: string;
   dueDate: string;
   description: string;
+  subtasks: SubtaskData[];
 }
 
 interface TaskDialogProps {
@@ -46,6 +53,9 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [subtasks, setSubtasks] = useState<SubtaskData[]>([]);
+  const [newSubtask, setNewSubtask] = useState("");
+
   const isEditMode = !!taskToEdit;
 
   useEffect(() => {
@@ -57,6 +67,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
+        // โหลดข้อมูลงานย่อย ถ้าไม่มีให้เป็นอาร์เรย์ว่าง
+        setSubtasks(taskToEdit.subtasks || []);
       } else {
         setTitle("");
         setCategoryId("design");
@@ -64,14 +76,37 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setDueDate("");
         setDescription("");
       }
+      setNewSubtask(""); // ล้างช่องพิมพ์งานย่อยเสมอเมื่อเปิด
     }
   }, [open, taskToEdit]);
+
+  const handleAddSubtask = () => {
+    if (!newSubtask.trim()) return;
+    setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask, isCompleted: false }]);
+    setNewSubtask("");
+  };
+
+  const toggleSubtask = (index: number) => {
+    const newSubtasks = [...subtasks];
+    newSubtasks[index].isCompleted = !newSubtasks[index].isCompleted;
+    setSubtasks(newSubtasks);
+  };
+
+  const updateSubtaskTitle = (index: number, newTitle: string) => {
+    const newSubtasks = [...subtasks];
+    newSubtasks[index].title = newTitle;
+    setSubtasks(newSubtasks);
+  };
+
+  const removeSubtask = (index: number) => {
+    setSubtasks(subtasks.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await onSave({ title, categoryId, columnId, dueDate, description });
+      await onSave({ title, categoryId, columnId, dueDate, description, subtasks });
     } finally {
       setIsSaving(false);
     }
@@ -86,6 +121,10 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       setIsDeleting(false);
     }
   };
+
+  // คำนวณสถิติ
+  const completedCount = subtasks.filter(st => st.isCompleted).length;
+  const progressPercent = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -162,6 +201,51 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 placeholder="เพิ่มรายละเอียดของงานนี้..."
                 disabled={isSaving}
               />
+            </div>
+
+            {/* 🟢 ส่วนที่เพิ่มใหม่: Checklist UI */}
+            <div className="space-y-3 pt-2 border-t mt-4">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">รายการย่อย (Checklist)</label>
+                {subtasks.length > 0 && <span className="text-xs text-muted-foreground">{completedCount}/{subtasks.length} สำเร็จ ({progressPercent}%)</span>}
+              </div>
+
+              {subtasks.length > 0 && (
+                <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-primary h-1.5 rounded-full transition-all duration-300" style={{ width: `${progressPercent}%` }}></div>
+                </div>
+              )}
+
+              <div className="space-y-2 max-h-[150px] overflow-y-auto pr-1">
+                {subtasks.map((st, index) => (
+                  <div key={st.id || index} className="flex items-start gap-2 group">
+                    <button type="button" onClick={() => toggleSubtask(index)} className="mt-1 shrink-0 text-muted-foreground hover:text-primary transition-colors">
+                      {st.isCompleted ? <CheckSquare className="w-4 h-4 text-primary" /> : <Square className="w-4 h-4" />}
+                    </button>
+                    <Input
+                      value={st.title}
+                      onChange={(e) => updateSubtaskTitle(index, e.target.value)}
+                      className={`h-7 text-sm px-2 bg-transparent border-transparent hover:border-input focus-visible:border-input ${st.isCompleted ? 'line-through text-muted-foreground' : ''}`}
+                    />
+                    <button type="button" onClick={() => removeSubtask(index)} className="opacity-0 group-hover:opacity-100 mt-1 shrink-0 text-muted-foreground hover:text-destructive transition-all">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="เพิ่มรายการย่อย..."
+                  value={newSubtask}
+                  onChange={(e) => setNewSubtask(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSubtask(); } }}
+                  className="h-8 text-sm"
+                />
+                <Button type="button" variant="secondary" size="sm" onClick={handleAddSubtask} className="h-8 shrink-0">
+                  <Plus className="w-4 h-4 mr-1" /> เพิ่ม
+                </Button>
+              </div>
             </div>
           </fieldset>
 

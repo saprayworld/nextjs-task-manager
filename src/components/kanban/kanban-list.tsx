@@ -9,7 +9,7 @@ import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { Task, Tag } from "./kanban-board";
 
-import { createTask, updateTask, deleteTask } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks } from "@/lib/actions/task";
 import { toast } from "sonner";
 
 interface KanbanListProps {
@@ -69,6 +69,10 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
+      const subtasks = data.subtasks || [];
+      const completedCount = subtasks.filter(st => st.isCompleted).length;
+      const newProgress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
+
       if (editingTask) {
         // กรณีแก้ไขงาน: อัปเดตหน้าจอทันที
         setTasks(prevTasks => prevTasks.map(t => {
@@ -81,6 +85,8 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
               columnId: data.columnId,
               tag: tagInfo,
               dueDate: data.dueDate,
+              subtasks: data.subtasks,
+              progress: newProgress,
               dueDateClasses: dueDateClasses
             };
           }
@@ -96,6 +102,8 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           dueDate: data.dueDate
         });
 
+        await syncSubtasks(editingTask.id as string, data.subtasks);
+
         toast.success('บันทึกสำเร็จ', {
           description: `"${data.title}" ถูกอัปเดตเรียบร้อยแล้ว`,
         });
@@ -110,6 +118,8 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           dueDate: data.dueDate,
         });
 
+        await syncSubtasks(savedTask.id as string, data.subtasks);
+
         const newTask: Task = {
           id: savedTask.id, // ใช้ ID ที่ได้จาก Database
           columnId: savedTask.columnId,
@@ -119,6 +129,8 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           tag: tagInfo,
           dueDate: savedTask.dueDate || undefined,
           dueDateClasses: dueDateClasses,
+          subtasks: data.subtasks,
+          progress: newProgress,
         };
         setTasks([...tasks, newTask]);
 

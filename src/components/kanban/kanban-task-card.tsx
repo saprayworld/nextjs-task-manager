@@ -10,8 +10,8 @@ const formatDateDisplay = (dateString?: string) => {
   try {
     const d = new Date(dateString);
     return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-  } catch(e) { 
-    return dateString; 
+  } catch (e) {
+    return dateString;
   }
 }
 
@@ -63,9 +63,9 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
           </span>
         )}
         <div className="flex gap-1">
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); onEdit(task); }}
-            className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity p-1"
+            className="text-muted-foreground hover:text-foreground transition-opacity p-1"
             title="แก้ไขงาน"
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -80,8 +80,8 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
           dangerouslySetInnerHTML={{ __html: task.description }}
         />
       )}
-      
-      {task.progress !== undefined && (
+
+      {(task.subtasks && task.subtasks.length > 0) && task.progress !== undefined && (
         <div className="w-full bg-secondary rounded-full h-1.5 mb-4 overflow-hidden">
           <div className="bg-primary h-1.5 rounded-full" style={{ width: `${task.progress}%` }}></div>
         </div>
@@ -98,7 +98,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
             </div>
           )}
         </div>
-        
+
         <div className="flex items-center gap-3 text-xs">
           {(task.attachments ?? 0) > 0 && (
             <span className="flex items-center gap-1 hover:text-foreground transition-colors">
