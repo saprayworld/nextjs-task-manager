@@ -75,6 +75,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId("todo");
         setDueDate("");
         setDescription("");
+        setSubtasks([]);
       }
       setNewSubtask(""); // ล้างช่องพิมพ์งานย่อยเสมอเมื่อเปิด
     }
@@ -203,7 +204,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               />
             </div>
 
-            {/* 🟢 ส่วนที่เพิ่มใหม่: Checklist UI */}
+            {/* Checklist UI */}
             <div className="space-y-3 pt-2 border-t mt-4">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">รายการย่อย (Checklist)</label>
