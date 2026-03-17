@@ -11,6 +11,17 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -256,13 +267,31 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
           <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row items-center sm:justify-between w-full gap-3 sm:gap-0">
             <div className="w-full sm:w-auto">
               {isEditMode && onDelete && (
-                <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
-                  {isDeleting ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังลบ...</>
-                  ) : (
-                    "ลบงาน"
-                  )}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="destructive" disabled={isDeleting} className="w-full sm:w-auto">
+                      {isDeleting ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังลบ...</>
+                      ) : (
+                        "ลบงาน"
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>ยืนยันการลบงาน</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        ลบงาน
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
             <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
