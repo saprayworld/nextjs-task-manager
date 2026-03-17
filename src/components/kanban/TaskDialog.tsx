@@ -11,6 +11,17 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -75,6 +86,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId("todo");
         setDueDate("");
         setDescription("");
+        setSubtasks([]);
       }
       setNewSubtask(""); // ล้างช่องพิมพ์งานย่อยเสมอเมื่อเปิด
     }
@@ -128,7 +140,10 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
             {isEditMode ? "แก้ไขงาน" : "สร้างงานใหม่"}
@@ -203,7 +218,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               />
             </div>
 
-            {/* 🟢 ส่วนที่เพิ่มใหม่: Checklist UI */}
+            {/* Checklist UI */}
             <div className="space-y-3 pt-2 border-t mt-4">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">รายการย่อย (Checklist)</label>
@@ -227,7 +242,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                       onChange={(e) => updateSubtaskTitle(index, e.target.value)}
                       className={`h-7 text-sm px-2 bg-transparent border-transparent hover:border-input focus-visible:border-input ${st.isCompleted ? 'line-through text-muted-foreground' : ''}`}
                     />
-                    <button type="button" onClick={() => removeSubtask(index)} className="opacity-0 group-hover:opacity-100 mt-1 shrink-0 text-muted-foreground hover:text-destructive transition-all">
+                    <button type="button" onClick={() => removeSubtask(index)} className="opacity-100 group-hover:opacity-100 mt-1 shrink-0 text-muted-foreground hover:text-destructive transition-all">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -252,13 +267,31 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
           <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row items-center sm:justify-between w-full gap-3 sm:gap-0">
             <div className="w-full sm:w-auto">
               {isEditMode && onDelete && (
-                <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
-                  {isDeleting ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังลบ...</>
-                  ) : (
-                    "ลบงาน"
-                  )}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="destructive" disabled={isDeleting} className="w-full sm:w-auto">
+                      {isDeleting ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังลบ...</>
+                      ) : (
+                        "ลบงาน"
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>ยืนยันการลบงาน</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        ลบงาน
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
             <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
