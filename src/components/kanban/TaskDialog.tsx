@@ -129,7 +129,10 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold tracking-tight">
             {isEditMode ? "แก้ไขงาน" : "สร้างงานใหม่"}
@@ -228,7 +231,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                       onChange={(e) => updateSubtaskTitle(index, e.target.value)}
                       className={`h-7 text-sm px-2 bg-transparent border-transparent hover:border-input focus-visible:border-input ${st.isCompleted ? 'line-through text-muted-foreground' : ''}`}
                     />
-                    <button type="button" onClick={() => removeSubtask(index)} className="opacity-0 group-hover:opacity-100 mt-1 shrink-0 text-muted-foreground hover:text-destructive transition-all">
+                    <button type="button" onClick={() => removeSubtask(index)} className="opacity-100 group-hover:opacity-100 mt-1 shrink-0 text-muted-foreground hover:text-destructive transition-all">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
