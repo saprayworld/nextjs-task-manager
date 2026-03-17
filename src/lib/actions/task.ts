@@ -21,10 +21,16 @@ export async function getTasks() {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized: กรุณาเข้าสู่ระบบ");
 
-  // 1. ดึงงานหลักทั้งหมด
+  // 1. ดึงงานหลักทั้งหมด (ไม่รวมงานที่อยู่ในถังขยะหรือ Archive)
   const tasks = await db.select()
     .from(task)
-    .where(eq(task.userId, user.id))
+    .where(
+      and(
+        eq(task.userId, user.id),
+        eq(task.isTrash, false),
+        eq(task.isArchive, false),
+      )
+    )
     .orderBy(asc(task.order));
 
   // 2. ดึงงานย่อยทั้งหมด (ที่ผูกกับงานหลักข้างบน)
@@ -88,17 +94,133 @@ export async function updateTask(taskId: string, data: Partial<typeof task.$infe
 }
 
 // ==========================================
-// 4. Delete: ลบงาน
+// 4. Soft Delete: ย้ายงานไปถังขยะ (ไม่ลบจริง)
 // ==========================================
 export async function deleteTask(taskId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.update(task)
+    .set({ isTrash: true, updatedAt: new Date() })
+    .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
+
+  revalidatePath("/kanban");
+  revalidatePath("/kanban/list");
+  return true;
+}
+
+// ==========================================
+// 5. Restore: กู้คืนงานจากถังขยะ
+// ==========================================
+export async function restoreTask(taskId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.update(task)
+    .set({ isTrash: false, updatedAt: new Date() })
+    .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
+
+  revalidatePath("/kanban");
+  revalidatePath("/kanban/list");
+  revalidatePath("/kanban/trash");
+  return true;
+}
+
+// ==========================================
+// 6. Archive: เก็บงานเข้าคลัง (ไม่แสดงใน Board แต่ไม่ลบ)
+// ==========================================
+export async function archiveTask(taskId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.update(task)
+    .set({ isArchive: true, updatedAt: new Date() })
+    .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
+
+  revalidatePath("/kanban");
+  revalidatePath("/kanban/list");
+  return true;
+}
+
+// ==========================================
+// 7. Unarchive: นำงานกลับจากคลัง
+// ==========================================
+export async function unarchiveTask(taskId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.update(task)
+    .set({ isArchive: false, updatedAt: new Date() })
+    .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
+
+  revalidatePath("/kanban");
+  revalidatePath("/kanban/list");
+  revalidatePath("/kanban/archive");
+  return true;
+}
+
+// ==========================================
+// 8. Permanent Delete: ลบงานถาวร (ใช้จากหน้าถังขยะ)
+// ==========================================
+export async function permanentDeleteTask(taskId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
   await db.delete(task)
     .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
 
-  revalidatePath("/kanban");
+  revalidatePath("/kanban/trash");
   return true;
+}
+
+// ==========================================
+// 9. ดึงงานที่อยู่ในถังขยะ
+// ==========================================
+export async function getTrashedTasks() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized: กรุณาเข้าสู่ระบบ");
+
+  const tasks = await db.select()
+    .from(task)
+    .where(
+      and(
+        eq(task.userId, user.id),
+        eq(task.isTrash, true),
+      )
+    )
+    .orderBy(asc(task.updatedAt));
+
+  const allSubtasks = await db.select().from(subtask);
+
+  return tasks.map(t => ({
+    ...t,
+    subtasks: allSubtasks.filter(st => st.taskId === t.id)
+  }));
+}
+
+// ==========================================
+// 10. ดึงงานที่อยู่ใน Archive
+// ==========================================
+export async function getArchivedTasks() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized: กรุณาเข้าสู่ระบบ");
+
+  const tasks = await db.select()
+    .from(task)
+    .where(
+      and(
+        eq(task.userId, user.id),
+        eq(task.isArchive, true),
+      )
+    )
+    .orderBy(asc(task.updatedAt));
+
+  const allSubtasks = await db.select().from(subtask);
+
+  return tasks.map(t => ({
+    ...t,
+    subtasks: allSubtasks.filter(st => st.taskId === t.id)
+  }));
 }
 
 // ==========================================
