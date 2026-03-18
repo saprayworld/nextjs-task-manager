@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckSquare, Loader2, Plus, Square, Trash2, Archive } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -279,22 +279,34 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
           <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row items-center sm:justify-between w-full gap-3 sm:gap-0">
             <div className="flex gap-2 w-full sm:w-auto">
               {isEditMode && onArchive && (
-                <Button type="button" variant="outline" onClick={handleArchive} disabled={isArchiving} className="w-full sm:w-auto gap-1.5">
+                <Button type="button" variant="outline" onClick={handleArchive} disabled={isArchiving} className="sm:w-auto gap-1.5">
                   {isArchiving ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" />กำลังเก็บ...</>
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="hidden sm:inline">กำลังเก็บ...</span>
+                    </>
                   ) : (
-                    <><Archive className="w-4 h-4" />เก็บเข้าคลัง</>
+                    <>
+                      <Archive className="w-4 h-4" />
+                      <span className="hidden sm:inline">เก็บเข้าคลัง</span>
+                    </>
                   )}
                 </Button>
               )}
               {isEditMode && onDelete && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button type="button" variant="destructive" disabled={isDeleting} className="w-full sm:w-auto">
+                    <Button type="button" variant="destructive" disabled={isDeleting} className="sm:w-auto">
                       {isDeleting ? (
-                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังย้าย...</>
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="hidden sm:inline">กำลังย้าย...</span>
+                        </>
                       ) : (
-                        <><Trash2 className="w-4 h-4 mr-1.5" />ย้ายไปถังขยะ</>
+                        <>
+                          <Trash2 className="w-4 h-4" />
+                          <span className="hidden sm:inline">ย้ายไปถังขยะ</span>
+                        </>
                       )}
                     </Button>
                   </AlertDialogTrigger>
@@ -315,18 +327,33 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 </AlertDialog>
               )}
             </div>
-            <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto">
               <DialogClose asChild>
-                <Button type="button" variant="ghost" disabled={isSaving} className="w-full sm:w-auto">
-                  ยกเลิก
+                <Button type="button" variant="outline" disabled={isSaving} className="sm:w-auto">
+                  <X className="w-4 h-4" />
+                  <span className="hidden sm:inline">ยกเลิก</span>
+                  <span className="sm:hidden">ยกเลิก</span>
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto"
+              <Button type="submit" disabled={isSaving} className="sm:w-auto"
                 aria-label={isEditMode ? "save-edit-task" : "create-task"}>
                 {isSaving ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}</>
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}
+                  </>
                 ) : (
-                  isEditMode ? "บันทึกการเปลี่ยนแปลง" : "สร้างงาน"
+                  isEditMode ?
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span className="hidden sm:inline">บันทึกการเปลี่ยนแปลง</span>
+                      <span className="sm:hidden">บันทึก</span>
+                    </>
+                    : <>
+                      <Save className="w-4 h-4" />
+                      <span className="hidden sm:inline">สร้างงาน</span>
+                      <span className="sm:hidden">สร้าง</span>
+                    </>
                 )}
               </Button>
             </div>
