@@ -144,4 +144,5 @@ playwright/.cache/
 
 # drizzle
 drizzle/
+migrations/
 
