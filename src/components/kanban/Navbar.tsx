@@ -65,7 +65,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-7 px-2 sm:px-3 text-xs ${pathname === '/kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <LayoutDashboard className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Board</span>
@@ -75,7 +75,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-7 px-2 sm:px-3 text-xs ${pathname === '/kanban/list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <List className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">List</span>
@@ -85,7 +85,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-7 px-2 sm:px-3 text-xs ${pathname === '/kanban/trash' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/trash' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">ถังขยะ</span>
@@ -95,7 +95,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-7 px-2 sm:px-3 text-xs ${pathname === '/kanban/archive' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/archive' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Archive className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Archive</span>
@@ -112,7 +112,7 @@ export function Navbar() {
         {session && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1">
+              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer">
                 <UserIcon className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>

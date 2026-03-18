@@ -176,7 +176,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           <h2 className="text-lg font-semibold tracking-tight">Task List</h2>
           <p className="text-xs text-muted-foreground hidden sm:block">ดูและจัดการงานทั้งหมดในรูปแบบตาราง</p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="flex items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
+        <Button onClick={handleOpenCreateDialog} className="flex items-center cursor-pointer gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
           <Plus className="w-4 h-4 shrink-0" />
           <span className="hidden sm:inline">สร้างงานใหม่</span>
           <span className="inline sm:hidden">สร้าง</span>

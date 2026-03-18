@@ -368,7 +368,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button onClick={handleOpenCreateDialog} className="flex items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
+          <Button onClick={handleOpenCreateDialog} className="flex cursor-pointer items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
             <Plus className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline">สร้างงานใหม่</span>
             <span className="inline sm:hidden">สร้าง</span>
