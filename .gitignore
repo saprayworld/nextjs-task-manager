@@ -141,3 +141,8 @@ playwright-report/
 test-results/
 blob-report/
 playwright/.cache/
+
+# drizzle
+drizzle/
+migrations/
+

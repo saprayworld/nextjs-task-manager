@@ -21,14 +21,14 @@ export const session = pgTable("session", {
   updatedAt: timestamp("updatedAt").notNull(),
   ipAddress: text("ipAddress"),
   userAgent: text("userAgent"),
-  userId: text("userId").notNull().references(() => user.id),
+  userId: text("userId").notNull().references(() => user.id, { onDelete: 'cascade' }),
 });
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("accountId").notNull(),
   providerId: text("providerId").notNull(),
-  userId: text("userId").notNull().references(() => user.id),
+  userId: text("userId").notNull().references(() => user.id, { onDelete: 'cascade' }),
   accessToken: text("accessToken"),
   refreshToken: text("refreshToken"),
   idToken: text("idToken"),
@@ -64,6 +64,8 @@ export const task = pgTable("task", {
   progress: integer("progress").default(0),
   dueDate: text("dueDate"),
   order: integer("order").notNull().default(0),
+  isTrash: boolean("isTrash").notNull().default(false),
+  isArchive: boolean("isArchive").notNull().default(false),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
 });

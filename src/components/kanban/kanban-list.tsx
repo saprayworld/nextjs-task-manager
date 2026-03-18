@@ -9,7 +9,7 @@ import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { Task, Tag } from "./kanban-board";
 
-import { createTask, updateTask, deleteTask, syncSubtasks } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask } from "@/lib/actions/task";
 import { toast } from "sonner";
 
 interface KanbanListProps {
@@ -42,15 +42,35 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
       setIsDialogOpen(false);
 
       try {
-        // สั่งลบข้อมูลใน Database จริงๆ
+        // ย้ายงานไปถังขยะ (Soft Delete)
         await deleteTask(editingTask.id as string);
-        toast.success('ลบงานสำเร็จ', {
-          description: `"${editingTask.title}" ถูกลบเรียบร้อยแล้ว`,
+        toast.success('ย้ายไปถังขยะสำเร็จ', {
+          description: `"${editingTask.title}" ถูกย้ายไปถังขยะแล้ว`,
         });
       } catch {
-        // Rollback กลับถ้าลบไม่สำเร็จ
+        // Rollback กลับถ้าไม่สำเร็จ
         setTasks(previousTasks);
-        toast.error('ลบงานไม่สำเร็จ', {
+        toast.error('ย้ายไปถังขยะไม่สำเร็จ', {
+          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        });
+      }
+    }
+  };
+
+  const handleArchiveTask = async () => {
+    if (editingTask) {
+      const previousTasks = tasks;
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
+      setIsDialogOpen(false);
+
+      try {
+        await archiveTask(editingTask.id as string);
+        toast.success('เก็บเข้าคลังสำเร็จ', {
+          description: `"${editingTask.title}" ถูกเก็บเข้า Archive แล้ว`,
+        });
+      } catch {
+        setTasks(previousTasks);
+        toast.error('เก็บเข้าคลังไม่สำเร็จ', {
           description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
         });
       }
@@ -156,7 +176,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           <h2 className="text-lg font-semibold tracking-tight">Task List</h2>
           <p className="text-xs text-muted-foreground hidden sm:block">ดูและจัดการงานทั้งหมดในรูปแบบตาราง</p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="flex items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
+        <Button onClick={handleOpenCreateDialog} className="flex items-center cursor-pointer gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
           <Plus className="w-4 h-4 shrink-0" />
           <span className="hidden sm:inline">สร้างงานใหม่</span>
           <span className="inline sm:hidden">สร้าง</span>
@@ -178,6 +198,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         columns={columns}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+        onArchive={handleArchiveTask}
       />
     </div>
   );
