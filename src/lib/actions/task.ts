@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { task, subtask } from "@/db/schema";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, isNull, isNotNull } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -27,8 +27,8 @@ export async function getTasks() {
     .where(
       and(
         eq(task.userId, user.id),
-        eq(task.isTrash, false),
-        eq(task.isArchive, false),
+        isNull(task.deletedAt),
+        isNull(task.archivedAt),
       )
     )
     .orderBy(asc(task.order));
@@ -101,7 +101,7 @@ export async function deleteTask(taskId: string) {
   if (!user) throw new Error("Unauthorized");
 
   await db.update(task)
-    .set({ isTrash: true, updatedAt: new Date() })
+    .set({ deletedAt: new Date(), updatedAt: new Date() })
     .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
 
   revalidatePath("/kanban");
@@ -117,7 +117,7 @@ export async function restoreTask(taskId: string) {
   if (!user) throw new Error("Unauthorized");
 
   await db.update(task)
-    .set({ isTrash: false, updatedAt: new Date() })
+    .set({ deletedAt: null, updatedAt: new Date() })
     .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
 
   revalidatePath("/kanban");
@@ -134,7 +134,7 @@ export async function archiveTask(taskId: string) {
   if (!user) throw new Error("Unauthorized");
 
   await db.update(task)
-    .set({ isArchive: true, updatedAt: new Date() })
+    .set({ archivedAt: new Date(), updatedAt: new Date() })
     .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
 
   revalidatePath("/kanban");
@@ -150,7 +150,7 @@ export async function unarchiveTask(taskId: string) {
   if (!user) throw new Error("Unauthorized");
 
   await db.update(task)
-    .set({ isArchive: false, updatedAt: new Date() })
+    .set({ archivedAt: null, updatedAt: new Date() })
     .where(and(eq(task.id, taskId), eq(task.userId, user.id)));
 
   revalidatePath("/kanban");
@@ -185,7 +185,7 @@ export async function getTrashedTasks() {
     .where(
       and(
         eq(task.userId, user.id),
-        eq(task.isTrash, true),
+        isNotNull(task.deletedAt),
       )
     )
     .orderBy(asc(task.updatedAt));
@@ -210,7 +210,7 @@ export async function getArchivedTasks() {
     .where(
       and(
         eq(task.userId, user.id),
-        eq(task.isArchive, true),
+        isNotNull(task.archivedAt),
       )
     )
     .orderBy(asc(task.updatedAt));
@@ -224,7 +224,7 @@ export async function getArchivedTasks() {
 }
 
 // ==========================================
-// 🟢 ส่วนที่เพิ่มใหม่: การจัดการ Subtask
+// การจัดการ Subtask
 // ==========================================
 
 export async function addSubtask(taskId: string, title: string) {
@@ -275,7 +275,7 @@ export async function deleteSubtask(subtaskId: string, taskId: string) {
   return true;
 }
 
-// 🟢 ฟังก์ชันใหม่: จัดการงานย่อยทั้งหมดในคลิกเดียว (ลบอันเก่า, อัปเดตอันเดิม, เพิ่มอันใหม่)
+// จัดการงานย่อยทั้งหมดในคลิกเดียว (ลบอันเก่า, อัปเดตอันเดิม, เพิ่มอันใหม่)
 export async function syncSubtasks(taskId: string, subtasksData: { id?: string, title: string, isCompleted: boolean }[]) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");

@@ -13,6 +13,7 @@ export default async function ArchivePage() {
     columnId: task.columnId,
     dueDate: task.dueDate,
     updatedAt: task.updatedAt,
+    archivedAt: task.archivedAt,
   }));
 
   return <ArchiveList initialTasks={formattedTasks} />;
