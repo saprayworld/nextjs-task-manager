@@ -62,6 +62,9 @@ export interface Task {
   dueDateClasses?: string;
   progress?: number;
   subtasks?: Subtask[];
+  startDateTime?: string;
+  endDateTime?: string;
+  totalWorkTime?: number;
 }
 
 interface KanbanBoardProps {
@@ -228,7 +231,10 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           description: data.description,
           categoryId: data.categoryId,
           columnId: data.columnId,
-          dueDate: data.dueDate
+          dueDate: data.dueDate,
+          startDateTime: data.startDateTime ? new Date(data.startDateTime) : null,
+          endDateTime: data.endDateTime ? new Date(data.endDateTime) : null,
+          totalWorkTime: data.totalWorkTime,
         });
 
         await syncSubtasks(editingTask.id as string, data.subtasks);
@@ -245,6 +251,9 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           categoryId: data.categoryId,
           columnId: data.columnId || "todo",
           dueDate: data.dueDate,
+          startDateTime: data.startDateTime ? new Date(data.startDateTime) : undefined,
+          endDateTime: data.endDateTime ? new Date(data.endDateTime) : undefined,
+          totalWorkTime: data.totalWorkTime,
         });
 
         await syncSubtasks(savedTask.id, data.subtasks);

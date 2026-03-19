@@ -53,6 +53,9 @@ export async function createTask(data: {
   categoryId?: string;
   dueDate?: string;
   order?: number;
+  startDateTime?: Date;
+  endDateTime?: Date;
+  totalWorkTime?: number;
 }) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -66,6 +69,9 @@ export async function createTask(data: {
     categoryId: data.categoryId,
     dueDate: data.dueDate,
     order: data.order || 0,
+    startDateTime: data.startDateTime || null,
+    endDateTime: data.endDateTime || null,
+    totalWorkTime: data.totalWorkTime || 0,
     createdAt: new Date(),
     updatedAt: new Date(),
   }).returning();

@@ -119,7 +119,10 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           description: data.description,
           categoryId: data.categoryId,
           columnId: data.columnId,
-          dueDate: data.dueDate
+          dueDate: data.dueDate,
+          startDateTime: data.startDateTime ? new Date(data.startDateTime) : null,
+          endDateTime: data.endDateTime ? new Date(data.endDateTime) : null,
+          totalWorkTime: data.totalWorkTime,
         });
 
         await syncSubtasks(editingTask.id as string, data.subtasks);
@@ -136,6 +139,9 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           categoryId: data.categoryId,
           columnId: data.columnId || "todo",
           dueDate: data.dueDate,
+          startDateTime: data.startDateTime ? new Date(data.startDateTime) : undefined,
+          endDateTime: data.endDateTime ? new Date(data.endDateTime) : undefined,
+          totalWorkTime: data.totalWorkTime,
         });
 
         await syncSubtasks(savedTask.id as string, data.subtasks);

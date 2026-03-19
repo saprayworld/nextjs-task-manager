@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -44,6 +44,9 @@ export interface TaskFormData {
   dueDate: string;
   description: string;
   subtasks: SubtaskData[];
+  startDateTime: string;
+  endDateTime: string;
+  totalWorkTime: number;
 }
 
 interface TaskDialogProps {
@@ -62,6 +65,9 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
   const [columnId, setColumnId] = useState("todo");
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
+  const [startDateTime, setStartDateTime] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
+  const [totalWorkTime, setTotalWorkTime] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
@@ -80,6 +86,9 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
+        setStartDateTime(taskToEdit.startDateTime || "");
+        setEndDateTime(taskToEdit.endDateTime || "");
+        setTotalWorkTime(taskToEdit.totalWorkTime || 0);
         // โหลดข้อมูลงานย่อย ถ้าไม่มีให้เป็นอาร์เรย์ว่าง
         setSubtasks(taskToEdit.subtasks || []);
       } else {
@@ -88,6 +97,9 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId("todo");
         setDueDate("");
         setDescription("");
+        setStartDateTime("");
+        setEndDateTime("");
+        setTotalWorkTime(0);
         setSubtasks([]);
       }
       setNewSubtask(""); // ล้างช่องพิมพ์งานย่อยเสมอเมื่อเปิด
@@ -120,7 +132,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
     e.preventDefault();
     setIsSaving(true);
     try {
-      await onSave({ title, categoryId, columnId, dueDate, description, subtasks });
+      await onSave({ title, categoryId, columnId, dueDate, description, subtasks, startDateTime, endDateTime, totalWorkTime });
     } finally {
       setIsSaving(false);
     }
@@ -217,6 +229,56 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                   onChange={(e) => setDueDate(e.target.value)}
                   className="w-full cursor-pointer [color-scheme:light_dark]"
                 />
+              </div>
+            </div>
+
+            {/* วันเวลาเริ่มงาน / สิ้นสุด / เวลาที่ใช้ */}
+            <div className="space-y-3 pt-2 border-t mt-4">
+              <div className="flex items-center gap-2">
+                <CalendarClock className="w-4 h-4 text-muted-foreground" />
+                <label className="text-sm font-medium">ช่วงเวลาทำงาน</label>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="task-start" className="text-xs text-muted-foreground">เริ่มงาน</label>
+                  <Input
+                    type="datetime-local"
+                    id="task-start"
+                    value={startDateTime}
+                    onChange={(e) => setStartDateTime(e.target.value)}
+                    className="w-full cursor-pointer [color-scheme:light_dark]"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="task-end" className="text-xs text-muted-foreground">สิ้นสุด</label>
+                  <Input
+                    type="datetime-local"
+                    id="task-end"
+                    value={endDateTime}
+                    onChange={(e) => setEndDateTime(e.target.value)}
+                    className="w-full cursor-pointer [color-scheme:light_dark]"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Timer className="w-4 h-4 text-muted-foreground" />
+                  <label htmlFor="task-worktime" className="text-xs text-muted-foreground">เวลาที่ใช้ทั้งหมด (นาที)</label>
+                </div>
+                <Input
+                  type="number"
+                  id="task-worktime"
+                  min={0}
+                  value={totalWorkTime}
+                  onChange={(e) => setTotalWorkTime(Number(e.target.value) || 0)}
+                  placeholder="เช่น 120"
+                  className="w-full sm:w-48"
+                />
+                {totalWorkTime > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    ≈ {Math.floor(totalWorkTime / 60)} ชั่วโมง {totalWorkTime % 60} นาที
+                  </p>
+                )}
               </div>
             </div>
 
