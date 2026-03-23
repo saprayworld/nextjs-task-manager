@@ -89,7 +89,7 @@ function MenuBar({ editor }: { editor: Editor }) {
   const iconSize = "w-4 h-4";
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1.5 bg-muted/30">
+    <div className="sticky top-0 z-10 flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1.5 bg-background rounded-t-[calc(var(--radius)-1px)]">
       {/* Undo / Redo */}
       <ToolbarButton
         onClick={() => editor.chain().focus().undo().run()}
@@ -327,7 +327,7 @@ export function TiptapEditor({ content, onChange, placeholder = "เพิ่ม
   return (
     <div
       className={cn(
-        "rounded-md border border-input bg-background overflow-hidden transition-colors",
+        "rounded-md border border-input bg-background transition-colors flex flex-col relative",
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background",
         disabled && "opacity-50 cursor-not-allowed"
       )}
