@@ -13,6 +13,7 @@ export default async function TrashPage() {
     columnId: task.columnId,
     dueDate: task.dueDate,
     updatedAt: task.updatedAt,
+    deletedAt: task.deletedAt,
   }));
 
   return <TrashList initialTasks={formattedTasks} />;

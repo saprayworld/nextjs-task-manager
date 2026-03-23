@@ -22,6 +22,9 @@ export default async function Page() {
       tag: tagInfo,
       progress: task.progress ?? undefined,
       subtasks: task.subtasks || [],
+      startDateTime: task.startDateTime ? task.startDateTime.toISOString().slice(0, 16) : undefined,
+      endDateTime: task.endDateTime ? task.endDateTime.toISOString().slice(0, 16) : undefined,
+      totalWorkTime: task.totalWorkTime ?? undefined,
     };
   });
 

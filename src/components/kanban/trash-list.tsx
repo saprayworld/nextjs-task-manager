@@ -27,6 +27,7 @@ interface TrashTask {
   columnId: string;
   dueDate?: string | null;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 interface TrashListProps {
@@ -160,7 +161,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      ย้ายไปถังขยะเมื่อ {formatDate(task.updatedAt)}
+                      ย้ายไปถังขยะเมื่อ {formatDate(task.deletedAt!)}
                     </p>
                   </div>
 

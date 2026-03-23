@@ -64,8 +64,11 @@ export const task = pgTable("task", {
   progress: integer("progress").default(0),
   dueDate: text("dueDate"),
   order: integer("order").notNull().default(0),
-  isTrash: boolean("isTrash").notNull().default(false),
-  isArchive: boolean("isArchive").notNull().default(false),
+  startDateTime: timestamp("startDateTime"),
+  endDateTime: timestamp("endDateTime"),
+  totalWorkTime: integer("totalWorkTime").default(0),
+  deletedAt: timestamp("deletedAt"),
+  archivedAt: timestamp("archivedAt"),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
 });

@@ -27,6 +27,7 @@ interface ArchiveTask {
   columnId: string;
   dueDate?: string | null;
   updatedAt: Date;
+  archivedAt: Date | null;
 }
 
 interface ArchiveListProps {
@@ -160,7 +161,7 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      เก็บเข้า Archive เมื่อ {formatDate(task.updatedAt)}
+                      เก็บเข้า Archive เมื่อ {formatDate(task.archivedAt!)}
                     </p>
                   </div>
 
