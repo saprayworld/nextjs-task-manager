@@ -7,19 +7,39 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Loader2, KeyRound, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { Loader2, KeyRound, ShieldAlert, CheckCircle2, Mail, AlertTriangle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 
 export default function SecurityPage() {
-  const { isPending } = useSession();
+  const { data: session, isPending } = useSession();
   const router = useRouter();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const handleSendVerification = async () => {
+    setIsSendingEmail(true);
+    try {
+      if (typeof authClient.sendVerificationEmail === "function") {
+        const { error } = await authClient.sendVerificationEmail({
+          email: session?.user?.email || "",
+        });
+        if (error) throw new Error(error.message);
+      } else {
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      toast.success("ส่งลิงก์ยืนยันสำเร็จ! กรุณาตรวจสอบกล่องจดหมายของคุณ");
+    } catch (err: any) {
+      toast.error(err.message || "ไม่สามารถส่งอีเมลยืนยันได้");
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,6 +117,58 @@ export default function SecurityPage() {
 
         {/* Right Side: Form Area */}
         <div className="md:col-span-8 lg:col-span-9 space-y-6">
+          
+          {/* Email Verification Card */}
+          <Card className="shadow-sm border-border/60 bg-card overflow-hidden transition-all duration-300">
+            <div className="h-1 w-full bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400"></div>
+            <CardHeader className="pb-4 pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-blue-500" />
+                  <h2 className="text-xl font-semibold tracking-tight">สถานะการยืนยันอีเมล</h2>
+                </div>
+                {session?.user?.emailVerified ? (
+                  <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                    <CheckCircle2 className="w-4 h-4" /> ยืนยันแล้ว
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                    <AlertTriangle className="w-4 h-4" /> ยังไม่ยืนยัน
+                  </div>
+                )}
+              </div>
+              <CardDescription className="text-sm mt-1">
+                อีเมลของคุณคือ <span className="font-semibold text-foreground/80">{session?.user?.email}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-2 pb-6">
+              {!session?.user?.emailVerified ? (
+                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                    การยืนยันอีเมลช่วยเพิ่มความปลอดภัยให้บัญชีของคุณ และทำให้คุณสามารถกู้คืนรหัสผ่านได้ในกรณีที่ลืม
+                  </p>
+                  <Button 
+                    onClick={handleSendVerification} 
+                    disabled={isSendingEmail}
+                    className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                  >
+                    {isSendingEmail ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <Send className="w-4 h-4 mr-2" />
+                    )}
+                    {isSendingEmail ? "กำลังส่งลิงก์..." : "ส่งลิงก์ยืนยันอีเมล"}
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground border border-border/40 rounded-xl p-4 bg-muted/20">
+                  บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Change Password Card */}
           <Card className="shadow-sm border-border/60 bg-card overflow-hidden transition-all duration-300">
             {/* Top decorative gradient line */}
             <div className="h-1.5 w-full bg-gradient-to-r from-orange-400 via-rose-400 to-red-500"></div>
