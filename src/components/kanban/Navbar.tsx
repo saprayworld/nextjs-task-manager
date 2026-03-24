@@ -112,8 +112,12 @@ export function Navbar() {
         {session && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer">
-                <UserIcon className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer relative overflow-hidden">
+                {session.user.image ? (
+                  <img src={session.user.image} alt="User profile" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-4 h-4" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -123,6 +127,13 @@ export function Navbar() {
                   <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/profile">
+                  <UserIcon className="w-4 h-4 mr-2" />
+                  โปรไฟล์
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
                 <LogOut className="w-4 h-4 mr-2" />
