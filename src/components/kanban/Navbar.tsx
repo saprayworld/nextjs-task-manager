@@ -36,7 +36,7 @@ export function Navbar() {
           <LayoutDashboard className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight leading-tight">Project System</h1>
+          <h1 className="text-lg hidden md:block sm:text-xl font-semibold tracking-tight leading-tight">Project System</h1>
         </div>
       </div>
 
