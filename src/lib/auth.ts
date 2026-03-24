@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { emailOTP } from "better-auth/plugins";
 import { db } from "@/db"; // อ้างอิงจากโฟลเดอร์ db ที่เราสร้างไว้
 import { sendEmail } from "./resend/send";
 
@@ -40,4 +41,31 @@ export const auth = betterAuth({
       });
     },
   },
+  plugins: [
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;">
+            <h2 style="color: #111827; margin-bottom: 16px; font-size: 24px; text-align: center;">รหัส OTP ของคุณ</h2>
+            <p style="color: #4b5563; line-height: 1.6; margin-bottom: 16px;">รหัสผ่านแบบใช้ครั้งเดียว (OTP) ของคุณคือ:</p>
+            <div style="text-align: center; margin: 32px 0;">
+              <span style="display: inline-block; padding: 14px 28px; background-color: #f3f4f6; color: #111827; letter-spacing: 4px; border-radius: 8px; font-weight: bold; font-size: 24px;">
+                ${otp}
+              </span>
+            </div>
+            <p style="color: #6b7280; font-size: 13px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 24px; line-height: 1.6;">
+              รหัสนี้ใช้สำหรับ ${type === 'sign-in' ? 'เข้าสู่ระบบ' : 'ยืนยันตัวตน'} และมีอายุการใช้งาน 5 นาที<br/>
+              หากคุณไม่ได้ขอรหัสนี้ โปรดเพิกเฉยต่ออีเมลฉบับนี้
+            </p>
+          </div>
+        `;
+
+        await sendEmail({
+          to: email,
+          subject: "รหัส OTP สำหรับเข้าสู่ระบบ",
+          html: emailHtml,
+        });
+      },
+    }),
+  ],
 });
