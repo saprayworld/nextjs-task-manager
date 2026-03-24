@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { User as UserIcon, Lock, Mail, ShieldCheck } from "lucide-react";
+import { User as UserIcon, Lock, Mail, ShieldCheck, Laptop } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function ProfileSidebar() {
@@ -20,6 +20,11 @@ export function ProfileSidebar() {
         <Button variant={pathname === "/profile/security" ? "secondary" : "ghost"} className={`justify-start gap-3 w-full font-medium ${pathname !== "/profile/security" ? "text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors" : ""}`} size="lg" asChild>
           <Link href="/profile/security">
             <Lock className="w-4 h-4" /> รหัสผ่านและความปลอดภัย
+          </Link>
+        </Button>
+        <Button variant={pathname === "/profile/sessions" ? "secondary" : "ghost"} className={`justify-start gap-3 w-full font-medium ${pathname !== "/profile/sessions" ? "text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors" : ""}`} size="lg" asChild>
+          <Link href="/profile/sessions">
+            <Laptop className="w-4 h-4" /> อุปกรณ์และเซสชัน
           </Link>
         </Button>
         <Button variant={pathname === "/profile/notifications" ? "secondary" : "ghost"} className={`justify-start gap-3 w-full font-medium ${pathname !== "/profile/notifications" ? "text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors" : ""}`} size="lg" asChild>
