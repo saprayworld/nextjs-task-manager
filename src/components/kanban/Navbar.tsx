@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Search, List, User as UserIcon, LogOut, Trash2, Archive } from "lucide-react";
+import { LayoutDashboard, Search, List, User as UserIcon, LogOut, Trash2, Archive, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,8 +21,10 @@ export function Navbar() {
   const pathname = usePathname(); // ใช้เช็คว่าอยู่หน้าไหน
   const router = useRouter();
   const { data: session } = useSession(); // ดึงข้อมูลผู้ใช้ปัจจุบัน
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     await signOut();
     router.push("/login");
   };
@@ -135,9 +138,20 @@ export function Navbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
-                <LogOut className="w-4 h-4 mr-2" />
-                ออกจากระบบ
+              <DropdownMenuItem 
+                onSelect={(e) => {
+                  e.preventDefault(); // ป้องกันไม่ให้ Dropdown ปิดทันทีเพื่อให้ผู้ใช้เห็นสถานะ Loading
+                  handleLogout();
+                }} 
+                className="text-destructive cursor-pointer data-[disabled]:opacity-50"
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4 mr-2" />
+                )}
+                {isLoggingOut ? "กำลังออกจากระบบ..." : "ออกจากระบบ"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
