@@ -139,6 +139,7 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {loading ? "กำลังดำเนินการ..." : "ส่งรหัส OTP"}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
@@ -177,6 +178,7 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {loading ? "กำลังตรวจสอบ..." : "ยืนยันและเข้าสู่ระบบ"}
               </Button>
               <div className="gap-2 text-center text-sm text-muted-foreground flex justify-between px-2">
