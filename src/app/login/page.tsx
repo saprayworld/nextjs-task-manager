@@ -116,7 +116,7 @@ export default function LoginPage() {
             {step === "credentials" ? "กรอกอีเมลเพื่อรับรหัสผ่านแบบใช้ครั้งเดียว (OTP)" : "กรอกรหัส OTP ที่ได้รับทางอีเมล"}
           </CardDescription>
         </CardHeader>
-        
+
         {step === "credentials" ? (
           <form onSubmit={handleCredentialsSubmit}>
             <CardContent className="space-y-4">
@@ -179,20 +179,21 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "กำลังตรวจสอบ..." : "ยืนยันและเข้าสู่ระบบ"}
               </Button>
-              <div className="text-center text-sm text-muted-foreground flex justify-between px-2">
+              <div className="gap-2 text-center text-sm text-muted-foreground flex justify-between px-2">
                 <button
                   type="button"
                   onClick={() => {
-                     setStep("credentials");
-                     setSuccessMsg("");
-                     setError("");
-                     setOtp("");
-                     setIsAuthenticating(false);
+                    setStep("credentials");
+                    setSuccessMsg("");
+                    setError("");
+                    setOtp("");
+                    setIsAuthenticating(false);
                   }}
                   className="underline underline-offset-4 hover:text-primary text-muted-foreground"
                 >
                   ย้อนกลับไปเปลี่ยนบัญชี
                 </button>
+                -
                 <button
                   type="button"
                   onClick={async () => {
