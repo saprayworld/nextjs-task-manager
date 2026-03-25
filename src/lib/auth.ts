@@ -10,6 +10,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true, // เปิดใช้งานระบบ Email / Password
+    requireEmailVerification: true,
   },
   emailVerification: {
     sendOnSignUp: true, // ถ้าเป็น true จะส่งอีเมลตอนผู้ใช้เพิ่งสมัครเสร็จโดยอัตโนมัติ
@@ -43,6 +44,7 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
+      disableSignUp: true,
       async sendVerificationOTP({ email, otp, type }) {
         const emailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;">

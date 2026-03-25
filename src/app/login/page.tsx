@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { checkEmailExists } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"credentials" | "otp">("credentials");
   const [loading, setLoading] = useState(false);
@@ -51,23 +51,23 @@ export default function LoginPage() {
     setSuccessMsg("");
     setIsAuthenticating(true);
 
-    // 1. ตรวจสอบอีเมลและรหัสผ่านก่อน (เข้าสู่ระบบด้วยรหัสผ่าน)
-    const { data: signInData, error: signInError } = await signIn.email({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      setError(signInError.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+    // 1. ตรวจสอบว่าอีเมลมีในระบบหรือไม่
+    const checkResult = await checkEmailExists(email);
+    if (checkResult.error) {
+      setError(checkResult.error);
       setLoading(false);
       setIsAuthenticating(false);
       return;
     }
 
-    // 2. หากรหัสผ่านถูกต้อง ให้ล็อคเอาต์ออกทันทีเพื่อไม่ให้มี session ค้างไว้ก่อนจะผ่าน OTP (Enforce OTP)
-    await authClient.signOut();
+    if (!checkResult.exists) {
+      setError("ไม่มีอีเมลนี้ในระบบ โปรดตรวจสอบว่าคุณได้สมัครสมาชิกแล้ว");
+      setLoading(false);
+      setIsAuthenticating(false);
+      return;
+    }
 
-    // 3. ทำการส่ง OTP ไปที่อีเมล
+    // 2. ส่ง OTP ไปที่อีเมลทันทีเพื่อเข้าสู่ระบบ
     const { error: otpError } = await authClient.emailOtp.sendVerificationOtp({
       email,
       type: "sign-in",
@@ -113,7 +113,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">เข้าสู่ระบบ</CardTitle>
           <CardDescription>
-            {step === "credentials" ? "กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ" : "กรอกรหัส OTP ที่ได้รับทางอีเมล"}
+            {step === "credentials" ? "กรอกอีเมลเพื่อรับรหัสผ่านแบบใช้ครั้งเดียว (OTP)" : "กรอกรหัส OTP ที่ได้รับทางอีเมล"}
           </CardDescription>
         </CardHeader>
         
@@ -136,25 +136,10 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">รหัสผ่าน</Label>
-                  <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                    ลืมรหัสผ่าน?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "กำลังตรวจสอบ..." : "เข้าสู่ระบบ"}
+                {loading ? "กำลังดำเนินการ..." : "ส่งรหัส OTP"}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
                 <Link href="/register" className="underline underline-offset-4 hover:text-primary">
@@ -203,7 +188,6 @@ export default function LoginPage() {
                      setError("");
                      setOtp("");
                      setIsAuthenticating(false);
-                     setPassword("");
                   }}
                   className="underline underline-offset-4 hover:text-primary text-muted-foreground"
                 >
