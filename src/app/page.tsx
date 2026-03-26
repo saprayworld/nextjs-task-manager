@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import {
   ArrowRight,
   CheckCircle2,
@@ -29,9 +31,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const features = [
   {
     icon: Lock,
-    title: "การยืนยันตัวตน",
+    title: "Passwordless Auth",
     description:
-      "ระบบ Login / Register ที่ปลอดภัยด้วย Better Auth รองรับ Email & Password",
+      "เข้าสู่ระบบง่ายและปลอดภัยขั้นสุดด้วย Email OTP ส่งตรงถึงกล่องจดหมายของคุณ",
     badge: "Secure",
   },
   {
@@ -50,9 +52,9 @@ const features = [
   },
   {
     icon: LayoutList,
-    title: "List View",
+    title: "List, Archive & Trash",
     description:
-      "มุมมองตารางสำหรับงานทั้งหมด พร้อมฟิลเตอร์สถานะแบบ Faceted",
+      "มุมมองตารางสำหรับงานทั้งหมด พร้อมระบบจัดเก็บงานลง Archive และถังขยะ",
     badge: "Flexible",
   },
   {
@@ -63,20 +65,14 @@ const features = [
     badge: "Fast",
   },
   {
-    icon: Moon,
-    title: "Dark Mode",
-    description:
-      "สลับธีม Dark / Light ได้ในคลิกเดียว พร้อมรองรับ System Preference",
-    badge: "UX",
-  },
-  {
     icon: Smartphone,
-    title: "Responsive Design",
+    title: "Device Sessions",
     description:
-      "ใช้งานได้ลื่นไหลทุกอุปกรณ์ ไม่ว่าจะ Mobile, Tablet หรือ Desktop",
-    badge: "Adaptive",
+      "ควบคุมทุกอุปกรณ์ที่เข้าใช้งาน ตรวจสอบและบังคับออกจากระบบจากระยะไกลได้ทันที",
+    badge: "Control",
   },
 ];
+
 
 const techStack = [
   { name: "Next.js 16", description: "App Router" },
@@ -85,12 +81,16 @@ const techStack = [
   { name: "shadcn/ui", description: "Components" },
   { name: "Drizzle ORM", description: "Database" },
   { name: "Better Auth", description: "Authentication" },
+  { name: "Resend", description: "Email & OTP" },
   { name: "@dnd-kit", description: "Drag & Drop" },
-  { name: "Tiptap", description: "Rich Text Editor" },
   { name: "Neon (PostgreSQL)", description: "Serverless Database" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
@@ -107,15 +107,26 @@ export default function Home() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">เข้าสู่ระบบ</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/register">
-                เริ่มต้นใช้งาน
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Link>
-            </Button>
+            {session ? (
+              <Button size="sm" asChild>
+                <Link href="/kanban">
+                  แดชบอร์ด
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/login">เข้าสู่ระบบ</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/register">
+                    เริ่มต้นใช้งาน
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -148,25 +159,36 @@ export default function Home() {
             </h1>
 
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              Kanban Board แบบ Full-Stack ที่ทันสมัย พร้อมระบบ Authentication,
-              Drag & Drop, Dark Mode และอีกมากมาย
+              ระบบจัดการโปรเจกต์แบบ Full-Stack ที่ทันสมัย พร้อมฟีเจอร์ Kanban, 
+              Passwordless Auth, Session Control และอีกมากมาย
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" className="min-w-[180px] text-base" asChild>
-                <Link href="/register">
-                  เริ่มต้นใช้งานฟรี
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="min-w-[180px] text-base"
-                asChild
-              >
-                <Link href="/login">เข้าสู่ระบบ</Link>
-              </Button>
+              {session ? (
+                <Button size="lg" className="min-w-[180px] text-base" asChild>
+                  <Link href="/kanban">
+                    เข้าสู่บอร์ดทำงาน
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button size="lg" className="min-w-[180px] text-base" asChild>
+                    <Link href="/register">
+                      เริ่มต้นใช้งานฟรี
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="min-w-[180px] text-base"
+                    asChild
+                  >
+                    <Link href="/login">เข้าสู่ระบบ</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 

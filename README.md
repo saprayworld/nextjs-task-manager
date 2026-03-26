@@ -1,26 +1,24 @@
 # Next.js Full-Stack Kanban Board
 
-A modern, feature-rich Kanban board application built with Next.js 16 (App Router), TypeScript, Tailwind CSS, and shadcn/ui. This project includes a complete backend with SQLite, Drizzle ORM, and secure authentication via Better Auth.
+A modern, feature-rich Kanban board application built with Next.js 16 (App Router), TypeScript, Tailwind CSS, and shadcn/ui. This project includes a complete backend with Neon Serverless PostgreSQL, Drizzle ORM, and secure Passwordless Authentication via Better Auth and Resend.
 
 ## ✨ Features
 
-- 🔐 Authentication: Secure Email/Password login and registration using Better Auth.
+- 🔐 Passwordless Authentication: Secure Email OTP login and registration powered by Better Auth and Resend.
 
-- 🗄️ Database: Local SQLite database integrated with Drizzle ORM for type-safe queries.
+- 🗄️ Database: Serverless PostgreSQL (Neon) integrated with Drizzle ORM for type-safe queries.
 
 - 📋 Kanban Board: Interactive drag-and-drop task management powered by `@dnd-kit`.
 
+- 🗑️ Archive & Trash: Support for archiving completed tasks and a soft-delete trash bin for recovery.
+
+- 🛡️ Profile & Security: Comprehensive profile management, email verification, and security settings.
+
+- 📱 Active Sessions: Device session management allowing users to revoke access from other logged-in devices.
+
 - 📝 Rich Text Editor: Comprehensive WYSIWYG editor for task descriptions powered by Tiptap.
 
-- 📊 List View: Alternative table view for tasks with faceted status filtering.
-
 - ⚡ Server Actions: Secure, server-side CRUD operations without traditional API endpoints.
-
-- 🎨 Modern UI: Beautiful, accessible components from shadcn/ui.
-
-- 🌙 Dark Mode: One-click dark/light mode toggle with system preference support.
-
-- 📱 Responsive Design: Works seamlessly on mobile, tablet, and desktop.
 
 ## 🛠️ Tech Stack
 
@@ -36,33 +34,32 @@ A modern, feature-rich Kanban board application built with Next.js 16 (App Route
 
 - Rich Text Editor: Tiptap & Tailwind Typography
 
-- Database: SQLite (better-sqlite3)
+- Database: Neon Serverless PostgreSQL
 
 - ORM: Drizzle ORM
 
 - Authentication: Better Auth
 
+- Email Provider: Resend
+
 ## 📂 Project Structure
 
 ```
 .
-├── app/                  # Next.js App Router (Pages & Layouts)
-│   ├── api/auth/         # Better Auth API catch-all routes
-│   ├── kanban/           # Protected Kanban board & list routes
-│   ├── login/            # Login page
-│   └── register/         # Registration page
-├── components/
-│   ├── kanban/           # Kanban specific components (Board, List, Card, Dialog)
-│   ├── ui/               # shadcn/ui reusable components
-│   └── theme-toggle.tsx  # Dark/Light mode toggle button
-├── db/                   # Database configuration
-│   ├── index.ts          # Database connection
-│   └── schema.ts         # Drizzle schema (User, Session, Task, etc.)
-├── lib/                  # Utilities and Actions
-│   ├── actions/          # Next.js Server Actions (CRUD for tasks)
-│   ├── auth.ts           # Better Auth server configuration
-│   ├── auth-client.ts    # Better Auth client SDK
-│   └── utils.ts          # Tailwind merge utilities
+├── src/
+│   ├── app/                  # Next.js App Router (Pages & Layouts)
+│   │   ├── api/auth/         # Better Auth endpoint
+│   │   ├── kanban/           # Dashboard, List, Archive, Trash
+│   │   ├── profile/          # Profile, Security, Sessions
+│   │   ├── login/            # Passwordless login
+│   │   └── register/         # Passwordless registration
+│   ├── components/
+│   │   ├── kanban/           # Kanban generic and specific components
+│   │   ├── profile/          # Profile & Sidebar components
+│   │   ├── ui/               # shadcn/ui reusable components
+│   │   └── theme-toggle.tsx  # Dark mode toggle
+│   ├── db/                   # Database configuration (Neon, Schema)
+│   └── lib/                  # Core Utilities & Server Actions
 └── drizzle.config.ts     # Drizzle ORM configuration
 ```
 
@@ -76,17 +73,24 @@ Follow these steps to run the project locally.
 yarn install
 ```
 
-2. Setup Database
+2. Setup Environment Variables
 
-Since this project uses SQLite and Drizzle ORM, you need to create the database file and apply the schema before running the app:
+Create a `.env` file containing your Neon database connection string and Resend API key for Email OTPs:
+
+```bash
+DATABASE_URL="postgresql://user:pass@ep-rest-of-url.neon.tech/neondb?sslmode=require"
+RESEND_API_KEY="re_123456789"
+```
+
+3. Setup Database
+
+Push the Drizzle schema directly to your Neon PostgreSQL instance:
 
 ```bash
 npx drizzle-kit push
 ```
 
-(This command will create a `sqlite.db` file in the root directory and generate all necessary tables).
-
-3. Start the Development Server
+4. Start the Development Server
 
 ```bash
 yarn dev
