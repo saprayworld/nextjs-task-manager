@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Search, List, User as UserIcon, LogOut, Trash2, Archive, Loader2 } from "lucide-react";
+import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession, signOut } from "@/lib/auth-client";
 import {
@@ -138,11 +137,18 @@ export function Navbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/kanban/report">
+                  <ChartPie className="w-4 h-4 mr-2" />
+                  รายงาน
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault(); // ป้องกันไม่ให้ Dropdown ปิดทันทีเพื่อให้ผู้ใช้เห็นสถานะ Loading
                   handleLogout();
-                }} 
+                }}
                 className="text-destructive cursor-pointer data-[disabled]:opacity-50"
                 disabled={isLoggingOut}
               >
