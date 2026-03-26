@@ -3,31 +3,37 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn, useSession } from "@/lib/auth-client";
+import { signIn, authClient, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { checkEmailExists } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"credentials" | "otp">("credentials");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  // ป้องกันการ redirect ไปหน้า kanban ถ้ากำลังอยู่ในขั้นตอนตรวจสอบ OTP
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // ถ้ามี session อยู่แล้ว (ล็อกอินไว้แล้ว) ให้ redirect ไปหน้า kanban
   useEffect(() => {
-    if (!isPending && session) {
+    if (!isPending && session && !isAuthenticating && step === "credentials") {
       router.replace("/kanban");
     }
-  }, [session, isPending, router]);
+  }, [session, isPending, router, isAuthenticating, step]);
 
-  // แสดง loading ระหว่างตรวจสอบ session
-  if (isPending || session) {
+  // แสดง loading ระหว่างตรวจสอบ session แรกเริ่ม (ถ้ายังไม่เคยกดล็อกอิน)
+  if (isPending || (session && !isAuthenticating && step === "credentials")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3">
@@ -38,19 +44,61 @@ export default function LoginPage() {
     );
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccessMsg("");
+    setIsAuthenticating(true);
 
-    // เรียกใช้ signIn จาก Better Auth SDK
-    const { data, error } = await signIn.email({
+    // 1. ตรวจสอบว่าอีเมลมีในระบบหรือไม่
+    const checkResult = await checkEmailExists(email);
+    if (checkResult.error) {
+      setError(checkResult.error);
+      setLoading(false);
+      setIsAuthenticating(false);
+      return;
+    }
+
+    if (!checkResult.exists) {
+      setError("ไม่มีอีเมลนี้ในระบบ โปรดตรวจสอบว่าคุณได้สมัครสมาชิกแล้ว");
+      setLoading(false);
+      setIsAuthenticating(false);
+      return;
+    }
+
+    // 2. ส่ง OTP ไปที่อีเมลทันทีเพื่อเข้าสู่ระบบ
+    const { error: otpError } = await authClient.emailOtp.sendVerificationOtp({
       email,
-      password,
+      type: "sign-in",
     });
 
-    if (error) {
-      setError(error.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+    if (otpError) {
+      setError(otpError.message || "ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่อีกครั้ง");
+      setLoading(false);
+      setIsAuthenticating(false);
+      return;
+    }
+
+    setSuccessMsg("ส่งรหัส OTP ไปที่อีเมลแล้ว กรุณาตรวจสอบกล่องจดหมายของคุณ");
+    setStep("otp");
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccessMsg("");
+
+    // 4. เมื่อกรอกถูกต้อง จะถือว่าเข้าสู่ระบบสำเร็จ (สร้าง session ใหม่ด้วย OTP)
+    const { data, error: apiError } = await signIn.emailOtp({
+      email,
+      otp,
+    });
+
+    if (apiError) {
+      setError(apiError.message || "รหัส OTP ไม่ถูกต้อง");
       setLoading(false);
       return;
     }
@@ -64,55 +112,113 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">เข้าสู่ระบบ</CardTitle>
-          <CardDescription>กรอกอีเมลและรหัสผ่านของคุณเพื่อเข้าสู่ระบบ</CardDescription>
+          <CardDescription>
+            {step === "credentials" ? "กรอกอีเมลเพื่อรับรหัสผ่านแบบใช้ครั้งเดียว (OTP)" : "กรอกรหัส OTP ที่ได้รับทางอีเมล"}
+          </CardDescription>
         </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                {error}
+
+        {step === "credentials" ? (
+          <form onSubmit={handleCredentialsSubmit}>
+            <CardContent className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  {error}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">อีเมล</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">อีเมล</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">รหัสผ่าน</Label>
-                {/* ลิงก์ลืมรหัสผ่าน (ทำไว้เป็น Placeholder ก่อน) */}
-                <Link href="#" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  ลืมรหัสผ่าน?
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4 mt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {loading ? "กำลังดำเนินการ..." : "ส่งรหัส OTP"}
+              </Button>
+              <div className="text-center text-sm text-muted-foreground">
+                <Link href="/register" className="underline underline-offset-4 hover:text-primary">
+                  ไปหน้าสมัครสมาชิก
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
-            </Button>
-            <div className="text-center text-sm text-muted-foreground">
-              ยังไม่มีบัญชี?{" "}
-              <Link href="/register" className="underline underline-offset-4 hover:text-primary">
-                สมัครสมาชิก
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
+            </CardFooter>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOtp}>
+            <CardContent className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  {error}
+                </div>
+              )}
+              {successMsg && (
+                <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md">
+                  {successMsg}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="otp">รหัส OTP</Label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="123456"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  maxLength={6}
+                  className="text-center text-2xl tracking-[0.5em]"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4 mt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {loading ? "กำลังตรวจสอบ..." : "ยืนยันและเข้าสู่ระบบ"}
+              </Button>
+              <div className="gap-2 text-center text-sm text-muted-foreground flex justify-between px-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("credentials");
+                    setSuccessMsg("");
+                    setError("");
+                    setOtp("");
+                    setIsAuthenticating(false);
+                  }}
+                  className="underline underline-offset-4 hover:text-primary text-muted-foreground"
+                >
+                  ย้อนกลับไปเปลี่ยนบัญชี
+                </button>
+                -
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setLoading(true);
+                    setError("");
+                    setSuccessMsg("");
+                    const { error: otpError } = await authClient.emailOtp.sendVerificationOtp({
+                      email,
+                      type: "sign-in",
+                    });
+                    if (otpError) setError(otpError.message || "เกิดข้อผิดพลาด");
+                    else setSuccessMsg("ส่งรหัส OTP ใหม่ไปที่อีเมลแล้ว");
+                    setLoading(false);
+                  }}
+                  disabled={loading}
+                  className="underline underline-offset-4 hover:text-primary text-muted-foreground disabled:opacity-50"
+                >
+                  ขอรหัสใหม่
+                </button>
+              </div>
+            </CardFooter>
+          </form>
+        )}
       </Card>
     </div>
   );

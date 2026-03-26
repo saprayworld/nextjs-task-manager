@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Search, List, User as UserIcon, LogOut, Trash2, Archive } from "lucide-react";
+import { LayoutDashboard, Search, List, User as UserIcon, LogOut, Trash2, Archive, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,8 +21,10 @@ export function Navbar() {
   const pathname = usePathname(); // ใช้เช็คว่าอยู่หน้าไหน
   const router = useRouter();
   const { data: session } = useSession(); // ดึงข้อมูลผู้ใช้ปัจจุบัน
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     await signOut();
     router.push("/login");
   };
@@ -112,8 +115,12 @@ export function Navbar() {
         {session && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer">
-                <UserIcon className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer relative overflow-hidden">
+                {session.user.image ? (
+                  <img src={session.user.image} alt="User profile" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-4 h-4" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -124,9 +131,27 @@ export function Navbar() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
-                <LogOut className="w-4 h-4 mr-2" />
-                ออกจากระบบ
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/profile">
+                  <UserIcon className="w-4 h-4 mr-2" />
+                  โปรไฟล์
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onSelect={(e) => {
+                  e.preventDefault(); // ป้องกันไม่ให้ Dropdown ปิดทันทีเพื่อให้ผู้ใช้เห็นสถานะ Loading
+                  handleLogout();
+                }} 
+                className="text-destructive cursor-pointer data-[disabled]:opacity-50"
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4 mr-2" />
+                )}
+                {isLoggingOut ? "กำลังออกจากระบบ..." : "ออกจากระบบ"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

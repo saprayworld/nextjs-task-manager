@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import { checkEmailExists } from "@/app/login/actions";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +17,9 @@ export default function RegisterPage() {
   const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   // ถ้ามี session อยู่แล้ว (ล็อกอินไว้แล้ว) ให้ redirect ไปหน้า kanban
   useEffect(() => {
@@ -43,11 +44,29 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccessMsg("");
 
-    // เรียกใช้ signUp จาก Better Auth SDK
+    // 1. ตรวจสอบว่าระบบมีอีเมลนี้อยู่แล้วหรือไม่
+    const checkResult = await checkEmailExists(email);
+    if (checkResult.error) {
+      setError(checkResult.error);
+      setLoading(false);
+      return;
+    }
+
+    if (checkResult.exists) {
+      setError("อีเมลนี้ถูกใช้งานแล้ว กรุณาไปหน้าเข้าสู่ระบบ");
+      setLoading(false);
+      return;
+    }
+
+    // 2. สุ่มรหัสผ่านหลังบ้าน (Auto-generated Password)
+    const randomPassword = crypto.randomUUID() + crypto.randomUUID();
+
+    // 3. เรียกใช้ signUp จาก Better Auth SDK
     const { data, error } = await signUp.email({
       email,
-      password,
+      password: randomPassword,
       name,
     });
 
@@ -57,8 +76,9 @@ export default function RegisterPage() {
       return;
     }
 
-    // สมัครสำเร็จ ให้พาไปหน้า board (หรือหน้า login)
-    router.push("/kanban");
+    // แจ้งเตือนให้ไปยืนยันอีเมล
+    setSuccessMsg("สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันบัญชี");
+    setLoading(false);
   };
 
   return (
@@ -68,8 +88,24 @@ export default function RegisterPage() {
           <CardTitle className="text-2xl font-bold tracking-tight">สร้างบัญชีใหม่</CardTitle>
           <CardDescription>กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก</CardDescription>
         </CardHeader>
-        <form onSubmit={handleRegister}>
-          <CardContent className="space-y-4">
+        
+        {successMsg ? (
+          <CardContent className="space-y-4 py-8">
+            <div className="p-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md text-center flex flex-col items-center gap-2">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+              <span>{successMsg}</span>
+            </div>
+            <Button
+              className="w-full mt-4"
+              variant="outline"
+              onClick={() => router.push("/login")}
+            >
+              กลับไปหน้าเข้าสู่ระบบ
+            </Button>
+          </CardContent>
+        ) : (
+          <form onSubmit={handleRegister}>
+            <CardContent className="space-y-4">
             {error && (
               <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 {error}
@@ -85,40 +121,32 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">อีเมล</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">รหัสผ่าน</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
-            </Button>
-            <div className="text-center text-sm text-muted-foreground">
-              มีบัญชีอยู่แล้ว?{" "}
-              <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-                เข้าสู่ระบบ
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
+              <div className="space-y-2">
+                <Label htmlFor="email">อีเมล</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4 mt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {loading ? "กำลังดำเนินการ..." : "สมัครสมาชิก"}
+              </Button>
+              <div className="text-center text-sm text-muted-foreground">
+                มีบัญชีอยู่แล้ว?{" "}
+                <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+                  เข้าสู่ระบบ
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
+        )}
       </Card>
     </div>
   );
