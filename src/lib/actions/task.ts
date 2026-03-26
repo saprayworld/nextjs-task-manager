@@ -31,7 +31,7 @@ export async function getTasks() {
         isNull(task.archivedAt),
       )
     )
-    .orderBy(asc(task.order));
+    .orderBy(asc(task.createdAt));
 
   // 2. ดึงงานย่อยทั้งหมด (ที่ผูกกับงานหลักข้างบน)
   const allSubtasks = await db.select().from(subtask);
