@@ -5,7 +5,7 @@ import { getTasks } from '@/lib/actions/task';
 
 export default async function ListPage() {
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database
-  const dbTasks = await getTasks();
+  const dbTasks = await getTasks({ includeHidden: true });
 
   // 2. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task
   const formattedTasks = dbTasks.map(task => {
@@ -25,6 +25,7 @@ export default async function ListPage() {
       startDateTime: task.startDateTime ? task.startDateTime.toISOString().slice(0, 16) : undefined,
       endDateTime: task.endDateTime ? task.endDateTime.toISOString().slice(0, 16) : undefined,
       totalWorkTime: task.totalWorkTime ?? undefined,
+      isVisible: task.isVisible,
     };
   });
 

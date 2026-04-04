@@ -187,6 +187,24 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     }
   };
 
+  const handleToggleVisibility = async () => {
+    if (editingTask) {
+      try {
+        await updateTask(editingTask.id as string, { isVisible: false });
+        // อัปเดท local state และปิด Dialog หลังบันทึกสำเร็จ
+        setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
+        setIsDialogOpen(false);
+        toast.success('ซ่อนงานสำเร็จ', {
+          description: `"${editingTask.title}" ถูกซ่อนจาก Board แล้ว`,
+        });
+      } catch {
+        toast.error('ซ่อนงานไม่สำเร็จ', {
+          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        });
+      }
+    }
+  };
+
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
       design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
@@ -463,6 +481,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}
+        onToggleVisibility={handleToggleVisibility}
       />
     </div>
   );

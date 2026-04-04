@@ -17,20 +17,27 @@ async function getCurrentUser() {
 // ==========================================
 // 1. Read: ดึงข้อมูลงาน + งานย่อย
 // ==========================================
-export async function getTasks() {
+export async function getTasks(options?: { includeHidden?: boolean }) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized: กรุณาเข้าสู่ระบบ");
 
+  const includeHidden = options?.includeHidden ?? false;
+
   // 1. ดึงงานหลักทั้งหมด (ไม่รวมงานที่อยู่ในถังขยะหรือ Archive)
+  const conditions = [
+    eq(task.userId, user.id),
+    isNull(task.deletedAt),
+    isNull(task.archivedAt),
+  ];
+
+  // กรองเฉพาะงานที่ visible ถ้าไม่ได้ขอดูงานที่ซ่อน
+  if (!includeHidden) {
+    conditions.push(eq(task.isVisible, true));
+  }
+
   const tasks = await db.select()
     .from(task)
-    .where(
-      and(
-        eq(task.userId, user.id),
-        isNull(task.deletedAt),
-        isNull(task.archivedAt),
-      )
-    )
+    .where(and(...conditions))
     .orderBy(asc(task.order), asc(task.createdAt));
 
   // 2. ดึงงานย่อยทั้งหมด (ที่ผูกกับงานหลักข้างบน)

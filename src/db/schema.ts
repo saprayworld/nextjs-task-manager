@@ -68,6 +68,7 @@ export const task = pgTable("task", {
   endDateTime: timestamp("endDateTime"),
   totalWorkTime: integer("totalWorkTime").default(0),
   deletedAt: timestamp("deletedAt"),
+  isVisible: boolean("isVisible").notNull().default(true),
   archivedAt: timestamp("archivedAt"),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
