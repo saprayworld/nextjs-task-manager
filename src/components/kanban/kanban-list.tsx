@@ -77,6 +77,29 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
     }
   };
 
+  const handleToggleVisibility = async () => {
+    if (editingTask) {
+      const currentVisibility = (editingTask as any).isVisible !== false;
+      const newVisibility = !currentVisibility;
+
+      try {
+        await updateTask(editingTask.id as string, { isVisible: newVisibility });
+        // อัปเดท local state และปิด Dialog หลังบันทึกสำเร็จ
+        setTasks(prevTasks => prevTasks.map(t =>
+          t.id === editingTask.id ? { ...t, isVisible: newVisibility } as any : t
+        ));
+        setIsDialogOpen(false);
+        toast.success(newVisibility ? 'แสดงงานใน Board สำเร็จ' : 'ซ่อนงานสำเร็จ', {
+          description: `"${editingTask.title}" ${newVisibility ? 'จะแสดงใน Board แล้ว' : 'ถูกซ่อนจาก Board แล้ว'}`,
+        });
+      } catch {
+        toast.error('ดำเนินการไม่สำเร็จ', {
+          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        });
+      }
+    }
+  };
+
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
       design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
@@ -205,6 +228,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}
+        onToggleVisibility={handleToggleVisibility}
       />
     </div>
   );

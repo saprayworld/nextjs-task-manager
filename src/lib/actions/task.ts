@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { task, subtask } from "@/db/schema";
-import { eq, and, asc, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, asc, desc, isNull, isNotNull, max } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -17,21 +17,28 @@ async function getCurrentUser() {
 // ==========================================
 // 1. Read: ดึงข้อมูลงาน + งานย่อย
 // ==========================================
-export async function getTasks() {
+export async function getTasks(options?: { includeHidden?: boolean }) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized: กรุณาเข้าสู่ระบบ");
 
+  const includeHidden = options?.includeHidden ?? false;
+
   // 1. ดึงงานหลักทั้งหมด (ไม่รวมงานที่อยู่ในถังขยะหรือ Archive)
+  const conditions = [
+    eq(task.userId, user.id),
+    isNull(task.deletedAt),
+    isNull(task.archivedAt),
+  ];
+
+  // กรองเฉพาะงานที่ visible ถ้าไม่ได้ขอดูงานที่ซ่อน
+  if (!includeHidden) {
+    conditions.push(eq(task.isVisible, true));
+  }
+
   const tasks = await db.select()
     .from(task)
-    .where(
-      and(
-        eq(task.userId, user.id),
-        isNull(task.deletedAt),
-        isNull(task.archivedAt),
-      )
-    )
-    .orderBy(asc(task.createdAt));
+    .where(and(...conditions))
+    .orderBy(asc(task.order), asc(task.createdAt));
 
   // 2. ดึงงานย่อยทั้งหมด (ที่ผูกกับงานหลักข้างบน)
   const allSubtasks = await db.select().from(subtask);
@@ -60,6 +67,24 @@ export async function createTask(data: {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  // คำนวณ order ถัดไปอัตโนมัติ (เอาค่าสูงสุดในคอลัมน์นั้น +1)
+  let nextOrder = 0;
+  if (data.order !== undefined) {
+    nextOrder = data.order;
+  } else {
+    const maxOrderResult = await db.select({ maxOrder: max(task.order) })
+      .from(task)
+      .where(
+        and(
+          eq(task.userId, user.id),
+          eq(task.columnId, data.columnId),
+          isNull(task.deletedAt),
+          isNull(task.archivedAt),
+        )
+      );
+    nextOrder = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+  }
+
   const newTask = await db.insert(task).values({
     id: crypto.randomUUID(),
     userId: user.id,
@@ -68,7 +93,7 @@ export async function createTask(data: {
     description: data.description,
     categoryId: data.categoryId,
     dueDate: data.dueDate,
-    order: data.order || 0,
+    order: nextOrder,
     startDateTime: data.startDateTime || null,
     endDateTime: data.endDateTime || null,
     totalWorkTime: data.totalWorkTime || 0,
@@ -97,6 +122,30 @@ export async function updateTask(taskId: string, data: Partial<typeof task.$infe
 
   revalidatePath("/kanban");
   return updatedTask[0];
+}
+
+// ==========================================
+// 3.5 Reorder: อัปเดตลำดับการ์ดแบบ Batch (สำหรับ Drag & Drop)
+// ==========================================
+export async function reorderTasks(updates: { id: string; columnId: string; order: number }[]) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  // อัปเดตทุกการ์ดที่มีการเปลี่ยนลำดับ
+  await Promise.all(
+    updates.map((item) =>
+      db.update(task)
+        .set({
+          columnId: item.columnId,
+          order: item.order,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(task.id, item.id), eq(task.userId, user.id)))
+    )
+  );
+
+  revalidatePath("/kanban");
+  return true;
 }
 
 // ==========================================

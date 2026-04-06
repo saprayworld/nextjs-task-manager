@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -57,9 +57,10 @@ interface TaskDialogProps {
   onSave: (data: TaskFormData) => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
   onArchive?: () => void | Promise<void>;
+  onToggleVisibility?: () => void | Promise<void>;
 }
 
-export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("design");
   const [columnId, setColumnId] = useState("todo");
@@ -71,6 +72,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isTogglingVisibility, setIsTogglingVisibility] = useState(false);
 
   const [subtasks, setSubtasks] = useState<SubtaskData[]>([]);
   const [newSubtask, setNewSubtask] = useState("");
@@ -157,6 +159,18 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       setIsArchiving(false);
     }
   };
+
+  const handleToggleVisibility = async () => {
+    if (!onToggleVisibility) return;
+    setIsTogglingVisibility(true);
+    try {
+      await onToggleVisibility();
+    } finally {
+      setIsTogglingVisibility(false);
+    }
+  };
+
+  const isCurrentlyVisible = taskToEdit?.isVisible !== false;
 
   // คำนวณสถิติ
   const completedCount = subtasks.filter(st => st.isCompleted).length;
@@ -349,6 +363,26 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
           <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row items-center sm:justify-between w-full gap-3 sm:gap-0">
             <div className="flex gap-2 w-full sm:w-auto">
+              {isEditMode && onToggleVisibility && (
+                <Button type="button" variant="outline" onClick={handleToggleVisibility} disabled={isTogglingVisibility} className="sm:w-auto gap-1.5">
+                  {isTogglingVisibility ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="hidden sm:inline">กำลังดำเนินการ...</span>
+                    </>
+                  ) : isCurrentlyVisible ? (
+                    <>
+                      <EyeOff className="w-4 h-4" />
+                      <span className="hidden sm:inline">ซ่อนจาก Board</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4" />
+                      <span className="hidden sm:inline">แสดงใน Board</span>
+                    </>
+                  )}
+                </Button>
+              )}
               {isEditMode && onArchive && (
                 <Button type="button" variant="outline" onClick={handleArchive} disabled={isArchiving} className="sm:w-auto gap-1.5">
                   {isArchiving ? (

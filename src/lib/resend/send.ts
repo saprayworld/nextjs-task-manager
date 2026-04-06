@@ -16,6 +16,15 @@ type SendEmailParams = {
  */
 export async function sendEmail({ to, subject, html, text }: SendEmailParams) {
   try {
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("Sending email to:", to);
+      console.log("Subject:", subject);
+      console.log("HTML:", html);
+      console.log("Text:", text);
+      return { success: true, data: null };
+    }
+
     const { data, error } = await resend.emails.send({
       // โปรดเปลี่ยนอีเมลผู้ส่ง (from) ตามที่คุณยืนยันโดเมนไว้ในระบบ Resend
       from: process.env.RESEND_FROM_EMAIL || "Task Manager <noreply@yourdomain.com>",

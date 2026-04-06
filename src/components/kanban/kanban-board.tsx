@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderTasks } from "@/lib/actions/task";
 
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
@@ -65,6 +65,7 @@ export interface Task {
   startDateTime?: string;
   endDateTime?: string;
   totalWorkTime?: number;
+  order?: number;
 }
 
 interface KanbanBoardProps {
@@ -186,6 +187,24 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     }
   };
 
+  const handleToggleVisibility = async () => {
+    if (editingTask) {
+      try {
+        await updateTask(editingTask.id as string, { isVisible: false });
+        // อัปเดท local state และปิด Dialog หลังบันทึกสำเร็จ
+        setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
+        setIsDialogOpen(false);
+        toast.success('ซ่อนงานสำเร็จ', {
+          description: `"${editingTask.title}" ถูกซ่อนจาก Board แล้ว`,
+        });
+      } catch {
+        toast.error('ซ่อนงานไม่สำเร็จ', {
+          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        });
+      }
+    }
+  };
+
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
       design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
@@ -269,6 +288,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           dueDateClasses: dueDateClasses,
           subtasks: data.subtasks,
           progress: newProgress,
+          order: savedTask.order,
         };
         setTasks([...tasks, newTask]);
 
@@ -330,17 +350,57 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     }
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => { // เปลี่ยนเป็น async
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active } = event;
     setActiveTask(null);
 
     // หาว่าการ์ดที่ลากมา ตอนนี้ถูกจับยัดไปอยู่คอลัมน์ไหนใน State แล้ว
     // (State ถูกอัปเดตไปแล้วใน handleDragOver)
     const movedTask = tasks.find((t) => t.id === active.id);
-    if (movedTask) {
-      // สั่งเซฟคอลัมน์ใหม่ลง Database
-      await updateTask(movedTask.id as string, {
-        columnId: movedTask.columnId as string,
+    if (!movedTask) return;
+
+    // คำนวณลำดับใหม่สำหรับคอลัมน์ที่เกี่ยวข้อง
+    const affectedColumnIds = new Set<string>();
+    affectedColumnIds.add(movedTask.columnId as string);
+    // ถ้าย้ายข้ามคอลัมน์ ให้รวมคอลัมน์เดิมด้วย
+    if (active.data.current?.task) {
+      const originalColumnId = (active.data.current.task as Task).columnId as string;
+      if (originalColumnId !== movedTask.columnId) {
+        affectedColumnIds.add(originalColumnId);
+      }
+    }
+
+    // สร้าง updates array สำหรับทุกการ์ดในคอลัมน์ที่ได้รับผลกระทบ
+    const updates: { id: string; columnId: string; order: number }[] = [];
+    for (const colId of affectedColumnIds) {
+      const columnTasks = tasks.filter((t) => t.columnId === colId);
+      columnTasks.forEach((t, index) => {
+        updates.push({
+          id: t.id as string,
+          columnId: colId,
+          order: index,
+        });
+      });
+    }
+
+    // อัปเดต order ใน local state ด้วย
+    setTasks((prevTasks) => {
+      const newTasks = [...prevTasks];
+      for (const update of updates) {
+        const idx = newTasks.findIndex((t) => t.id === update.id);
+        if (idx !== -1) {
+          newTasks[idx] = { ...newTasks[idx], order: update.order };
+        }
+      }
+      return newTasks;
+    });
+
+    // บันทึกลำดับใหม่ลง Database
+    try {
+      await reorderTasks(updates);
+    } catch {
+      toast.error('บันทึกลำดับไม่สำเร็จ', {
+        description: 'เกิดข้อผิดพลาดในการจัดเรียงการ์ด',
       });
     }
   };
@@ -421,6 +481,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}
+        onToggleVisibility={handleToggleVisibility}
       />
     </div>
   );
