@@ -3,6 +3,7 @@ import { Navbar } from "@/components/kanban/Navbar";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { generatePendingTasks } from "@/lib/services/recurring-generator";
 
 export default async function KanbanLayout({ children }: { children: React.ReactNode }) {
   // ดึงข้อมูล Session จาก Request Headers ฝั่ง Server
@@ -14,6 +15,9 @@ export default async function KanbanLayout({ children }: { children: React.React
   if (!session) {
     redirect("/login");
   }
+
+  // สร้าง recurring tasks ที่ค้างอยู่ (Lazy generation)
+  await generatePendingTasks(session.user.id);
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground font-sans">
