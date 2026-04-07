@@ -33,6 +33,7 @@ interface RecurringTemplateFormData {
   recurrenceType: string;
   recurrenceInterval: number;
   recurrenceDayOfMonth: number | undefined;
+  advanceDays: number;
   startDate: string;
   endDate: string;
   maxOccurrences: number | undefined;
@@ -51,6 +52,7 @@ interface RecurringTemplateDialogProps {
     recurrenceType: string;
     recurrenceInterval: number;
     recurrenceDayOfMonth?: number | null;
+    advanceDays?: number | null;
     startDate: Date;
     endDate?: Date | null;
     maxOccurrences?: number | null;
@@ -83,6 +85,7 @@ export function RecurringTemplateDialog({
   const [maxOccurrences, setMaxOccurrences] = useState<number | undefined>(undefined);
   const [subtaskTemplates, setSubtaskTemplates] = useState<string[]>([]);
   const [newSubtask, setNewSubtask] = useState("");
+  const [advanceDays, setAdvanceDays] = useState(0);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -101,6 +104,7 @@ export function RecurringTemplateDialog({
         setRecurrenceType(templateToEdit.recurrenceType);
         setRecurrenceInterval(templateToEdit.recurrenceInterval);
         setRecurrenceDayOfMonth(templateToEdit.recurrenceDayOfMonth ?? 1);
+        setAdvanceDays(templateToEdit.advanceDays ?? 0);
         setStartDate(templateToEdit.startDate.toISOString().split("T")[0]);
         setEndDate(templateToEdit.endDate ? templateToEdit.endDate.toISOString().split("T")[0] : "");
         setMaxOccurrences(templateToEdit.maxOccurrences ?? undefined);
@@ -121,6 +125,7 @@ export function RecurringTemplateDialog({
         setRecurrenceType("monthly");
         setRecurrenceInterval(1);
         setRecurrenceDayOfMonth(1);
+        setAdvanceDays(0);
         setStartDate(new Date().toISOString().split("T")[0]);
         setEndDate("");
         setMaxOccurrences(undefined);
@@ -158,6 +163,7 @@ export function RecurringTemplateDialog({
         recurrenceType,
         recurrenceInterval,
         recurrenceDayOfMonth: recurrenceType === "monthly" ? recurrenceDayOfMonth : undefined,
+        advanceDays,
         startDate,
         endDate,
         maxOccurrences,
@@ -193,6 +199,11 @@ export function RecurringTemplateDialog({
       default:
         return "";
     }
+  };
+
+  const getAdvanceSummary = () => {
+    if (advanceDays <= 0) return "";
+    return ` (สร้างล่วงหน้า ${advanceDays} วัน)`;
   };
 
   return (
@@ -348,10 +359,31 @@ export function RecurringTemplateDialog({
                   </div>
                 )}
 
+                {/* สร้างล่วงหน้า */}
+                <div className="space-y-1.5">
+                  <label htmlFor="recurring-advance" className="text-xs text-muted-foreground">สร้างล่วงหน้า (วัน)</label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="recurring-advance"
+                      type="number"
+                      min={0}
+                      max={90}
+                      value={advanceDays}
+                      onChange={(e) => setAdvanceDays(Math.max(0, Number(e.target.value) || 0))}
+                      placeholder="0"
+                      className="w-24"
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      วันก่อนกำหนดส่ง (0 = สร้างในวัน due)
+                    </span>
+                  </div>
+                </div>
+
+
                 {/* Preview ข้อความสรุป */}
                 <div className="bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
                   <p className="text-sm text-primary font-medium">
-                    📅 {getRecurrenceSummary()}
+                    📅 {getRecurrenceSummary()}{getAdvanceSummary()}
                   </p>
                 </div>
               </div>

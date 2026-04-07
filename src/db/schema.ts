@@ -68,6 +68,7 @@ export const recurringTaskTemplate = pgTable("recurring_task_template", {
   recurrenceType: text("recurrenceType").notNull(),              // 'daily' | 'weekly' | 'monthly' | 'yearly'
   recurrenceInterval: integer("recurrenceInterval").notNull().default(1), // ทุกๆ N หน่วย
   recurrenceDayOfMonth: integer("recurrenceDayOfMonth"),         // 1-31 (สำหรับ monthly)
+  advanceDays: integer("advanceDays").default(0),                // สร้าง task ล่วงหน้ากี่วันก่อน due date
 
   // ช่วงเวลา
   startDate: timestamp("startDate").notNull(),

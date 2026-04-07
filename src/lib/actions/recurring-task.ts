@@ -6,7 +6,7 @@ import { eq, and, asc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { addMonths, setDate } from "date-fns";
+import { addMonths, setDate, subDays } from "date-fns";
 
 async function getCurrentUser() {
   const session = await auth.api.getSession({
@@ -39,6 +39,7 @@ export async function createRecurringTemplate(data: {
   recurrenceType: string;
   recurrenceInterval?: number;
   recurrenceDayOfMonth?: number;
+  advanceDays?: number;
   startDate: Date;
   endDate?: Date;
   maxOccurrences?: number;
@@ -59,6 +60,9 @@ export async function createRecurringTemplate(data: {
   }
   if (data.recurrenceInterval !== undefined && data.recurrenceInterval < 1) {
     throw new Error("ช่วงความถี่ต้องมากกว่า 0");
+  }
+  if (data.advanceDays !== undefined && data.advanceDays < 0) {
+    throw new Error("จำนวนวันล่วงหน้าต้องไม่ติดลบ");
   }
 
   const now = new Date();
@@ -85,6 +89,14 @@ export async function createRecurringTemplate(data: {
     }
   }
 
+  // ลบ advanceDays จาก nextRunAt เพื่อสร้าง task ล่วงหน้า
+  const advance = data.advanceDays ?? 0;
+  if (advance > 0) {
+    const advancedDate = subDays(nextRunAt, advance);
+    // ถ้าลบแล้ว advancedDate <= now → ให้สร้างทันที
+    nextRunAt = advancedDate <= now ? now : advancedDate;
+  }
+
   const newTemplate = await db.insert(recurringTaskTemplate).values({
     id: crypto.randomUUID(),
     userId: user.id,
@@ -95,6 +107,7 @@ export async function createRecurringTemplate(data: {
     recurrenceType: data.recurrenceType,
     recurrenceInterval: interval,
     recurrenceDayOfMonth: data.recurrenceDayOfMonth ?? null,
+    advanceDays: data.advanceDays ?? 0,
     startDate: data.startDate,
     endDate: data.endDate ?? null,
     maxOccurrences: data.maxOccurrences ?? null,
@@ -126,6 +139,7 @@ export async function updateRecurringTemplate(
     recurrenceType?: string;
     recurrenceInterval?: number;
     recurrenceDayOfMonth?: number | null;
+    advanceDays?: number;
     startDate?: Date;
     endDate?: Date | null;
     maxOccurrences?: number | null;
@@ -164,6 +178,7 @@ export async function updateRecurringTemplate(
   if (data.recurrenceType !== undefined) updateData.recurrenceType = data.recurrenceType;
   if (data.recurrenceInterval !== undefined) updateData.recurrenceInterval = data.recurrenceInterval;
   if (data.recurrenceDayOfMonth !== undefined) updateData.recurrenceDayOfMonth = data.recurrenceDayOfMonth;
+  if (data.advanceDays !== undefined) updateData.advanceDays = data.advanceDays;
   if (data.startDate !== undefined) updateData.startDate = data.startDate;
   if (data.endDate !== undefined) updateData.endDate = data.endDate;
   if (data.maxOccurrences !== undefined) updateData.maxOccurrences = data.maxOccurrences;

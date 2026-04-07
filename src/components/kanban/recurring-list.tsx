@@ -29,6 +29,7 @@ interface RecurringTemplate {
   recurrenceType: string;
   recurrenceInterval: number;
   recurrenceDayOfMonth: number | null;
+  advanceDays: number | null;
   startDate: Date;
   endDate: Date | null;
   maxOccurrences: number | null;
@@ -74,6 +75,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
     recurrenceType: string;
     recurrenceInterval: number;
     recurrenceDayOfMonth: number | undefined;
+    advanceDays: number;
     startDate: string;
     endDate: string;
     maxOccurrences: number | undefined;
@@ -90,6 +92,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
           recurrenceType: data.recurrenceType,
           recurrenceInterval: data.recurrenceInterval,
           recurrenceDayOfMonth: data.recurrenceDayOfMonth ?? null,
+          advanceDays: data.advanceDays,
           startDate: new Date(data.startDate),
           endDate: data.endDate ? new Date(data.endDate) : null,
           maxOccurrences: data.maxOccurrences ?? null,
@@ -111,6 +114,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
           recurrenceType: data.recurrenceType,
           recurrenceInterval: data.recurrenceInterval,
           recurrenceDayOfMonth: data.recurrenceDayOfMonth,
+          advanceDays: data.advanceDays,
           startDate: new Date(data.startDate),
           endDate: data.endDate ? new Date(data.endDate) : undefined,
           maxOccurrences: data.maxOccurrences,

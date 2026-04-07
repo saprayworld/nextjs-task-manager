@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { task, subtask, recurringTaskTemplate } from "@/db/schema";
 import { eq, and, lte, or, isNull, gte } from "drizzle-orm";
-import { addDays, addWeeks, addMonths, addYears, setDate } from "date-fns";
+import { addDays, addWeeks, addMonths, addYears, setDate, subDays, format } from "date-fns";
 
 // ==========================================
 // Lazy Generator: สร้าง recurring tasks ที่ค้างอยู่
@@ -41,12 +41,24 @@ export async function generatePendingTasks(userId: string) {
       continue;
     }
 
-    // 3. Optimistic lock: อัปเดต nextRunAt + occurrenceCount ก่อน
-    //    ใช้ lte(nextRunAt, now) เป็น condition เพื่อป้องกัน race condition
-    //    ถ้า tab อื่นอัปเดตไปแล้ว nextRunAt จะเปลี่ยน → condition ไม่ตรง → ไม่ทำซ้ำ
-    const nextRun = calculateNextRun(template, now);
+    // 3. คำนวณ due date จริงของรอบนี้ (targetDueDate)
+    //    nextRunAt อาจถูกเลื่อนขึ้นมาตาม advanceDays แล้ว
+    //    ดังนั้น targetDueDate = nextRunAt + advanceDays
+    const advance = template.advanceDays ?? 0;
+    const targetDueDate = advance > 0
+      ? addDays(template.nextRunAt!, advance)
+      : template.nextRunAt!;
+
+    // 4. คำนวณ nextRunAt ของรอบถัดไป
+    //    เอา targetDueDate เป็นฐาน → คำนวณ due date ถัดไป → แล้วลบ advanceDays
+    const nextTargetDueDate = calculateNextTargetDate(template, targetDueDate);
+    const nextRun = advance > 0
+      ? subDays(nextTargetDueDate, advance)
+      : nextTargetDueDate;
+
     const newOccurrenceCount = (template.occurrenceCount ?? 0) + 1;
 
+    // 5. Optimistic lock: อัปเดต nextRunAt + occurrenceCount ก่อน
     const updated = await db.update(recurringTaskTemplate)
       .set({
         nextRunAt: nextRun,
@@ -65,8 +77,11 @@ export async function generatePendingTasks(userId: string) {
     // ถ้าไม่ได้อัปเดต (tab อื่นทำไปแล้ว) → ข้ามเลย
     if (updated.length === 0) continue;
 
-    // 4. สร้าง task instance จาก template
+    // 6. สร้าง task instance จาก template
+    //    ใส่ dueDate = targetDueDate เพื่อให้ผู้ใช้เห็นว่างาน due เมื่อไร
     const newTaskId = crypto.randomUUID();
+    const dueDateStr = format(targetDueDate, "yyyy-MM-dd");
+
     await db.insert(task).values({
       id: newTaskId,
       userId: userId,
@@ -74,6 +89,7 @@ export async function generatePendingTasks(userId: string) {
       title: template.title,
       description: template.description,
       categoryId: template.categoryId,
+      dueDate: dueDateStr,
       recurringTemplateId: template.id,
       recurrenceIndex: newOccurrenceCount,
       order: 0,
@@ -81,7 +97,7 @@ export async function generatePendingTasks(userId: string) {
       updatedAt: now,
     });
 
-    // 5. สร้าง subtasks จาก template (ถ้ามี)
+    // 7. สร้าง subtasks จาก template (ถ้ามี)
     if (template.subtaskTemplates) {
       try {
         const subtaskTitles: string[] = JSON.parse(template.subtaskTemplates);
@@ -100,7 +116,7 @@ export async function generatePendingTasks(userId: string) {
       }
     }
 
-    // 6. ถ้าถึง maxOccurrences แล้ว → ปิด template
+    // 8. ถ้าถึง maxOccurrences แล้ว → ปิด template
     if (template.maxOccurrences && newOccurrenceCount >= template.maxOccurrences) {
       await db.update(recurringTaskTemplate)
         .set({ isActive: false, updatedAt: now })
@@ -110,9 +126,9 @@ export async function generatePendingTasks(userId: string) {
 }
 
 // ==========================================
-// คำนวณรอบถัดไป (เริ่มจาก monthly ก่อน)
+// คำนวณ target due date ถัดไป (ไม่รวม advanceDays)
 // ==========================================
-function calculateNextRun(
+function calculateNextTargetDate(
   template: typeof recurringTaskTemplate.$inferSelect,
   fromDate: Date
 ): Date {
@@ -126,10 +142,8 @@ function calculateNextRun(
       return addWeeks(fromDate, interval);
 
     case 'monthly': {
-      // ถ้ากำหนด dayOfMonth → ใช้วันที่นั้นของเดือนถัดไป
       const next = addMonths(fromDate, interval);
       if (template.recurrenceDayOfMonth) {
-        // setDate จะ clamp ให้อัตโนมัติ (เช่น วันที่ 31 ในเดือน 30 วัน → วันที่ 30)
         return setDate(next, Math.min(template.recurrenceDayOfMonth, getDaysInMonth(next)));
       }
       return next;
@@ -139,7 +153,6 @@ function calculateNextRun(
       return addYears(fromDate, interval);
 
     default:
-      // fallback: 1 เดือน
       return addMonths(fromDate, 1);
   }
 }
@@ -148,3 +161,4 @@ function calculateNextRun(
 function getDaysInMonth(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 }
+
