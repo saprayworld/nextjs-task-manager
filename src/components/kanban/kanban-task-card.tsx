@@ -2,7 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit2, Paperclip, MessageSquare, Clock } from 'lucide-react';
+import { Edit2, Paperclip, MessageSquare, Clock, RefreshCw } from 'lucide-react';
 import { Task } from './kanban-board'; // นำเข้า Type จากหน้า Board
 
 const formatDateDisplay = (dateString?: string) => {
@@ -60,6 +60,12 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
         {task.tag && (
           <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`}>
             {task.tag.text}
+          </span>
+        )}
+        {task.recurringTemplateId && (
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={`งานประจำ รอบที่ ${task.recurrenceIndex ?? '?'}`}>
+            <RefreshCw className="w-3 h-3" />
+            #{task.recurrenceIndex}
           </span>
         )}
         <div className="flex gap-1">

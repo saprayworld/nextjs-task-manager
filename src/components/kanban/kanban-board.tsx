@@ -66,6 +66,8 @@ export interface Task {
   endDateTime?: string;
   totalWorkTime?: number;
   order?: number;
+  recurringTemplateId?: string | null;
+  recurrenceIndex?: number | null;
 }
 
 interface KanbanBoardProps {

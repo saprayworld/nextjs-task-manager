@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff, RefreshCw } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -198,6 +198,17 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         <form onSubmit={handleSubmit} className="space-y-4 py-1">
           <div className="no-scrollbar max-h-[60vh] overflow-y-auto px-4">
             <fieldset disabled={isSaving} className="space-y-5">
+
+              {/* แสดงข้อมูล Recurring (อ่านอย่างเดียว) */}
+              {isEditMode && taskToEdit?.recurringTemplateId && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
+                  <RefreshCw className="w-4 h-4 text-primary shrink-0" />
+                  <p className="text-xs text-primary">
+                    <span className="font-medium">งานประจำ</span> — สร้างอัตโนมัติ รอบที่ {taskToEdit.recurrenceIndex ?? '?'}
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label htmlFor="task-title" className="text-sm font-medium">
                   ชื่องาน <span className="text-destructive">*</span>
