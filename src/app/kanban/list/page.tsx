@@ -2,6 +2,7 @@ import React from 'react';
 import KanbanList from '@/components/kanban/kanban-list';
 import { mockColumns, tags } from '@/components/kanban/mock-data';
 import { getTasks } from '@/lib/actions/task';
+import { format } from 'date-fns';
 
 export default async function ListPage() {
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database
@@ -22,8 +23,8 @@ export default async function ListPage() {
       tag: tagInfo,
       progress: task.progress ?? undefined,
       subtasks: task.subtasks || [],
-      startDateTime: task.startDateTime ? task.startDateTime.toISOString().slice(0, 16) : undefined,
-      endDateTime: task.endDateTime ? task.endDateTime.toISOString().slice(0, 16) : undefined,
+      startDateTime: task.startDateTime ? format(task.startDateTime, "yyyy-MM-dd'T'HH:mm") : undefined,
+      endDateTime: task.endDateTime ? format(task.endDateTime, "yyyy-MM-dd'T'HH:mm") : undefined,
       totalWorkTime: task.totalWorkTime ?? undefined,
       isVisible: task.isVisible,
     };
