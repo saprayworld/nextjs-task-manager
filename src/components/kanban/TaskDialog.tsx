@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff } from "lucide-react";
+import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff, RefreshCw } from "lucide-react";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { tags } from "./mock-data";
 
 export interface BoardColumn {
   id: string | number;
@@ -62,7 +63,7 @@ interface TaskDialogProps {
 
 export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("design");
+  const [categoryId, setCategoryId] = useState("wr");
   const [columnId, setColumnId] = useState("todo");
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
@@ -84,7 +85,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       setIsSaving(false);
       if (taskToEdit) {
         setTitle(taskToEdit.title || "");
-        setCategoryId(taskToEdit.categoryId || "design");
+        setCategoryId(taskToEdit.categoryId || "wr");
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
@@ -95,7 +96,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setSubtasks(taskToEdit.subtasks || []);
       } else {
         setTitle("");
-        setCategoryId("design");
+        setCategoryId("wr");
         setColumnId("todo");
         setDueDate("");
         setDescription("");
@@ -198,6 +199,17 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         <form onSubmit={handleSubmit} className="space-y-4 py-1">
           <div className="no-scrollbar max-h-[60vh] overflow-y-auto px-4">
             <fieldset disabled={isSaving} className="space-y-5">
+
+              {/* แสดงข้อมูล Recurring (อ่านอย่างเดียว) */}
+              {isEditMode && taskToEdit?.recurringTemplateId && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
+                  <RefreshCw className="w-4 h-4 text-primary shrink-0" />
+                  <p className="text-xs text-primary">
+                    <span className="font-medium">งานประจำ</span> — สร้างอัตโนมัติ รอบที่ {taskToEdit.recurrenceIndex ?? '?'}
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label htmlFor="task-title" className="text-sm font-medium">
                   ชื่องาน <span className="text-destructive">*</span>
@@ -235,10 +247,11 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                     onChange={(e) => setCategoryId(e.target.value)}
                     className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <option value="design">Design</option>
-                    <option value="development">Development</option>
-                    <option value="research">Research</option>
-                    <option value="marketing">Marketing</option>
+                    {
+                      Object.entries(tags).map(([key, value], index) => {
+                        return <option key={`tag-${index}`} value={key}>{value.text}</option>
+                      })
+                    }
                   </select>
                 </div>
 

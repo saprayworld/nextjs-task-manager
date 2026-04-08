@@ -50,13 +50,55 @@ export const verification = pgTable("verification", {
 });
 
 // ==========================================
-// ส่วนที่ 2: ตารางสำหรับระบบ Kanban Board
+// ส่วนที่ 2: ตารางสำหรับระบบ Recurring Tasks (งานประจำ)
+// ==========================================
+export const recurringTaskTemplate = pgTable("recurring_task_template", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+
+  // ข้อมูลงานที่จะ copy ไปยัง task ใหม่
+  title: text("title").notNull(),
+  description: text("description"),
+  categoryId: text("categoryId"),
+  columnId: text("columnId").notNull(),
+
+  // Recurrence Rule
+  recurrenceType: text("recurrenceType").notNull(),              // 'daily' | 'weekly' | 'monthly' | 'yearly'
+  recurrenceInterval: integer("recurrenceInterval").notNull().default(1), // ทุกๆ N หน่วย
+  recurrenceDayOfMonth: integer("recurrenceDayOfMonth"),         // 1-31 (สำหรับ monthly)
+  advanceDays: integer("advanceDays").default(0),                // สร้าง task ล่วงหน้ากี่วันก่อน due date
+
+  // ช่วงเวลา
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate"),                                 // null = ไม่มีกำหนดสิ้นสุด
+  maxOccurrences: integer("maxOccurrences"),                     // null = ไม่จำกัดจำนวนครั้ง
+  occurrenceCount: integer("occurrenceCount").default(0),
+
+  // Scheduling State
+  nextRunAt: timestamp("nextRunAt"),                             // วันที่จะสร้าง task ถัดไป
+  lastRunAt: timestamp("lastRunAt"),                             // วันที่สร้าง task ล่าสุด
+  isActive: boolean("isActive").notNull().default(true),
+
+  // Subtask Templates (JSON array of titles)
+  subtaskTemplates: text("subtaskTemplates"),                    // '["งานย่อย 1","งานย่อย 2"]'
+
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
+
+// ==========================================
+// ส่วนที่ 3: ตารางสำหรับระบบ Kanban Board
 // ==========================================
 export const task = pgTable("task", {
   id: text("id").primaryKey(),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+  recurringTemplateId: text("recurringTemplateId")
+    .references(() => recurringTaskTemplate.id, { onDelete: 'set null' }),
+  recurrenceIndex: integer("recurrenceIndex"),       // ลำดับรอบที่เท่าไร
   columnId: text("columnId").notNull(),
   title: text("title").notNull(),
   description: text("description"),

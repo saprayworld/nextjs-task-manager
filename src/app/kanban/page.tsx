@@ -26,6 +26,8 @@ export default async function Page() {
       endDateTime: task.endDateTime ? task.endDateTime.toISOString().slice(0, 16) : undefined,
       totalWorkTime: task.totalWorkTime ?? undefined,
       order: task.order,
+      recurringTemplateId: task.recurringTemplateId,
+      recurrenceIndex: task.recurrenceIndex,
     };
   });
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie } from "lucide-react";
+import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession, signOut } from "@/lib/auth-client";
@@ -101,6 +101,16 @@ export function Navbar() {
             >
               <Archive className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Archive</span>
+            </Button>
+          </Link>
+          <Link href="/kanban/recurring">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/recurring' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <RefreshCw className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">งานประจำ</span>
             </Button>
           </Link>
         </div>
