@@ -247,52 +247,51 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@better-auth/core@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.5.6.tgz#bd2ebca53ede4af254ff689514e9c2c206f05efc"
-  integrity sha512-Ez9DZdIMFyxHremmoLz1emFPGNQomDC1jqqBPnZ6Ci+6TiGN3R9w/Y03cJn6I8r1ycKgOzeVMZtJ/erOZ27Gsw==
+"@better-auth/core@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.6.0.tgz#40a4017777985e3895a568f2f12e4c4ebe7cfd94"
+  integrity sha512-LmdPTyKRDn6iCcXBGlOHOyzpJl1W/3w64zrEbhhHaWmtdpzQWlY8awlWBoDTL9eL4TAusr9dDvwIbMYTvEqaeA==
   dependencies:
     "@opentelemetry/semantic-conventions" "^1.39.0"
     "@standard-schema/spec" "^1.1.0"
     zod "^4.3.6"
 
-"@better-auth/drizzle-adapter@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/drizzle-adapter/-/drizzle-adapter-1.5.6.tgz#f18c0b8cdcce0119e7e073bb2cf4d7687fe5fda4"
-  integrity sha512-VfFFmaoFw3ug12SiSuIwzrMoHyIVmkMGWm9gZ4sXdYYVX4HboCL4m3fjzOhppcmK5OGatRuU+N1UX6wxCITcXw==
+"@better-auth/drizzle-adapter@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/drizzle-adapter/-/drizzle-adapter-1.6.0.tgz#7cd7f952e7e7ac72a8489acf7ff8a8baf37874c8"
+  integrity sha512-iMgvZlrL4FI63CGaxLqE5rgA2Q9VVmc2fQIP7N5E79nGAEpHtztstHFPlen9RDLRJA4xa3wuyVaPSILylwE+LA==
 
-"@better-auth/kysely-adapter@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/kysely-adapter/-/kysely-adapter-1.5.6.tgz#11674e2bf79b5ee0af0a4ae6adc05ad8a51f82cd"
-  integrity sha512-Fnf+h8WVKtw6lEOmVmiVVzDf3shJtM60AYf9XTnbdCeUd6MxN/KnaJZpkgtYnRs7a+nwtkVB+fg4lGETebGFXQ==
+"@better-auth/kysely-adapter@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/kysely-adapter/-/kysely-adapter-1.6.0.tgz#647b7dbce39f8ed83836c07afb48dd1464d8c128"
+  integrity sha512-ZLEp2j3jquX7wrPQ7tPOSRAjmMoHhdrsgkuH9Bp/fgNZV7M1eiwAY6fHRGKad6KIldoI+iazMUIm60v11fIHCg==
 
-"@better-auth/memory-adapter@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/memory-adapter/-/memory-adapter-1.5.6.tgz#3ba41032f39e2766bb95e65150b9dab066ac19e9"
-  integrity sha512-rS7ZsrIl5uvloUgNN0u9LOZJMMXnsZXVdUZ3MrTBKWM2KpoJjzPr9yN3Szyma5+0V7SltnzSGHPkYj2bEzzmlA==
+"@better-auth/memory-adapter@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/memory-adapter/-/memory-adapter-1.6.0.tgz#3e113c79892b80875d3c954e00c9838bb29b3b2c"
+  integrity sha512-FbLmz6ujltw8RDUkBzutwIfoV+q9Mu0gLVrfhDAb9INe+jLcaQikiIjFdVwPzpx+bOs6bWTDfylrlI6+Ytxs3Q==
 
-"@better-auth/mongo-adapter@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/mongo-adapter/-/mongo-adapter-1.5.6.tgz#1e393fb535cbf52d26faebf48fb28bed2856bfe0"
-  integrity sha512-6+M3MS2mor8fTUV3EI1FBLP0cs6QfbN+Ovx9+XxR/GdfKIBoNFzmPEPRbdGt+ft6PvrITsUm+T70+kkHgVSP6w==
+"@better-auth/mongo-adapter@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/mongo-adapter/-/mongo-adapter-1.6.0.tgz#98410f366d45d4e58c441b691990ab8af4b67bf7"
+  integrity sha512-EYZwMpcpoaLRnfhEr+k+MTKS8SKi51TWh1b7bLSy+yHLL0PdbadFsGYZPgzLbZEaq4kUP0asMzXxA+blutjOQQ==
 
-"@better-auth/prisma-adapter@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/prisma-adapter/-/prisma-adapter-1.5.6.tgz#29f0d54398689fea2c1842db154d6acc240db321"
-  integrity sha512-UxY9vQJs1Tt+O+T2YQnseDMlWmUSQvFZSBb5YiFRg7zcm+TEzujh4iX2/csA0YiZptLheovIuVWTP9nriewEBA==
+"@better-auth/prisma-adapter@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/prisma-adapter/-/prisma-adapter-1.6.0.tgz#54ea61b3ee9753350fc94a9c726da2da9989d97e"
+  integrity sha512-8x/aqR1NckGiC49P02cxuH0wLzbJXvE/v2NnMEFo6h3uWq4ESYL0jTY9vNlFeVIKDyGSzrbteofzzG+yQv0wAQ==
 
-"@better-auth/telemetry@1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@better-auth/telemetry/-/telemetry-1.5.6.tgz#e174de307fbaf2c705a200e67934a25ff3bb0bc4"
-  integrity sha512-yXC7NSxnIFlxDkGdpD7KA+J9nqIQAPCJKe77GoaC5bWoe/DALo1MYorZfTgOafS7wrslNtsPT4feV/LJi1ubqQ==
+"@better-auth/telemetry@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/telemetry/-/telemetry-1.6.0.tgz#c18e55ad706785ff79b5e2bb6d7ebf75172a7a13"
+  integrity sha512-JrJyx1ioswEAh8rB7mVxEFIDLl6AK3W3rtqc2MK6BgvcmKveWJ730Eoi/PNvi0b4tFk4kczmuQITm69uMbnTvQ==
+
+"@better-auth/utils@0.4.0", "@better-auth/utils@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@better-auth/utils/-/utils-0.4.0.tgz#2616ed771cab97d9047b946c4df47da1d6e05a95"
+  integrity sha512-RpMtLUIQAEWMgdPLNVbIF5ON2mm+CH0U3rCdUCU1VyeAUui4m38DyK7/aXMLZov2YDjG684pS1D0MBllrmgjQA==
   dependencies:
-    "@better-auth/utils" "0.3.1"
-    "@better-fetch/fetch" "1.1.21"
-
-"@better-auth/utils@0.3.1", "@better-auth/utils@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@better-auth/utils/-/utils-0.3.1.tgz#ffa4de03b9aef33df536fd19f36a24fa9c9942c0"
-  integrity sha512-+CGp4UmZSUrHHnpHhLPYu6cV+wSUSvVbZbNykxhUDocpVNTo9uFFxw/NqJlh1iC4wQ9HKKWGCKuZ5wUgS0v6Kg==
+    "@noble/hashes" "^2.0.1"
 
 "@better-fetch/fetch@1.1.21", "@better-fetch/fetch@^1.1.21":
   version "1.1.21"
@@ -2881,35 +2880,35 @@ baseline-browser-mapping@^2.9.0, baseline-browser-mapping@^2.9.19:
   resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.10.10.tgz#e74bd066724c1d8d7d8ea75fc3be25389a7a5c56"
   integrity sha512-sUoJ3IMxx4AyRqO4MLeHlnGDkyXRoUG0/AI9fjK+vS72ekpV0yWVY7O0BVjmBcRtkNcsAO2QDZ4tdKKGoI6YaQ==
 
-better-auth@^1.5.6:
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.5.6.tgz#8f089f6a04b674e9fc874800eabc46a6528f7c82"
-  integrity sha512-QSpJTqaT1XVfWRQe/fm3PgeuwOIlz1nWX/Dx7nsHStJ382bLzmDbQk2u7IT0IJ6wS5SRxfqEE1Ev9TXontgyAQ==
+better-auth@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.6.0.tgz#62993174e4c5f3c5039f6bfcd9090fea0bbeae40"
+  integrity sha512-reEK4X37w/X0Wi0ZpNSo6w3j9F2tsA7ebWn2AmWTzkceiatkxcadRg9aK+Mirw2PY56GQqX9dBgqBG6XMNU/Zg==
   dependencies:
-    "@better-auth/core" "1.5.6"
-    "@better-auth/drizzle-adapter" "1.5.6"
-    "@better-auth/kysely-adapter" "1.5.6"
-    "@better-auth/memory-adapter" "1.5.6"
-    "@better-auth/mongo-adapter" "1.5.6"
-    "@better-auth/prisma-adapter" "1.5.6"
-    "@better-auth/telemetry" "1.5.6"
-    "@better-auth/utils" "0.3.1"
+    "@better-auth/core" "1.6.0"
+    "@better-auth/drizzle-adapter" "1.6.0"
+    "@better-auth/kysely-adapter" "1.6.0"
+    "@better-auth/memory-adapter" "1.6.0"
+    "@better-auth/mongo-adapter" "1.6.0"
+    "@better-auth/prisma-adapter" "1.6.0"
+    "@better-auth/telemetry" "1.6.0"
+    "@better-auth/utils" "0.4.0"
     "@better-fetch/fetch" "1.1.21"
     "@noble/ciphers" "^2.1.1"
     "@noble/hashes" "^2.0.1"
-    better-call "1.3.2"
+    better-call "1.3.5"
     defu "^6.1.4"
     jose "^6.1.3"
-    kysely "^0.28.12"
+    kysely "^0.28.14"
     nanostores "^1.1.1"
     zod "^4.3.6"
 
-better-call@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/better-call/-/better-call-1.3.2.tgz#9f91c8468d485c3dc829831a41f91d72d3dbffc7"
-  integrity sha512-4cZIfrerDsNTn3cm+MhLbUePN0gdwkhSXEuG7r/zuQ8c/H7iU0/jSK5TD3FW7U0MgKHce/8jGpPYNO4Ve+4NBw==
+better-call@1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/better-call/-/better-call-1.3.5.tgz#71ea6a0d939ea030c665ea1b0ddcee06b8e423ac"
+  integrity sha512-kOFJkBP7utAQLEYrobZm3vkTH8mXq5GNgvjc5/XEST1ilVHaxXUXfeDeFlqoETMtyqS4+3/h4ONX2i++ebZrvA==
   dependencies:
-    "@better-auth/utils" "^0.3.1"
+    "@better-auth/utils" "^0.4.0"
     "@better-fetch/fetch" "^1.1.21"
     rou3 "^0.7.12"
     set-cookie-parser "^3.0.1"
@@ -4828,10 +4827,10 @@ kleur@^4.1.5:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-kysely@^0.28.12:
-  version "0.28.14"
-  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.28.14.tgz#94cb38767aea5dfa18ecea2137497560f276edf4"
-  integrity sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==
+kysely@^0.28.14:
+  version "0.28.15"
+  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.28.15.tgz#29c3db0e92fca6115e0846b9e34c2f79ecd317ec"
+  integrity sha512-r2clcf7HLWvDXaVUEvQymXJY4i3bSOIV3xsL/Upy3ZfSv5HeKsk9tsqbBptLvth5qHEIhxeHTA2jNLyQABkLBA==
 
 language-subtag-registry@^0.3.20:
   version "0.3.23"
@@ -6173,10 +6172,10 @@ setprototypeof@~1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-shadcn@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-4.1.0.tgz#12e51372d5d89f95990c29bc732bca3046d6c9f1"
-  integrity sha512-3zETJ+0Ezj69FS6RL0HOkLKKAR5yXisXx1iISJdfLQfrUqj/VIQlanQi1Ukk+9OE+XHZVj4FQNTBSfbr2CyCYg==
+shadcn@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-4.2.0.tgz#d8aff21cb4d1d3e6753945e2087df5a0aa3f15a3"
+  integrity sha512-ZDuV340itidaUd4Gi1BxQX+Y7Ush6BHp6URZBM2RyxUUBZ6yFtOWIr4nVY+Ro+YRSpo82v7JrsmtcU5xoBCMJQ==
   dependencies:
     "@babel/core" "^7.28.0"
     "@babel/parser" "^7.28.0"
