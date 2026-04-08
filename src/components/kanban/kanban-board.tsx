@@ -30,6 +30,7 @@ import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderT
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
+import { tags } from './mock-data';
 
 // ==========================================
 // Types
@@ -209,10 +210,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
 
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
     const categoryTagMap: Record<string, Tag> = {
-      design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
-      development: { text: "Development", classes: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400" },
-      research: { text: "Research", classes: "text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400" },
-      marketing: { text: "Marketing", classes: "text-purple-600 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400" },
+      ...tags
     };
 
     const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap.design;

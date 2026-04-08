@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BoardColumn } from "./TaskDialog";
+import { tags } from "./mock-data";
 
 interface RecurringTemplateFormData {
   title: string;
@@ -282,10 +283,11 @@ export function RecurringTemplateDialog({
                     onChange={(e) => setCategoryId(e.target.value)}
                     className={selectClasses}
                   >
-                    <option value="design">Design</option>
-                    <option value="development">Development</option>
-                    <option value="research">Research</option>
-                    <option value="marketing">Marketing</option>
+                    {
+                      Object.entries(tags).map(([key, value], index) => {
+                        return <option key={`tag-${index}`} value={key}>{value.text}</option>
+                      })
+                    }
                   </select>
                 </div>
               </div>

@@ -57,17 +57,19 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
       {...listeners}
     >
       <div className="flex items-center justify-between mb-3">
-        {task.tag && (
-          <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`}>
-            {task.tag.text}
-          </span>
-        )}
-        {task.recurringTemplateId && (
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={`งานประจำ รอบที่ ${task.recurrenceIndex ?? '?'}`}>
-            <RefreshCw className="w-3 h-3" />
-            #{task.recurrenceIndex}
-          </span>
-        )}
+        <div className='flex items-center gap-2'>
+          {task.tag && (
+            <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`}>
+              {task.tag.text}
+            </span>
+          )}
+          {task.recurringTemplateId && (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={`งานประจำ รอบที่ ${task.recurrenceIndex ?? '?'}`}>
+              <RefreshCw className="w-3 h-3" />
+              #{task.recurrenceIndex}
+            </span>
+          )}
+        </div>
         <div className="flex gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(task); }}

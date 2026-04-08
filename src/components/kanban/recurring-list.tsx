@@ -270,13 +270,12 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
         ) : (
           <div className="space-y-2">
             {filteredTemplates.map((template) => {
-              const tagInfo = tags[template.categoryId || "design"] || tags.design;
+              const tagInfo = tags[template.categoryId || "default"] || tags.design;
               return (
                 <div
                   key={template.id}
-                  className={`flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-xl border bg-card hover:bg-accent/50 transition-colors group ${
-                    !template.isActive ? "opacity-60" : ""
-                  }`}
+                  className={`flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 rounded-xl border bg-card hover:bg-accent/50 transition-colors group ${!template.isActive ? "opacity-60" : ""
+                    }`}
                 >
                   {/* Info */}
                   <div className="flex-1 min-w-0">

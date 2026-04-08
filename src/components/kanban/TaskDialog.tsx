@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { tags } from "./mock-data";
 
 export interface BoardColumn {
   id: string | number;
@@ -62,7 +63,7 @@ interface TaskDialogProps {
 
 export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("design");
+  const [categoryId, setCategoryId] = useState("wr");
   const [columnId, setColumnId] = useState("todo");
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
@@ -84,7 +85,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       setIsSaving(false);
       if (taskToEdit) {
         setTitle(taskToEdit.title || "");
-        setCategoryId(taskToEdit.categoryId || "design");
+        setCategoryId(taskToEdit.categoryId || "wr");
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
@@ -95,7 +96,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setSubtasks(taskToEdit.subtasks || []);
       } else {
         setTitle("");
-        setCategoryId("design");
+        setCategoryId("wr");
         setColumnId("todo");
         setDueDate("");
         setDescription("");
@@ -246,10 +247,11 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                     onChange={(e) => setCategoryId(e.target.value)}
                     className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <option value="design">Design</option>
-                    <option value="development">Development</option>
-                    <option value="research">Research</option>
-                    <option value="marketing">Marketing</option>
+                    {
+                      Object.entries(tags).map(([key, value], index) => {
+                        return <option key={`tag-${index}`} value={key}>{value.text}</option>
+                      })
+                    }
                   </select>
                 </div>
 
