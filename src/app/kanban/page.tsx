@@ -1,5 +1,3 @@
-import React from 'react';
-import { format } from 'date-fns';
 import KanbanBoard from '@/components/kanban/kanban-board'; // ปรับ Path ให้ตรงกับที่คุณเก็บไฟล์ Component ของคุณ
 import { mockColumns, tags } from '@/components/kanban/mock-data';
 import { getTasks } from '@/lib/actions/task';
@@ -23,8 +21,8 @@ export default async function Page() {
       tag: tagInfo,
       progress: task.progress ?? undefined,
       subtasks: task.subtasks || [],
-      startDateTime: task.startDateTime ? format(task.startDateTime, "yyyy-MM-dd'T'HH:mm") : undefined,
-      endDateTime: task.endDateTime ? format(task.endDateTime, "yyyy-MM-dd'T'HH:mm") : undefined,
+      startDateTime: task.startDateTime ? task.startDateTime.toISOString() : undefined,
+      endDateTime: task.endDateTime ? task.endDateTime.toISOString() : undefined,
       totalWorkTime: task.totalWorkTime ?? undefined,
       order: task.order,
       recurringTemplateId: task.recurringTemplateId,

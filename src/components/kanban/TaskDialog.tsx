@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { tags } from "./mock-data";
+import { format } from "date-fns";
 
 export interface BoardColumn {
   id: string | number;
@@ -89,8 +90,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
-        setStartDateTime(taskToEdit.startDateTime || "");
-        setEndDateTime(taskToEdit.endDateTime || "");
+        setStartDateTime(format(new Date(taskToEdit.startDateTime), "yyyy-MM-dd'T'HH:mm") || "");
+        setEndDateTime(format(new Date(taskToEdit.endDateTime), "yyyy-MM-dd'T'HH:mm") || "");
         setTotalWorkTime(taskToEdit.totalWorkTime || 0);
         // โหลดข้อมูลงานย่อย ถ้าไม่มีให้เป็นอาร์เรย์ว่าง
         setSubtasks(taskToEdit.subtasks || []);
