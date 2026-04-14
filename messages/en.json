@@ -1,0 +1,21 @@
+{
+  "Index": {
+    "title": "TaskFlow - Modern Kanban Board"
+  },
+  "Navbar": {
+    "title": "Project System",
+    "links": {
+      "board": "Board",
+      "list": "List",
+      "trash": "Trash",
+      "archive": "Archive",
+      "recurring": "Recurring"
+    },
+    "userMenu": {
+      "profile": "Profile",
+      "report": "Report",
+      "logout": "Sign Out",
+      "loggingOut": "Signing Out..."
+    }
+  }
+}

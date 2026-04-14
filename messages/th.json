@@ -1,0 +1,21 @@
+{
+  "Index": {
+    "title": "TaskFlow - คันบังบอร์ดที่ทันสมัย"
+  },
+  "Navbar": {
+    "title": "Project System",
+    "links": {
+      "board": "บอร์ด",
+      "list": "รายการ",
+      "trash": "ถังขยะ",
+      "archive": "Archive",
+      "recurring": "งานประจำ"
+    },
+    "userMenu": {
+      "profile": "โปรไฟล์",
+      "report": "รายงาน",
+      "logout": "ออกจากระบบ",
+      "loggingOut": "กำลังออกจากระบบ..."
+    }
+  }
+}
