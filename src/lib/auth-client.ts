@@ -3,7 +3,7 @@ import { emailOTPClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   // ถ้าขึ้น Production ค่อยแก้เป็น URL ของเว็บจริง
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL: (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   plugins: [
     emailOTPClient(),
   ],
