@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     VERCEL_GIT_COMMIT_URL: process.env.VERCEL_GIT_COMMIT_URL,
     VERCEL_URL: process.env.VERCEL_URL,
     VERCEL_ENV: process.env.VERCEL_ENV,
+
+    NEXT_PUBLIC_VERCEL_URL: process.env.VERCEL_URL,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
   },
 };
 
