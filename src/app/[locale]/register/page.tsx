@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
-import { checkEmailExists } from "@/app/login/actions";
+import { checkEmailExists } from "@/app/[locale]/login/actions"
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,7 +88,7 @@ export default function RegisterPage() {
           <CardTitle className="text-2xl font-bold tracking-tight">สร้างบัญชีใหม่</CardTitle>
           <CardDescription>กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก</CardDescription>
         </CardHeader>
-        
+
         {successMsg ? (
           <CardContent className="space-y-4 py-8">
             <div className="p-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md text-center flex flex-col items-center gap-2">
@@ -106,21 +106,21 @@ export default function RegisterPage() {
         ) : (
           <form onSubmit={handleRegister}>
             <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                {error}
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  {error}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="name">ชื่อ-นามสกุล</Label>
+                <Input
+                  id="name"
+                  placeholder="John Doe"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="name">ชื่อ-นามสกุล</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
               <div className="space-y-2">
                 <Label htmlFor="email">อีเมล</Label>
                 <Input
