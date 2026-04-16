@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     VERCEL_GIT_COMMIT_DATE: process.env.VERCEL_GIT_COMMIT_DATE,
     VERCEL_GIT_COMMIT_URL: process.env.VERCEL_GIT_COMMIT_URL,
     VERCEL_URL: process.env.VERCEL_URL,
+    VERCEL_ENV: process.env.VERCEL_ENV,
   },
 };
 
