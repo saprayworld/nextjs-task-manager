@@ -223,7 +223,9 @@ export function Navbar() {
               <span className="text-sm font-medium text-muted-foreground">Git Hash</span>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-sm font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-md">#{process.env.VERCEL_GIT_COMMIT_SHA || "N/A"}</span>
+                <span className="text-sm font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                  #{process.env.VERCEL_GIT_COMMIT_SHA ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : "N/A"}
+                </span>
               </div>
             </div>
           </div>

@@ -4,15 +4,22 @@ import { emailOTP } from "better-auth/plugins";
 import { db } from "@/db"; // อ้างอิงจากโฟลเดอร์ db ที่เราสร้างไว้
 import { sendEmail } from "./resend/send";
 
+const origins = [
+  process.env.NEXT_PUBLIC_APP_URL, // Domain หลักใน Production (เช่น https://buildx.com)
+].filter(Boolean) as string[];
+
 const previewUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "";
+
+if (process.env.NODE_ENV !== "production") {
+  origins.push("http://localhost:3000");
+}
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
   trustedOrigins: [
-    "http://localhost:3000",
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    ...origins,
     ...(previewUrl ? [previewUrl] : []),
   ],
   emailAndPassword: {
