@@ -8,6 +8,10 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://*.vercel.app"
+  ],
   emailAndPassword: {
     enabled: true, // เปิดใช้งานระบบ Email / Password
     requireEmailVerification: true,
