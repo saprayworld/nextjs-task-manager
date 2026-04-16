@@ -4,20 +4,23 @@ import { emailOTP } from "better-auth/plugins";
 import { db } from "@/db"; // อ้างอิงจากโฟลเดอร์ db ที่เราสร้างไว้
 import { sendEmail } from "./resend/send";
 
+const previewUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "";
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
   trustedOrigins: [
     "http://localhost:3000",
-    "https://*.vercel.app"
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    ...(previewUrl ? [previewUrl] : []),
   ],
   emailAndPassword: {
-    enabled: true, // เปิดใช้งานระบบ Email / Password
+    enabled: true,
     requireEmailVerification: true,
   },
   emailVerification: {
-    sendOnSignUp: true, // ถ้าเป็น true จะส่งอีเมลตอนผู้ใช้เพิ่งสมัครเสร็จโดยอัตโนมัติ
+    sendOnSignUp: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
       const emailHtml = `
