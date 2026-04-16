@@ -199,26 +199,32 @@ export function Navbar() {
               <div className="p-2 bg-primary/10 text-primary rounded-lg">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
-              เกี่ยวกับซอฟต์แวร์
+              About
             </DialogTitle>
             <DialogDescription>
-              รายละเอียดและข้อมูลเวอร์ชันของระบบ
+              Details and version information of the system
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-0 py-2">
             <div className="flex justify-between items-center py-3 border-b border-border/50">
-              <span className="text-sm font-medium text-muted-foreground">ชื่อซอฟต์แวร์</span>
-              <span className="text-sm font-semibold tracking-tight">Project System Kanban</span>
+              <span className="text-sm font-medium text-muted-foreground">Project Name</span>
+              <span className="text-sm font-semibold tracking-tight">TaskFlow (sapray-nextjs-task-manager)</span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-border/50">
-              <span className="text-sm font-medium text-muted-foreground">เวอร์ชัน</span>
-              <span className="text-sm font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-md">v0.1.0</span>
+              <span className="text-sm font-medium text-muted-foreground">Version</span>
+              <span className="text-sm font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-md">pre-release</span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-border/50">
+              <span className="text-sm font-medium text-muted-foreground">Environment</span>
+              <span className="text-sm font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                {process.env.VERCEL_ENV || process.env.NODE_ENV}
+              </span>
+            </div>
+            {/* <div className="flex justify-between items-center py-3 border-b border-border/50">
               <span className="text-sm font-medium text-muted-foreground">วันที่อัปเดตล่าสุด</span>
               <span className="text-sm">TEST</span>
-            </div>
+            </div> */}
             <div className="flex justify-between items-center py-3 border-b border-border/50">
               <span className="text-sm font-medium text-muted-foreground">Git Hash</span>
               <div className="flex items-center gap-2">
@@ -232,10 +238,10 @@ export function Navbar() {
 
           <div className="mt-2 flex flex-col gap-3">
             <div className="bg-muted/40 p-3 rounded-lg text-xs text-center text-muted-foreground">
-              &copy; {new Date().getFullYear()} Project System. All rights reserved.
+              &copy; {new Date().getFullYear()} Saprayworld. All rights reserved.
             </div>
             <Button className="w-full" variant="outline" onClick={() => setIsAboutOpen(false)}>
-              ปิดหน้าต่าง
+              Close
             </Button>
           </div>
         </DialogContent>
