@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
-import { checkEmailExists } from "@/app/[locale]/login/actions"
+import { checkEmailExists } from "@/app/login/actions"
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";

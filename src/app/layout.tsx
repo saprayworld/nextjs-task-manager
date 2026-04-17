@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"; // <-- นำเข้า Provider
 import { Toaster } from "@/components/ui/sonner";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getLocale } from 'next-intl/server';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,17 +24,15 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }>) {
-  const { locale } = await params;
+  const locale = await getLocale();
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning> 
-    {/* ต้องใส่ suppressHydrationWarning ที่ html เพื่อไม่ให้ Next.js แจ้งเตือน Hydration Mismatch ตอนสลับตีม */}
+    <html lang={locale} suppressHydrationWarning>
+      {/* ต้องใส่ suppressHydrationWarning ที่ html เพื่อไม่ให้ Next.js แจ้งเตือน Hydration Mismatch ตอนสลับตีม */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

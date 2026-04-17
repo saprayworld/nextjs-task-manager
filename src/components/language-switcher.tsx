@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,17 +11,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+import { setUserLocale } from "@/actions/locale";
 
 export function LanguageSwitcher() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const pathname = usePathname();
   const locale = useLocale();
 
   const changeLanguage = (nextLocale: string) => {
-    startTransition(() => {
-      // @ts-ignore - pathname types might strictly expect valid hrefs
-      router.replace(pathname, { locale: nextLocale });
+    startTransition(async () => {
+      await setUserLocale(nextLocale);
+      router.refresh();
     });
   };
 
