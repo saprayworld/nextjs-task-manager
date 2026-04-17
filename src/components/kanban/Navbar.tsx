@@ -187,7 +187,7 @@ export function Navbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => setIsAboutOpen(true)} className="cursor-pointer">
                   <Info className="w-4 h-4 mr-2" />
-                  เกี่ยวกับ
+                  {t('userMenu.about')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

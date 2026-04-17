@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, authClient, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { checkEmailExists } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("Login");
   const { data: session, isPending } = useSession();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -38,7 +40,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">กำลังตรวจสอบสถานะ...</p>
+          <p className="text-sm text-muted-foreground">{t("statusChecking")}</p>
         </div>
       </div>
     );
@@ -61,7 +63,7 @@ export default function LoginPage() {
     }
 
     if (!checkResult.exists) {
-      setError("ไม่มีอีเมลนี้ในระบบ โปรดตรวจสอบว่าคุณได้สมัครสมาชิกแล้ว");
+      setError(t("emailNotFound"));
       setLoading(false);
       setIsAuthenticating(false);
       return;
@@ -74,13 +76,13 @@ export default function LoginPage() {
     });
 
     if (otpError) {
-      setError(otpError.message || "ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่อีกครั้ง");
+      setError(otpError.message || t("otpSendError"));
       setLoading(false);
       setIsAuthenticating(false);
       return;
     }
 
-    setSuccessMsg("ส่งรหัส OTP ไปที่อีเมลแล้ว กรุณาตรวจสอบกล่องจดหมายของคุณ");
+    setSuccessMsg(t("otpSendSuccess"));
     setStep("otp");
     setLoading(false);
   };
@@ -98,7 +100,7 @@ export default function LoginPage() {
     });
 
     if (apiError) {
-      setError(apiError.message || "รหัส OTP ไม่ถูกต้อง");
+      setError(apiError.message || t("otpInvalid"));
       setLoading(false);
       return;
     }
@@ -111,9 +113,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">เข้าสู่ระบบ</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">{t("title")}</CardTitle>
           <CardDescription>
-            {step === "credentials" ? "กรอกอีเมลเพื่อรับรหัสผ่านแบบใช้ครั้งเดียว (OTP)" : "กรอกรหัส OTP ที่ได้รับทางอีเมล"}
+            {step === "credentials" ? t("descriptionCredentials") : t("descriptionOtp")}
           </CardDescription>
         </CardHeader>
 
@@ -126,11 +128,11 @@ export default function LoginPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="email">อีเมล</Label>
+                <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -140,11 +142,11 @@ export default function LoginPage() {
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {loading ? "กำลังดำเนินการ..." : "ส่งรหัส OTP"}
+                {loading ? t("processing") : t("sendOtpButton")}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
                 <Link href="/register" className="underline underline-offset-4 hover:text-primary">
-                  ไปหน้าสมัครสมาชิก
+                  {t("goToRegister")}
                 </Link>
               </div>
             </CardFooter>
@@ -163,11 +165,11 @@ export default function LoginPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="otp">รหัส OTP</Label>
+                <Label htmlFor="otp">{t("otpLabel")}</Label>
                 <Input
                   id="otp"
                   type="text"
-                  placeholder="123456"
+                  placeholder={t("otpPlaceholder")}
                   required
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
@@ -179,7 +181,7 @@ export default function LoginPage() {
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {loading ? "กำลังตรวจสอบ..." : "ยืนยันและเข้าสู่ระบบ"}
+                {loading ? t("verifying") : t("verifyAndLoginButton")}
               </Button>
               <div className="gap-2 text-center text-sm text-muted-foreground flex justify-between px-2">
                 <button
@@ -193,7 +195,7 @@ export default function LoginPage() {
                   }}
                   className="underline underline-offset-4 hover:text-primary text-muted-foreground"
                 >
-                  ย้อนกลับไปเปลี่ยนบัญชี
+                  {t("backToChangeAccount")}
                 </button>
                 -
                 <button
@@ -206,14 +208,14 @@ export default function LoginPage() {
                       email,
                       type: "sign-in",
                     });
-                    if (otpError) setError(otpError.message || "เกิดข้อผิดพลาด");
-                    else setSuccessMsg("ส่งรหัส OTP ใหม่ไปที่อีเมลแล้ว");
+                    if (otpError) setError(otpError.message || t("errorOccurred"));
+                    else setSuccessMsg(t("otpSendNewSuccess"));
                     setLoading(false);
                   }}
                   disabled={loading}
                   className="underline underline-offset-4 hover:text-primary text-muted-foreground disabled:opacity-50"
                 >
-                  ขอรหัสใหม่
+                  {t("requestNewOtp")}
                 </button>
               </div>
             </CardFooter>
