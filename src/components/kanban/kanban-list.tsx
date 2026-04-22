@@ -11,6 +11,7 @@ import { Task, Tag } from "./kanban-board";
 
 import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask } from "@/lib/actions/task";
 import { toast } from "sonner";
+import { useTranslations } from 'next-intl';
 
 interface KanbanListProps {
   initialColumns: BoardColumn[];
@@ -18,6 +19,9 @@ interface KanbanListProps {
 }
 
 export default function KanbanList({ initialColumns, initialTasks }: KanbanListProps) {
+  const t = useTranslations('KanbanList');
+  const tToast = useTranslations('KanbanBoard.toast');
+
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -44,14 +48,14 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
       try {
         // ย้ายงานไปถังขยะ (Soft Delete)
         await deleteTask(editingTask.id as string);
-        toast.success('ย้ายไปถังขยะสำเร็จ', {
-          description: `"${editingTask.title}" ถูกย้ายไปถังขยะแล้ว`,
+        toast.success(tToast('trashSuccess'), {
+          description: tToast('trashSuccessDesc', { title: editingTask.title }),
         });
       } catch {
         // Rollback กลับถ้าไม่สำเร็จ
         setTasks(previousTasks);
-        toast.error('ย้ายไปถังขยะไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(tToast('trashError'), {
+          description: tToast('errorTryAgain'),
         });
       }
     }
@@ -65,13 +69,13 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
 
       try {
         await archiveTask(editingTask.id as string);
-        toast.success('เก็บเข้าคลังสำเร็จ', {
-          description: `"${editingTask.title}" ถูกเก็บเข้า Archive แล้ว`,
+        toast.success(tToast('archiveSuccess'), {
+          description: tToast('archiveSuccessDesc', { title: editingTask.title }),
         });
       } catch {
         setTasks(previousTasks);
-        toast.error('เก็บเข้าคลังไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(tToast('archiveError'), {
+          description: tToast('errorTryAgain'),
         });
       }
     }
@@ -89,12 +93,12 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
           t.id === editingTask.id ? { ...t, isVisible: newVisibility } as any : t
         ));
         setIsDialogOpen(false);
-        toast.success(newVisibility ? 'แสดงงานใน Board สำเร็จ' : 'ซ่อนงานสำเร็จ', {
-          description: `"${editingTask.title}" ${newVisibility ? 'จะแสดงใน Board แล้ว' : 'ถูกซ่อนจาก Board แล้ว'}`,
+        toast.success(newVisibility ? tToast('showSuccess') : tToast('hideSuccess'), {
+          description: newVisibility ? tToast('showSuccessDesc', { title: editingTask.title }) : tToast('hideSuccessDesc', { title: editingTask.title }),
         });
       } catch {
-        toast.error('ดำเนินการไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(tToast('hideError'), {
+          description: tToast('errorTryAgain'),
         });
       }
     }
@@ -150,8 +154,8 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
 
         await syncSubtasks(editingTask.id as string, data.subtasks);
 
-        toast.success('บันทึกสำเร็จ', {
-          description: `"${data.title}" ถูกอัปเดตเรียบร้อยแล้ว`,
+        toast.success(tToast('saveSuccess'), {
+          description: tToast('updateSuccessDesc', { title: data.title }),
         });
 
       } else {
@@ -183,15 +187,15 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         };
         setTasks([...tasks, newTask]);
 
-        toast.success('สร้างงานสำเร็จ', {
-          description: `"${data.title}" ถูกเพิ่มเรียบร้อยแล้ว`,
+        toast.success(tToast('createSuccess'), {
+          description: tToast('createSuccessDesc', { title: data.title }),
         });
       }
 
       setIsDialogOpen(false);
     } catch {
-      toast.error('บันทึกไม่สำเร็จ', {
-        description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+      toast.error(tToast('saveError'), {
+        description: tToast('errorTryAgain'),
       });
     }
   };
@@ -202,13 +206,13 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
       {/* Header เฉพาะของหน้า List */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">Task List</h2>
-          <p className="text-xs text-muted-foreground hidden sm:block">ดูและจัดการงานทั้งหมดในรูปแบบตาราง</p>
+          <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
+          <p className="text-xs text-muted-foreground hidden sm:block">{t('description')}</p>
         </div>
         <Button onClick={handleOpenCreateDialog} className="flex items-center cursor-pointer gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
           <Plus className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline">สร้างงานใหม่</span>
-          <span className="inline sm:hidden">สร้าง</span>
+          <span className="hidden sm:inline">{t('createNewTask')}</span>
+          <span className="inline sm:hidden">{t('create')}</span>
         </Button>
       </div>
 

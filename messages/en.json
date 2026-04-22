@@ -119,6 +119,8 @@
       "hideSuccess": "Hidden successfully",
       "hideSuccessDesc": "\"{title}\" has been hidden from the board.",
       "hideError": "Failed to hide",
+      "showSuccess": "Shown on board successfully",
+      "showSuccessDesc": "\"{title}\" will now be shown on the board.",
       "saveSuccess": "Saved successfully",
       "updateSuccessDesc": "\"{title}\" has been updated successfully.",
       "createSuccess": "Created successfully",
@@ -130,6 +132,33 @@
     "taskCard": {
       "editTask": "Edit Task",
       "recurringRound": "Recurring task round {round}"
+    }
+  },
+  "KanbanList": {
+    "title": "Task List",
+    "description": "View and manage all tasks in tabular format",
+    "createNewTask": "Create New Task",
+    "create": "Create",
+    "columns": {
+      "title": "Title",
+      "status": "Status",
+      "dueDate": "Due Date",
+      "notSpecified": "Not specified"
+    },
+    "actions": {
+      "manage": "Management",
+      "editTask": "Edit Task",
+      "deleteTask": "Delete Task"
+    },
+    "table": {
+      "searchPlaceholder": "Search tasks (Title)...",
+      "reset": "Reset",
+      "view": "View",
+      "toggleColumns": "Toggle columns",
+      "noTasksFound": "No tasks found",
+      "rowsPerPage": "Rows per page",
+      "rows": "Rows",
+      "page": "Page {pageIndex} of {pageCount}"
     }
   },
   "TaskDialog": {

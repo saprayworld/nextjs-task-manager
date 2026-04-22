@@ -119,6 +119,8 @@
       "hideSuccess": "ซ่อนงานสำเร็จ",
       "hideSuccessDesc": "\"{title}\" ถูกซ่อนจาก Board แล้ว",
       "hideError": "ซ่อนงานไม่สำเร็จ",
+      "showSuccess": "แสดงงานในบอร์ดสำเร็จ",
+      "showSuccessDesc": "\"{title}\" จะแสดงใน Board แล้ว",
       "saveSuccess": "บันทึกสำเร็จ",
       "updateSuccessDesc": "\"{title}\" ถูกอัปเดตเรียบร้อยแล้ว",
       "createSuccess": "สร้างงานสำเร็จ",
@@ -130,6 +132,33 @@
     "taskCard": {
       "editTask": "แก้ไขงาน",
       "recurringRound": "งานประจำ รอบที่ {round}"
+    }
+  },
+  "KanbanList": {
+    "title": "Task List",
+    "description": "ดูและจัดการงานทั้งหมดในรูปแบบตาราง",
+    "createNewTask": "สร้างงานใหม่",
+    "create": "สร้าง",
+    "columns": {
+      "title": "Title",
+      "status": "Status",
+      "dueDate": "Due Date",
+      "notSpecified": "ไม่ระบุ"
+    },
+    "actions": {
+      "manage": "การจัดการ",
+      "editTask": "แก้ไขงาน",
+      "deleteTask": "ลบงาน"
+    },
+    "table": {
+      "searchPlaceholder": "ค้นหางาน (Title)...",
+      "reset": "Reset",
+      "view": "View",
+      "toggleColumns": "Toggle columns",
+      "noTasksFound": "ไม่พบข้อมูลงาน",
+      "rowsPerPage": "Rows per page",
+      "rows": "Rows",
+      "page": "Page {pageIndex} of {pageCount}"
     }
   },
   "TaskDialog": {
