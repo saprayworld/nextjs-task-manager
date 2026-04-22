@@ -27,51 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-const features = [
-  {
-    icon: Lock,
-    title: "Passwordless Auth",
-    description:
-      "เข้าสู่ระบบง่ายและปลอดภัยขั้นสุดด้วย Email OTP ส่งตรงถึงกล่องจดหมายของคุณ",
-    badge: "Secure",
-  },
-  {
-    icon: Kanban,
-    title: "Kanban Board",
-    description:
-      "จัดการงานแบบ Drag & Drop ด้วย @dnd-kit ลากย้ายการ์ดได้อย่างลื่นไหล",
-    badge: "Interactive",
-  },
-  {
-    icon: Type,
-    title: "Rich Text Editor",
-    description:
-      "เขียนรายละเอียดงานและจัดรูปแบบได้อย่างครบครัน แบบ WYSIWYG ด้วย Tiptap",
-    badge: "Editor",
-  },
-  {
-    icon: LayoutList,
-    title: "List, Archive & Trash",
-    description:
-      "มุมมองตารางสำหรับงานทั้งหมด พร้อมระบบจัดเก็บงานลง Archive และถังขยะ",
-    badge: "Flexible",
-  },
-  {
-    icon: Zap,
-    title: "Server Actions",
-    description:
-      "CRUD Operations ฝั่ง Server โดยไม่ต้องสร้าง API Endpoints แยก",
-    badge: "Fast",
-  },
-  {
-    icon: Smartphone,
-    title: "Device Sessions",
-    description:
-      "ควบคุมทุกอุปกรณ์ที่เข้าใช้งาน ตรวจสอบและบังคับออกจากระบบจากระยะไกลได้ทันที",
-    badge: "Control",
-  },
-];
+import { getTranslations } from "next-intl/server";
 
 
 const techStack = [
@@ -87,9 +43,49 @@ const techStack = [
 ];
 
 export default async function Home() {
+  const t = await getTranslations("Home");
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  const features = [
+    {
+      icon: Lock,
+      title: t("feature1Title"),
+      description: t("feature1Desc"),
+      badge: "Secure",
+    },
+    {
+      icon: Kanban,
+      title: t("feature2Title"),
+      description: t("feature2Desc"),
+      badge: "Interactive",
+    },
+    {
+      icon: Type,
+      title: t("feature3Title"),
+      description: t("feature3Desc"),
+      badge: "Editor",
+    },
+    {
+      icon: LayoutList,
+      title: t("feature4Title"),
+      description: t("feature4Desc"),
+      badge: "Flexible",
+    },
+    {
+      icon: Zap,
+      title: t("feature5Title"),
+      description: t("feature5Desc"),
+      badge: "Fast",
+    },
+    {
+      icon: Smartphone,
+      title: t("feature6Title"),
+      description: t("feature6Desc"),
+      badge: "Control",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,18 +106,18 @@ export default async function Home() {
             {session ? (
               <Button size="sm" asChild>
                 <Link href="/kanban">
-                  แดชบอร์ด
+                  {t("dashboardButton")}
                   <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </Button>
             ) : (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">เข้าสู่ระบบ</Link>
+                  <Link href="/login">{t("loginButton")}</Link>
                 </Button>
                 <Button size="sm" asChild>
                   <Link href="/register">
-                    เริ่มต้นใช้งาน
+                    {t("getStartedButton")}
                     <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Link>
                 </Button>
@@ -147,27 +143,26 @@ export default async function Home() {
               className="mb-6 px-4 py-1.5 text-sm font-medium"
             >
               <Zap className="mr-1.5 h-3.5 w-3.5" />
-              Built with Next.js 16 & shadcn/ui
+              {t("heroBadge")}
             </Badge>
 
             <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              จัดการงานของคุณ
+              {t("heroTitle1")}
               <br />
               <span className="bg-gradient-to-r from-chart-1 via-chart-2 to-chart-5 bg-clip-text text-transparent">
-                อย่างเป็นระบบ
+                {t("heroTitle2")}
               </span>
             </h1>
 
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              ระบบจัดการโปรเจกต์แบบ Full-Stack ที่ทันสมัย พร้อมฟีเจอร์ Kanban, 
-              Passwordless Auth, Session Control และอีกมากมาย
+              {t("heroDescription")}
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               {session ? (
                 <Button size="lg" className="min-w-[180px] text-base" asChild>
                   <Link href="/kanban">
-                    เข้าสู่บอร์ดทำงาน
+                    {t("goToBoardButton")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -175,7 +170,7 @@ export default async function Home() {
                 <>
                   <Button size="lg" className="min-w-[180px] text-base" asChild>
                     <Link href="/register">
-                      เริ่มต้นใช้งานฟรี
+                      {t("startFreeButton")}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
@@ -185,7 +180,7 @@ export default async function Home() {
                     className="min-w-[180px] text-base"
                     asChild
                   >
-                    <Link href="/login">เข้าสู่ระบบ</Link>
+                    <Link href="/login">{t("loginButton")}</Link>
                   </Button>
                 </>
               )}
@@ -209,7 +204,7 @@ export default async function Home() {
                   <div className="mb-2.5 flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-chart-5" />
                     <span className="text-xs font-semibold md:text-sm">
-                      To Do
+                      {t("previewTodo")}
                     </span>
                     <Badge
                       variant="secondary"
@@ -235,7 +230,7 @@ export default async function Home() {
                   <div className="mb-2.5 flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-chart-1" />
                     <span className="text-xs font-semibold md:text-sm">
-                      In Progress
+                      {t("previewInProgress")}
                     </span>
                     <Badge
                       variant="secondary"
@@ -259,7 +254,7 @@ export default async function Home() {
                   <div className="mb-2.5 flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-chart-2" />
                     <span className="text-xs font-semibold md:text-sm">
-                      Done
+                      {t("previewDone")}
                     </span>
                     <Badge
                       variant="secondary"
@@ -292,14 +287,13 @@ export default async function Home() {
       <section className="container mx-auto px-4 py-20 md:py-28 md:px-6">
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <Badge variant="outline" className="mb-4 px-3 py-1 text-sm">
-            ✨ Features
+            {t("featuresBadge")}
           </Badge>
           <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-            ทุกอย่างที่คุณต้องการ
+            {t("featuresTitle")}
           </h2>
           <p className="text-muted-foreground md:text-lg">
-            ฟีเจอร์ครบครันสำหรับการจัดการงาน ตั้งแต่ระบบ Auth
-            ไปจนถึง Kanban Board แบบ Drag & Drop
+            {t("featuresDescription")}
           </p>
         </div>
 
@@ -339,14 +333,13 @@ export default async function Home() {
       <section className="container mx-auto px-4 py-20 md:py-28 md:px-6">
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <Badge variant="outline" className="mb-4 px-3 py-1 text-sm">
-            🛠️ Tech Stack
+            {t("techBadge")}
           </Badge>
           <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-            สร้างด้วยเทคโนโลยีที่ทันสมัย
+            {t("techTitle")}
           </h2>
           <p className="text-muted-foreground md:text-lg">
-            เลือกใช้ Tools ที่ดีที่สุดในแต่ละด้าน เพื่อประสบการณ์ Developer
-            ที่ยอดเยี่ยม
+            {t("techDescription")}
           </p>
         </div>
 
@@ -378,15 +371,15 @@ export default async function Home() {
         <div className="container mx-auto px-4 py-20 md:py-28 md:px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-              พร้อมจัดระเบียบงานแล้วหรือยัง?
+              {t("ctaTitle")}
             </h2>
             <p className="mb-8 text-muted-foreground md:text-lg">
-              สมัครฟรี เริ่มสร้าง Kanban Board ของคุณได้เลยวันนี้
+              {t("ctaDescription")}
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" className="min-w-[200px] text-base" asChild>
                 <Link href="/register">
-                  สมัครสมาชิกฟรี
+                  {t("ctaRegisterFree")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -402,7 +395,7 @@ export default async function Home() {
                   rel="noopener noreferrer"
                 >
                   <Github className="mr-2 h-4 w-4" />
-                  ดูบน GitHub
+                  {t("ctaGithub")}
                 </a>
               </Button>
             </div>
@@ -418,8 +411,7 @@ export default async function Home() {
             <span className="font-medium">TaskFlow</span>
           </div>
           <p>
-            © {new Date().getFullYear()} TaskFlow. สร้างด้วย Next.js &
-            shadcn/ui
+            {t("footerText", { year: new Date().getFullYear() })}
           </p>
         </div>
       </footer>

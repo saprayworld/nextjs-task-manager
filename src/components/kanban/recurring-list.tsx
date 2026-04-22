@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { createRecurringTemplate, updateRecurringTemplate, deleteRecurringTemplate, toggleRecurringTemplate } from "@/lib/actions/recurring-task";
 import { RecurringTemplateDialog } from "./RecurringTemplateDialog";
 import { mockColumns, tags } from "./mock-data";
+import { useTranslations, useLocale } from "next-intl";
 
 interface RecurringTemplate {
   id: string;
@@ -47,6 +48,9 @@ interface RecurringListProps {
 }
 
 export default function RecurringList({ initialTemplates }: RecurringListProps) {
+  const t = useTranslations("RecurringList");
+  const locale = useLocale();
+
   const [templates, setTemplates] = useState<RecurringTemplate[]>(initialTemplates);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -103,7 +107,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
             prev.map((t) => (t.id === editingTemplate.id ? (updated as RecurringTemplate) : t))
           );
         }
-        toast.success("บันทึกสำเร็จ", { description: `"${data.title}" ถูกอัปเดตแล้ว` });
+        toast.success(t('toast.saveSuccess'), { description: t('toast.saveSuccessDesc', { title: data.title }) });
       } else {
         // Create
         const created = await createRecurringTemplate({
@@ -123,12 +127,12 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
         if (created) {
           setTemplates((prev) => [...prev, created as RecurringTemplate]);
         }
-        toast.success("สร้างงานประจำสำเร็จ", { description: `"${data.title}" พร้อมทำงานแล้ว` });
+        toast.success(t('toast.createSuccess'), { description: t('toast.createSuccessDesc', { title: data.title }) });
       }
       setDialogOpen(false);
     } catch (error) {
-      toast.error("เกิดข้อผิดพลาด", {
-        description: error instanceof Error ? error.message : "กรุณาลองใหม่อีกครั้ง",
+      toast.error(t('toast.error'), {
+        description: error instanceof Error ? error.message : t('toast.errorTryAgain'),
       });
     }
   };
@@ -138,12 +142,12 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
     try {
       await deleteRecurringTemplate(editingTemplate.id);
       setTemplates((prev) => prev.filter((t) => t.id !== editingTemplate.id));
-      toast.success("ลบสำเร็จ", {
-        description: `"${editingTemplate.title}" ถูกลบแล้ว`,
+      toast.success(t('toast.deleteSuccess'), {
+        description: t('toast.deleteSuccessDesc', { title: editingTemplate.title }),
       });
       setDialogOpen(false);
     } catch {
-      toast.error("ลบไม่สำเร็จ", { description: "กรุณาลองใหม่อีกครั้ง" });
+      toast.error(t('toast.deleteError'), { description: t('toast.errorTryAgain') });
     }
   };
 
@@ -153,14 +157,14 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
       const updated = await toggleRecurringTemplate(templateId);
       if (updated) {
         setTemplates((prev) =>
-          prev.map((t) => (t.id === templateId ? (updated as RecurringTemplate) : t))
+          prev.map((temp) => (temp.id === templateId ? (updated as RecurringTemplate) : temp))
         );
-        toast.success(updated.isActive ? "เปิดใช้งานแล้ว" : "หยุดใช้งานแล้ว", {
-          description: `"${title}" ${updated.isActive ? "จะสร้างงานตามกำหนดต่อไป" : "จะไม่สร้างงานจนกว่าจะเปิดใหม่"}`,
+        toast.success(updated.isActive ? t('toast.statusActive') : t('toast.statusPaused'), {
+          description: updated.isActive ? t('toast.statusActiveDesc', { title }) : t('toast.statusPausedDesc', { title }),
         });
       }
     } catch {
-      toast.error("เกิดข้อผิดพลาด", { description: "กรุณาลองใหม่อีกครั้ง" });
+      toast.error(t('toast.error'), { description: t('toast.errorTryAgain') });
     } finally {
       setLoadingId(null);
     }
@@ -170,10 +174,10 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
     setLoadingId(templateId);
     try {
       await deleteRecurringTemplate(templateId);
-      setTemplates((prev) => prev.filter((t) => t.id !== templateId));
-      toast.success("ลบสำเร็จ", { description: `"${title}" ถูกลบแล้ว` });
+      setTemplates((prev) => prev.filter((tem) => tem.id !== templateId));
+      toast.success(t('toast.deleteSuccess'), { description: t('toast.deleteSuccessDesc', { title }) });
     } catch {
-      toast.error("ลบไม่สำเร็จ", { description: "กรุณาลองใหม่อีกครั้ง" });
+      toast.error(t('toast.deleteError'), { description: t('toast.errorTryAgain') });
     } finally {
       setLoadingId(null);
     }
@@ -181,20 +185,20 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
 
   // === Helpers ===
 
-  const getRecurrenceLabel = (t: RecurringTemplate) => {
-    const intervalText = t.recurrenceInterval > 1 ? `ทุก ${t.recurrenceInterval} ` : "";
-    switch (t.recurrenceType) {
-      case "daily": return `${intervalText}วัน`;
-      case "weekly": return `${intervalText}สัปดาห์`;
-      case "monthly": return `${intervalText}เดือน${t.recurrenceDayOfMonth ? ` วันที่ ${t.recurrenceDayOfMonth}` : ""}`;
-      case "yearly": return `${intervalText}ปี`;
-      default: return t.recurrenceType;
+  const getRecurrenceLabel = (tem: RecurringTemplate) => {
+    const intervalText = tem.recurrenceInterval > 1 ? t('recurrence.every', { interval: tem.recurrenceInterval }) : "";
+    switch (tem.recurrenceType) {
+      case "daily": return `${intervalText}${t('recurrence.daily')}`;
+      case "weekly": return `${intervalText}${t('recurrence.weekly')}`;
+      case "monthly": return `${intervalText}${tem.recurrenceDayOfMonth ? t('recurrence.monthlyOnDay', { day: tem.recurrenceDayOfMonth }) : t('recurrence.monthly')}`;
+      case "yearly": return `${intervalText}${t('recurrence.yearly')}`;
+      default: return tem.recurrenceType;
     }
   };
 
   const formatDate = (date: Date | null) => {
     if (!date) return "—";
-    return new Intl.DateTimeFormat("th-TH", {
+    return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -214,15 +218,15 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
         <div>
           <div className="flex items-center gap-2">
             <RefreshCw className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold tracking-tight">งานประจำ</h2>
+            <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
             {templates.length > 0 && (
               <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full font-medium">
-                {templates.length} รายการ
+                {t('itemCount', { count: templates.length })}
               </span>
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            จัดการงานที่สร้างอัตโนมัติ เช่น ทุกเดือน ทุกสัปดาห์
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -231,7 +235,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="ค้นหางานประจำ..."
+                placeholder={t('searchPlaceholder')}
                 className="w-full pl-8 h-9 text-sm bg-background"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -240,8 +244,8 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
           )}
           <Button size="sm" onClick={handleCreate} className="shrink-0">
             <Plus className="w-4 h-4 mr-1.5" />
-            <span className="hidden sm:inline">สร้างงานประจำ</span>
-            <span className="sm:hidden">สร้าง</span>
+            <span className="hidden sm:inline">{t('createNew')}</span>
+            <span className="sm:hidden">{t('create')}</span>
           </Button>
         </div>
       </div>
@@ -253,19 +257,19 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
             <div className="p-4 bg-primary/5 rounded-full mb-4">
               <RefreshCw className="w-10 h-10 text-primary/40" />
             </div>
-            <h3 className="font-semibold text-lg mb-1">ยังไม่มีงานประจำ</h3>
+            <h3 className="font-semibold text-lg mb-1">{t('emptyState')}</h3>
             <p className="text-sm text-muted-foreground max-w-sm mb-4">
-              สร้างงานประจำเพื่อให้ระบบสร้าง task ให้อัตโนมัติตามกำหนดเวลา
+              {t('emptyStateDesc')}
             </p>
             <Button onClick={handleCreate}>
               <Plus className="w-4 h-4 mr-1.5" />
-              สร้างงานประจำแรก
+              {t('createFirst')}
             </Button>
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <Search className="w-8 h-8 text-muted-foreground/50 mb-3" />
-            <p className="text-sm text-muted-foreground">ไม่พบงานประจำที่ตรงกับคำค้นหา</p>
+            <p className="text-sm text-muted-foreground">{t('noResults')}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -288,7 +292,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                       </span>
                       {!template.isActive && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-muted text-muted-foreground">
-                          หยุดชั่วคราว
+                          {t('status.paused')}
                         </span>
                       )}
                     </div>
@@ -299,17 +303,16 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                       </span>
                       <span className="flex items-center gap-1">
                         <CalendarDays className="w-3 h-3" />
-                        ถัดไป: {formatDate(template.nextRunAt)}
+                        {t('labels.next')}{formatDate(template.nextRunAt)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Hash className="w-3 h-3" />
-                        สร้างไปแล้ว {template.occurrenceCount ?? 0} ครั้ง
-                        {template.maxOccurrences ? ` / ${template.maxOccurrences}` : ""}
+                        {template.maxOccurrences ? t('labels.createdCountMax', { count: template.occurrenceCount ?? 0, max: template.maxOccurrences }) : t('labels.createdCount', { count: template.occurrenceCount ?? 0 })}
                       </span>
                       {template.lastRunAt && (
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          ล่าสุด: {formatDate(template.lastRunAt)}
+                          {t('labels.latest')}{formatDate(template.lastRunAt)}
                         </span>
                       )}
                     </div>
@@ -327,12 +330,12 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                       {template.isActive ? (
                         <>
                           <Pause className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">หยุด</span>
+                          <span className="hidden sm:inline">{t('actions.pause')}</span>
                         </>
                       ) : (
                         <>
                           <Play className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">เปิด</span>
+                          <span className="hidden sm:inline">{t('actions.resume')}</span>
                         </>
                       )}
                     </Button>
@@ -344,7 +347,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                       disabled={loadingId === template.id}
                     >
                       <Pencil className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">แก้ไข</span>
+                      <span className="hidden sm:inline">{t('actions.edit')}</span>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -355,24 +358,24 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                           disabled={loadingId === template.id}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">ลบ</span>
+                          <span className="hidden sm:inline">{t('actions.delete')}</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>ลบงานประจำนี้?</AlertDialogTitle>
+                          <AlertDialogTitle>{t('actions.deleteTitle')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            &quot;{template.title}&quot; จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ
+                            {t('actions.deleteDesc', { title: template.title })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                          <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDeleteFromList(template.id, template.title)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             <Trash2 className="w-4 h-4 mr-1.5" />
-                            ลบ Template
+                            {t('actions.deleteTemplate')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

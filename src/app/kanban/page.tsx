@@ -1,8 +1,10 @@
 import KanbanBoard from '@/components/kanban/kanban-board'; // ปรับ Path ให้ตรงกับที่คุณเก็บไฟล์ Component ของคุณ
 import { mockColumns, tags } from '@/components/kanban/mock-data';
 import { getTasks } from '@/lib/actions/task';
-
+import { getTranslations } from 'next-intl/server';
 export default async function Page() {
+  const t = await getTranslations("KanbanBoard");
+
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database (ปลอดภัย 100% เพราะเช็ค Session แล้ว)
   const dbTasks = await getTasks();
 
@@ -30,10 +32,15 @@ export default async function Page() {
     };
   });
 
+  const translatedColumns = mockColumns.map(col => ({
+    ...col,
+    title: t(`columns.${col.id}`) || col.title
+  }));
+
   return (
     // โยนข้อมูลจริงลงไปใน Board แทน mockTasks
     <KanbanBoard
-      initialColumns={mockColumns}
+      initialColumns={translatedColumns}
       initialTasks={formattedTasks}
     />
   );

@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Edit2, Paperclip, MessageSquare, Clock, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Task } from './kanban-board'; // นำเข้า Type จากหน้า Board
 
 const formatDateDisplay = (dateString?: string) => {
@@ -21,6 +22,7 @@ interface KanbanTaskCardProps {
 }
 
 export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
+  const t = useTranslations("KanbanBoard");
   const {
     setNodeRef,
     attributes,
@@ -64,7 +66,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
             </span>
           )}
           {task.recurringTemplateId && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={`งานประจำ รอบที่ ${task.recurrenceIndex ?? '?'}`}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={t("taskCard.recurringRound", { round: task.recurrenceIndex ?? '?' })}>
               <RefreshCw className="w-3 h-3" />
               #{task.recurrenceIndex}
             </span>
@@ -74,7 +76,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(task); }}
             className="text-muted-foreground hover:text-foreground transition-opacity p-1"
-            title="แก้ไขงาน"
+            title={t("taskCard.editTask")}
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useSession, signOut } from "@/lib/auth-client";
 import {
   DropdownMenu,
@@ -24,12 +25,15 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+import { useTranslations } from "next-intl";
+
 export function Navbar() {
   const pathname = usePathname(); // ใช้เช็คว่าอยู่หน้าไหน
   const router = useRouter();
   const { data: session } = useSession(); // ดึงข้อมูลผู้ใช้ปัจจุบัน
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const t = useTranslations("Navbar");
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -48,7 +52,7 @@ export function Navbar() {
             <LayoutDashboard className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg hidden md:block sm:text-xl font-semibold tracking-tight leading-tight">Project System</h1>
+            <h1 className="text-lg hidden md:block sm:text-xl font-semibold tracking-tight leading-tight">{t('title')}</h1>
           </div>
         </div>
 
@@ -80,7 +84,7 @@ export function Navbar() {
                 className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <LayoutDashboard className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">Board</span>
+                <span className="hidden sm:inline">{t('links.board')}</span>
               </Button>
             </Link>
             <Link href="/kanban/list">
@@ -90,7 +94,7 @@ export function Navbar() {
                 className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <List className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">List</span>
+                <span className="hidden sm:inline">{t('links.list')}</span>
               </Button>
             </Link>
             <Link href="/kanban/trash">
@@ -100,7 +104,7 @@ export function Navbar() {
                 className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/trash' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">ถังขยะ</span>
+                <span className="hidden sm:inline">{t('links.trash')}</span>
               </Button>
             </Link>
             <Link href="/kanban/archive">
@@ -110,7 +114,7 @@ export function Navbar() {
                 className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/archive' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <Archive className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">Archive</span>
+                <span className="hidden sm:inline">{t('links.archive')}</span>
               </Button>
             </Link>
             <Link href="/kanban/recurring">
@@ -120,15 +124,16 @@ export function Navbar() {
                 className={`h-7 px-2 sm:px-3 text-xs cursor-pointer ${pathname === '/kanban/recurring' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <RefreshCw className="w-4 h-4 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">งานประจำ</span>
+                <span className="hidden sm:inline">{t('links.recurring')}</span>
               </Button>
             </Link>
           </div>
 
           <div className="w-px h-6 bg-border mx-1"></div>
 
-          {/* 3. ปุ่มสลับโหมดสี */}
+          {/* 3. ปุ่มสลับโหมดสี และ สลับภาษา */}
           <ThemeToggle />
+          <LanguageSwitcher />
 
           {/* 4. เมนูโปรไฟล์ผู้ใช้และปุ่มออกจากระบบ */}
           {session && (
@@ -153,14 +158,14 @@ export function Navbar() {
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/profile">
                     <UserIcon className="w-4 h-4 mr-2" />
-                    โปรไฟล์
+                    {t('userMenu.profile')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/kanban/report">
                     <ChartPie className="w-4 h-4 mr-2" />
-                    รายงาน
+                    {t('userMenu.report')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -177,12 +182,12 @@ export function Navbar() {
                   ) : (
                     <LogOut className="w-4 h-4 mr-2" />
                   )}
-                  {isLoggingOut ? "กำลังออกจากระบบ..." : "ออกจากระบบ"}
+                  {isLoggingOut ? t('userMenu.loggingOut') : t('userMenu.logout')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => setIsAboutOpen(true)} className="cursor-pointer">
                   <Info className="w-4 h-4 mr-2" />
-                  เกี่ยวกับ
+                  {t('userMenu.about')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

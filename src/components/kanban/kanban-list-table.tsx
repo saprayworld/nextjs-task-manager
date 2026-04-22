@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 
 import { KanbanFacetedFilter } from "./kanban-faceted-filter";
 import { BoardColumn } from "./TaskDialog";
+import { useTranslations } from 'next-intl';
 
 interface KanbanListTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -33,6 +34,8 @@ interface KanbanListTableProps<TData, TValue> {
 }
 
 export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: KanbanListTableProps<TData, TValue>) {
+  const t = useTranslations('KanbanList.table');
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -65,7 +68,7 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-1 flex-wrap items-center gap-2">
           <Input
-            placeholder="ค้นหางาน (Title)..."
+            placeholder={t('searchPlaceholder')}
             value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
             onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
             className="h-8 w-[200px] lg:w-[250px]"
@@ -87,7 +90,7 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
               onClick={() => table.resetColumnFilters()}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t('reset')}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -97,11 +100,11 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="ml-auto flex h-8">
               <SlidersHorizontal className="mr-2 h-4 w-4" />
-              View
+              {t('view')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[150px]">
-            <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('toggleColumns')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
@@ -154,7 +157,7 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  ไม่พบข้อมูลงาน
+                  {t('noTasksFound')}
                 </TableCell>
               </TableRow>
             )}
@@ -166,8 +169,8 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
       <div className="flex flex-col sm:flex-row items-center justify-end px-2 gap-4">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium hidden sm:block">Rows per page</p>
-            <p className="text-sm font-medium sm:hidden">Rows</p>
+            <p className="text-sm font-medium hidden sm:block">{t('rowsPerPage')}</p>
+            <p className="text-sm font-medium sm:hidden">{t('rows')}</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => table.setPageSize(Number(value))}
@@ -186,7 +189,7 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
           </div>
           <div className="flex items-center gap-2">
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {t('page', { pageIndex: table.getState().pagination.pageIndex + 1, pageCount: table.getPageCount() })}
             </div>
             <div className="flex items-center space-x-2">
               <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
