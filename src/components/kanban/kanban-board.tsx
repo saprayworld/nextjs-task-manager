@@ -24,6 +24,7 @@ import { LayoutDashboard, Search, Moon, Plus, MoreHorizontal } from 'lucide-reac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderTasks } from "@/lib/actions/task";
 
@@ -124,6 +125,7 @@ function Column({ column, tasks, onEditTask }: ColumnProps) {
 // Main Board Component
 // ==========================================
 export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoardProps) {
+  const t = useTranslations("KanbanBoard");
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -157,14 +159,14 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
       try {
         // ย้ายงานไปถังขยะ (Soft Delete)
         await deleteTask(editingTask.id as string);
-        toast.success('ย้ายไปถังขยะสำเร็จ', {
-          description: `"${editingTask.title}" ถูกย้ายไปถังขยะแล้ว`,
+        toast.success(t("toast.trashSuccess"), {
+          description: t("toast.trashSuccessDesc", { title: editingTask.title }),
         });
       } catch {
         // Rollback กลับถ้าไม่สำเร็จ
         setTasks(previousTasks);
-        toast.error('ย้ายไปถังขยะไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(t("toast.trashError"), {
+          description: t("toast.errorTryAgain"),
         });
       }
     }
@@ -178,13 +180,13 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
 
       try {
         await archiveTask(editingTask.id as string);
-        toast.success('เก็บเข้าคลังสำเร็จ', {
-          description: `"${editingTask.title}" ถูกเก็บเข้า Archive แล้ว`,
+        toast.success(t("toast.archiveSuccess"), {
+          description: t("toast.archiveSuccessDesc", { title: editingTask.title }),
         });
       } catch {
         setTasks(previousTasks);
-        toast.error('เก็บเข้าคลังไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(t("toast.archiveError"), {
+          description: t("toast.errorTryAgain"),
         });
       }
     }
@@ -197,12 +199,12 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
         // อัปเดท local state และปิด Dialog หลังบันทึกสำเร็จ
         setTasks(prevTasks => prevTasks.filter(t => t.id !== editingTask.id));
         setIsDialogOpen(false);
-        toast.success('ซ่อนงานสำเร็จ', {
-          description: `"${editingTask.title}" ถูกซ่อนจาก Board แล้ว`,
+        toast.success(t("toast.hideSuccess"), {
+          description: t("toast.hideSuccessDesc", { title: editingTask.title }),
         });
       } catch {
-        toast.error('ซ่อนงานไม่สำเร็จ', {
-          description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+        toast.error(t("toast.hideError"), {
+          description: t("toast.errorTryAgain"),
         });
       }
     }
@@ -258,8 +260,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
 
         await syncSubtasks(editingTask.id as string, data.subtasks);
 
-        toast.success('บันทึกสำเร็จ', {
-          description: `"${data.title}" ถูกอัปเดตเรียบร้อยแล้ว`,
+        toast.success(t("toast.saveSuccess"), {
+          description: t("toast.updateSuccessDesc", { title: data.title }),
         });
 
       } else {
@@ -292,15 +294,15 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
         };
         setTasks([...tasks, newTask]);
 
-        toast.success('สร้างงานสำเร็จ', {
-          description: `"${data.title}" ถูกเพิ่มเรียบร้อยแล้ว`,
+        toast.success(t("toast.createSuccess"), {
+          description: t("toast.createSuccessDesc", { title: data.title }),
         });
       }
 
       setIsDialogOpen(false);
     } catch {
-      toast.error('บันทึกไม่สำเร็จ', {
-        description: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+      toast.error(t("toast.saveError"), {
+        description: t("toast.errorTryAgain"),
       });
     }
   };
@@ -399,8 +401,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
     try {
       await reorderTasks(updates);
     } catch {
-      toast.error('บันทึกลำดับไม่สำเร็จ', {
-        description: 'เกิดข้อผิดพลาดในการจัดเรียงการ์ด',
+      toast.error(t("toast.reorderError"), {
+        description: t("toast.reorderErrorDesc"),
       });
     }
   };
@@ -423,15 +425,15 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
       {/* Header เฉพาะของหน้า Board */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 sm:px-6 py-4 shrink-0">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">Kanban Board</h2>
-          <p className="text-xs text-muted-foreground">จัดการและติดตามสถานะงานทั้งหมด</p>
+          <h2 className="text-lg font-semibold tracking-tight">{t("title")}</h2>
+          <p className="text-xs text-muted-foreground">{t("description")}</p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="ค้นหางาน, ป้ายกำกับ..."
+              placeholder={t("searchPlaceholder")}
               className="w-full pl-8 h-9 text-sm bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -439,8 +441,8 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           </div>
           <Button onClick={handleOpenCreateDialog} className="flex cursor-pointer items-center gap-1 sm:gap-2 h-9 px-3 sm:px-4 text-sm font-medium shadow-sm shrink-0">
             <Plus className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline">สร้างงานใหม่</span>
-            <span className="inline sm:hidden">สร้าง</span>
+            <span className="hidden sm:inline">{t("createNewTask")}</span>
+            <span className="inline sm:hidden">{t("create")}</span>
           </Button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { CheckSquare, Loader2, Plus, Square, Trash2, Archive, Save, X, CalendarClock, Timer, XIcon, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { TiptapEditor } from "@/components/tiptap-editor";
 import {
   Dialog,
@@ -63,6 +64,7 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
+  const t = useTranslations("TaskDialog");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("wr");
   const [columnId, setColumnId] = useState("todo");
@@ -187,7 +189,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       >
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between flex-shrink-0">
-            {isEditMode ? "แก้ไขงาน" : "สร้างงานใหม่"}
+            {isEditMode ? t("titleEdit") : t("titleCreate")}
             <DialogClose asChild>
               <Button type="button" variant="ghost" className="sm:w-auto p-2!">
                 <XIcon className="w-5! h-5!" />
@@ -206,19 +208,19 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
                   <RefreshCw className="w-4 h-4 text-primary shrink-0" />
                   <p className="text-xs text-primary">
-                    <span className="font-medium">งานประจำ</span> — สร้างอัตโนมัติ รอบที่ {taskToEdit.recurrenceIndex ?? '?'}
+                    <span className="font-medium">{t("recurring")}</span> — {t("recurringRound", { round: taskToEdit.recurrenceIndex ?? '?' })}
                   </p>
                 </div>
               )}
 
               <div className="space-y-1.5">
                 <label htmlFor="task-title" className="text-sm font-medium">
-                  ชื่องาน <span className="text-destructive">*</span>
+                  {t("taskName")} <span className="text-destructive">{t("taskNameRequired")}</span>
                 </label>
                 <Input
                   id="task-title"
                   required
-                  placeholder="เช่น อัปเดตโลโก้เว็บไซต์"
+                  placeholder={t("taskNamePlaceholder")}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full"
@@ -227,7 +229,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="task-status" className="text-sm font-medium">สถานะ</label>
+                  <label htmlFor="task-status" className="text-sm font-medium">{t("status")}</label>
                   <select
                     id="task-status"
                     value={columnId}
@@ -241,7 +243,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="task-category" className="text-sm font-medium">หมวดหมู่</label>
+                  <label htmlFor="task-category" className="text-sm font-medium">{t("category")}</label>
                   <select
                     id="task-category"
                     value={categoryId}
@@ -257,7 +259,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="task-date" className="text-sm font-medium">กำหนดส่ง</label>
+                  <label htmlFor="task-date" className="text-sm font-medium">{t("dueDate")}</label>
                   <Input
                     type="date"
                     id="task-date"
@@ -272,11 +274,11 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               <div className="space-y-3 pt-2 border-t mt-4">
                 <div className="flex items-center gap-2">
                   <CalendarClock className="w-4 h-4 text-muted-foreground" />
-                  <label className="text-sm font-medium">ช่วงเวลาทำงาน</label>
+                  <label className="text-sm font-medium">{t("workPeriod")}</label>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="task-start" className="text-xs text-muted-foreground">เริ่มงาน</label>
+                    <label htmlFor="task-start" className="text-xs text-muted-foreground">{t("start")}</label>
                     <Input
                       type="datetime-local"
                       id="task-start"
@@ -286,7 +288,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="task-end" className="text-xs text-muted-foreground">สิ้นสุด</label>
+                    <label htmlFor="task-end" className="text-xs text-muted-foreground">{t("end")}</label>
                     <Input
                       type="datetime-local"
                       id="task-end"
@@ -299,7 +301,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
                     <Timer className="w-4 h-4 text-muted-foreground" />
-                    <label htmlFor="task-worktime" className="text-xs text-muted-foreground">เวลาที่ใช้ทั้งหมด (นาที)</label>
+                    <label htmlFor="task-worktime" className="text-xs text-muted-foreground">{t("totalTime")}</label>
                   </div>
                   <Input
                     type="number"
@@ -307,23 +309,23 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                     min={0}
                     value={totalWorkTime}
                     onChange={(e) => setTotalWorkTime(Number(e.target.value) || 0)}
-                    placeholder="เช่น 120"
+                    placeholder={t("totalTimePlaceholder")}
                     className="w-full sm:w-48"
                   />
                   {totalWorkTime > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      ≈ {Math.floor(totalWorkTime / 60)} ชั่วโมง {totalWorkTime % 60} นาที
+                      ≈ {Math.floor(totalWorkTime / 60)} {t("hours")} {totalWorkTime % 60} {t("minutes")}
                     </p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium">รายละเอียด</label>
+                <label className="text-sm font-medium">{t("details")}</label>
                 <TiptapEditor
                   content={description}
                   onChange={setDescription}
-                  placeholder="เพิ่มรายละเอียดของงานนี้..."
+                  placeholder={t("detailsPlaceholder")}
                   disabled={isSaving}
                 />
               </div>
@@ -331,8 +333,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               {/* Checklist UI */}
               <div className="space-y-3 pt-2 border-t mt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">รายการย่อย (Checklist)</label>
-                  {subtasks.length > 0 && <span className="text-xs text-muted-foreground">{completedCount}/{subtasks.length} สำเร็จ ({progressPercent}%)</span>}
+                  <label className="text-sm font-medium">{t("checklist")}</label>
+                  {subtasks.length > 0 && <span className="text-xs text-muted-foreground">{completedCount}/{subtasks.length} {t("completed")} ({progressPercent}%)</span>}
                 </div>
 
                 {subtasks.length > 0 && (
@@ -361,14 +363,14 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
 
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="เพิ่มรายการย่อย..."
+                    placeholder={t("addSubtaskPlaceholder")}
                     value={newSubtask}
                     onChange={(e) => setNewSubtask(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSubtask(); } }}
                     className="h-8 text-sm"
                   />
                   <Button type="button" variant="secondary" size="sm" onClick={handleAddSubtask} className="h-8 shrink-0">
-                    <Plus className="w-4 h-4 mr-1" /> เพิ่ม
+                    <Plus className="w-4 h-4 mr-1" /> {t("add")}
                   </Button>
                 </div>
               </div>
@@ -382,17 +384,17 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                   {isTogglingVisibility ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="hidden sm:inline">กำลังดำเนินการ...</span>
+                      <span className="hidden sm:inline">{t("processing")}</span>
                     </>
                   ) : isCurrentlyVisible ? (
                     <>
                       <EyeOff className="w-4 h-4" />
-                      <span className="hidden sm:inline">ซ่อนจาก Board</span>
+                      <span className="hidden sm:inline">{t("hideFromBoard")}</span>
                     </>
                   ) : (
                     <>
                       <Eye className="w-4 h-4" />
-                      <span className="hidden sm:inline">แสดงใน Board</span>
+                      <span className="hidden sm:inline">{t("showOnBoard")}</span>
                     </>
                   )}
                 </Button>
@@ -402,12 +404,12 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                   {isArchiving ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="hidden sm:inline">กำลังเก็บ...</span>
+                      <span className="hidden sm:inline">{t("archiving")}</span>
                     </>
                   ) : (
                     <>
                       <Archive className="w-4 h-4" />
-                      <span className="hidden sm:inline">เก็บเข้าคลัง</span>
+                      <span className="hidden sm:inline">{t("archive")}</span>
                     </>
                   )}
                 </Button>
@@ -419,27 +421,27 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                       {isDeleting ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span className="hidden sm:inline">กำลังย้าย...</span>
+                          <span className="hidden sm:inline">{t("moving")}</span>
                         </>
                       ) : (
                         <>
                           <Trash2 className="w-4 h-4" />
-                          <span className="hidden sm:inline">ย้ายไปถังขยะ</span>
+                          <span className="hidden sm:inline">{t("moveToTrash")}</span>
                         </>
                       )}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>ย้ายงานไปถังขยะ?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        งานนี้จะถูกย้ายไปที่ถังขยะ คุณสามารถกู้คืนได้ภายหลัง
+                        {t("deleteDescription")}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                       <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                        <Trash2 className="w-4 h-4 mr-1.5" />ย้ายไปถังขยะ
+                        <Trash2 className="w-4 h-4 mr-1.5" />{t("moveToTrash")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -450,8 +452,8 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
               <DialogClose asChild>
                 <Button type="button" variant="outline" disabled={isSaving} className="sm:w-auto">
                   <X className="w-4 h-4" />
-                  <span className="hidden sm:inline">ยกเลิก</span>
-                  <span className="sm:hidden">ยกเลิก</span>
+                  <span className="hidden sm:inline">{t("cancel")}</span>
+                  <span className="sm:hidden">{t("cancel")}</span>
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={isSaving} className="sm:w-auto"
@@ -459,19 +461,19 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                 {isSaving ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}
+                    {isEditMode ? t("saving") : t("creating")}
                   </>
                 ) : (
                   isEditMode ?
                     <>
                       <Save className="w-4 h-4" />
-                      <span className="hidden sm:inline">บันทึกการเปลี่ยนแปลง</span>
-                      <span className="sm:hidden">บันทึก</span>
+                      <span className="hidden sm:inline">{t("saveChanges")}</span>
+                      <span className="sm:hidden">{t("save")}</span>
                     </>
                     : <>
                       <Save className="w-4 h-4" />
-                      <span className="hidden sm:inline">สร้างงาน</span>
-                      <span className="sm:hidden">สร้าง</span>
+                      <span className="hidden sm:inline">{t("createTask")}</span>
+                      <span className="sm:hidden">{t("create")}</span>
                     </>
                 )}
               </Button>
