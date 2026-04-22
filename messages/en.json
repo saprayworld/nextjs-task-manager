@@ -161,6 +161,112 @@
       "page": "Page {pageIndex} of {pageCount}"
     }
   },
+  "ArchiveList": {
+    "title": "Archive",
+    "itemCount": "{count} items",
+    "description": "Archived tasks will be kept here. You can restore them anytime.",
+    "searchPlaceholder": "Search in Archive...",
+    "emptyState": "Archive is empty",
+    "emptyStateDesc": "When you archive a task, it will be stored here instead of showing on the Board",
+    "noResults": "No tasks matching the search",
+    "archivedAt": "Archived on {date}",
+    "actions": {
+      "restore": "Restore",
+      "moveToTrash": "Move to Trash",
+      "cancel": "Cancel",
+      "deleteTitle": "Move to Trash?",
+      "deleteDesc": "Are you sure you want to move \"{title}\" to trash?"
+    },
+    "toast": {
+      "restoreSuccess": "Restored successfully",
+      "restoreSuccessDesc": "\"{title}\" has been restored to the Board",
+      "restoreError": "Failed to restore",
+      "trashSuccess": "Moved to trash successfully",
+      "trashSuccessDesc": "\"{title}\" has been moved to trash",
+      "trashError": "Failed to move",
+      "errorTryAgain": "An error occurred, please try again"
+    }
+  },
+  "RecurringList": {
+    "title": "Recurring Tasks",
+    "itemCount": "{count} items",
+    "description": "Manage automatically created tasks such as monthly or weekly tasks.",
+    "searchPlaceholder": "Search recurring tasks...",
+    "createNew": "Create Recurring Task",
+    "create": "Create",
+    "createFirst": "Create first recurring task",
+    "emptyState": "No recurring tasks yet",
+    "emptyStateDesc": "Create a recurring task to have the system automatically create tasks on schedule",
+    "noResults": "No recurring tasks matching the search",
+    "status": {
+      "paused": "Paused"
+    },
+    "recurrence": {
+      "every": "Every {interval} ",
+      "daily": "day(s)",
+      "weekly": "week(s)",
+      "monthly": "month(s)",
+      "monthlyOnDay": "month(s) on day {day}",
+      "yearly": "year(s)"
+    },
+    "labels": {
+      "next": "Next: ",
+      "createdCount": "Created {count} times",
+      "createdCountMax": "Created {count} / {max} times",
+      "latest": "Latest: "
+    },
+    "actions": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete this recurring task?",
+      "deleteDesc": "\"{title}\" will be permanently deleted, but already created tasks will not be affected.",
+      "deleteTemplate": "Delete Template"
+    },
+    "toast": {
+      "saveSuccess": "Saved successfully",
+      "saveSuccessDesc": "\"{title}\" has been updated",
+      "createSuccess": "Created recurring task successfully",
+      "createSuccessDesc": "\"{title}\" is ready to run",
+      "error": "Error occurred",
+      "errorTryAgain": "Please try again later",
+      "deleteSuccess": "Deleted successfully",
+      "deleteSuccessDesc": "\"{title}\" has been deleted",
+      "deleteError": "Failed to delete",
+      "statusActive": "Activated",
+      "statusActiveDesc": "\"{title}\" will continue creating tasks on schedule",
+      "statusPaused": "Paused",
+      "statusPausedDesc": "\"{title}\" will not create tasks until activated again"
+    }
+  },
+  "TrashList": {
+    "title": "Trash",
+    "itemCount": "{count} items",
+    "description": "Deleted tasks will be here. You can restore or permanently delete them.",
+    "searchPlaceholder": "Search in trash...",
+    "emptyState": "Trash is empty",
+    "emptyStateDesc": "When you delete a task from Board or List, it will be moved here.",
+    "noResults": "No tasks matching the search",
+    "deletedAt": "Moved to trash on {date}",
+    "actions": {
+      "restore": "Restore",
+      "permanentDelete": "Delete Permanently",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete permanently?",
+      "deleteDesc": "Are you sure you want to permanently delete \"{title}\"? This action cannot be undone."
+    },
+    "toast": {
+      "restoreSuccess": "Restored successfully",
+      "restoreSuccessDesc": "\"{title}\" has been restored to the Board",
+      "restoreError": "Failed to restore",
+      "deleteSuccess": "Permanently deleted",
+      "deleteSuccessDesc": "\"{title}\" has been permanently deleted",
+      "deleteError": "Failed to delete",
+      "errorTryAgain": "An error occurred, please try again"
+    }
+  },
   "TaskDialog": {
     "titleEdit": "Edit Task",
     "titleCreate": "Create New Task",

@@ -161,6 +161,112 @@
       "page": "Page {pageIndex} of {pageCount}"
     }
   },
+  "ArchiveList": {
+    "title": "Archive",
+    "itemCount": "{count} รายการ",
+    "description": "งานที่ถูกเก็บเข้าคลังจะอยู่ที่นี่ คุณสามารถนำกลับมาได้ตลอด",
+    "searchPlaceholder": "ค้นหาใน Archive...",
+    "emptyState": "Archive ว่างเปล่า",
+    "emptyStateDesc": "เมื่อคุณ archive งาน งานจะถูกเก็บมาที่นี่แทนที่จะแสดงบน Board",
+    "noResults": "ไม่พบงานที่ตรงกับคำค้นหา",
+    "archivedAt": "เก็บเข้า Archive เมื่อ {date}",
+    "actions": {
+      "restore": "นำกลับ",
+      "moveToTrash": "ย้ายไปถังขยะ",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ย้ายไปถังขยะ?",
+      "deleteDesc": "ต้องการย้าย \"{title}\" ไปถังขยะหรือไม่?"
+    },
+    "toast": {
+      "restoreSuccess": "นำกลับสำเร็จ",
+      "restoreSuccessDesc": "\"{title}\" ถูกนำกลับไปที่ Board แล้ว",
+      "restoreError": "นำกลับไม่สำเร็จ",
+      "trashSuccess": "ย้ายไปถังขยะสำเร็จ",
+      "trashSuccessDesc": "\"{title}\" ถูกย้ายไปถังขยะแล้ว",
+      "trashError": "ย้ายไม่สำเร็จ",
+      "errorTryAgain": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+    }
+  },
+  "RecurringList": {
+    "title": "งานประจำ",
+    "itemCount": "{count} รายการ",
+    "description": "จัดการงานที่สร้างอัตโนมัติ เช่น ทุกเดือน ทุกสัปดาห์",
+    "searchPlaceholder": "ค้นหางานประจำ...",
+    "createNew": "สร้างงานประจำ",
+    "create": "สร้าง",
+    "createFirst": "สร้างงานประจำแรก",
+    "emptyState": "ยังไม่มีงานประจำ",
+    "emptyStateDesc": "สร้างงานประจำเพื่อให้ระบบสร้าง task ให้อัตโนมัติตามกำหนดเวลา",
+    "noResults": "ไม่พบงานประจำที่ตรงกับคำค้นหา",
+    "status": {
+      "paused": "หยุดชั่วคราว"
+    },
+    "recurrence": {
+      "every": "ทุก {interval} ",
+      "daily": "วัน",
+      "weekly": "สัปดาห์",
+      "monthly": "เดือน",
+      "monthlyOnDay": "เดือน วันที่ {day}",
+      "yearly": "ปี"
+    },
+    "labels": {
+      "next": "ถัดไป: ",
+      "createdCount": "สร้างไปแล้ว {count} ครั้ง",
+      "createdCountMax": "สร้างไปแล้ว {count} / {max} ครั้ง",
+      "latest": "ล่าสุด: "
+    },
+    "actions": {
+      "pause": "หยุด",
+      "resume": "เปิด",
+      "edit": "แก้ไข",
+      "delete": "ลบ",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ลบงานประจำนี้?",
+      "deleteDesc": "\"{title}\" จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
+      "deleteTemplate": "ลบ Template"
+    },
+    "toast": {
+      "saveSuccess": "บันทึกสำเร็จ",
+      "saveSuccessDesc": "\"{title}\" ถูกอัปเดตแล้ว",
+      "createSuccess": "สร้างงานประจำสำเร็จ",
+      "createSuccessDesc": "\"{title}\" พร้อมทำงานแล้ว",
+      "error": "เกิดข้อผิดพลาด",
+      "errorTryAgain": "กรุณาลองใหม่อีกครั้ง",
+      "deleteSuccess": "ลบสำเร็จ",
+      "deleteSuccessDesc": "\"{title}\" ถูกลบแล้ว",
+      "deleteError": "ลบไม่สำเร็จ",
+      "statusActive": "เปิดใช้งานแล้ว",
+      "statusActiveDesc": "\"{title}\" จะสร้างงานตามกำหนดต่อไป",
+      "statusPaused": "หยุดใช้งานแล้ว",
+      "statusPausedDesc": "\"{title}\" จะไม่สร้างงานจนกว่าจะเปิดใหม่"
+    }
+  },
+  "TrashList": {
+    "title": "ถังขยะ",
+    "itemCount": "{count} รายการ",
+    "description": "งานที่ถูกลบจะอยู่ที่นี่ คุณสามารถกู้คืนหรือลบถาวรได้",
+    "searchPlaceholder": "ค้นหาในถังขยะ...",
+    "emptyState": "ถังขยะว่างเปล่า",
+    "emptyStateDesc": "เมื่อคุณลบงานจาก Board หรือ List งานจะถูกย้ายมาที่นี่",
+    "noResults": "ไม่พบงานที่ตรงกับคำค้นหา",
+    "deletedAt": "ย้ายไปถังขยะเมื่อ {date}",
+    "actions": {
+      "restore": "กู้คืน",
+      "permanentDelete": "ลบถาวร",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ลบงานถาวร?",
+      "deleteDesc": "คุณแน่ใจหรือไม่ว่าต้องการลบ \"{title}\" ถาวร? การดำเนินการนี้ไม่สามารถกู้คืนได้"
+    },
+    "toast": {
+      "restoreSuccess": "กู้คืนสำเร็จ",
+      "restoreSuccessDesc": "\"{title}\" ถูกกู้คืนกลับไปที่ Board แล้ว",
+      "restoreError": "กู้คืนไม่สำเร็จ",
+      "deleteSuccess": "ลบถาวรสำเร็จ",
+      "deleteSuccessDesc": "\"{title}\" ถูกลบถาวรเรียบร้อยแล้ว",
+      "deleteError": "ลบไม่สำเร็จ",
+      "errorTryAgain": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+    }
+  },
   "TaskDialog": {
     "titleEdit": "แก้ไขงาน",
     "titleCreate": "สร้างงานใหม่",
