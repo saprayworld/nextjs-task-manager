@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Prompt } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"; // <-- นำเข้า Provider
 import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +14,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const prompt = Prompt({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["thai", "latin"],
+  variable: "--font-prompt",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +41,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       {/* ต้องใส่ suppressHydrationWarning ที่ html เพื่อไม่ให้ Next.js แจ้งเตือน Hydration Mismatch ตอนสลับตีม */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${prompt.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
