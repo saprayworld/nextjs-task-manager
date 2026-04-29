@@ -131,7 +131,8 @@
     },
     "taskCard": {
       "editTask": "Edit Task",
-      "recurringRound": "Recurring task round {round}"
+      "recurringRound": "Recurring task round {round}",
+      "totalTimeUnit": "min"
     }
   },
   "KanbanList": {

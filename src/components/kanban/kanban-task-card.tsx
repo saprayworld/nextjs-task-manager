@@ -120,6 +120,11 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
               <MessageSquare className="w-3 h-3" /> {task.comments}
             </span>
           )}
+          {(task.totalWorkTime ?? 0) > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 transition-colors">
+              <Clock className="w-3 h-3" /> {`${task.totalWorkTime} ${t("taskCard.totalTimeUnit")}`}
+            </span>
+          )}
           {task.dueDate && (
             <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${task.dueDateClasses || ''}`}>
               <Clock className="w-3 h-3" /> {formatDateDisplay(task.dueDate)}
