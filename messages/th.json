@@ -131,7 +131,8 @@
     },
     "taskCard": {
       "editTask": "แก้ไขงาน",
-      "recurringRound": "งานประจำ รอบที่ {round}"
+      "recurringRound": "งานประจำ รอบที่ {round}",
+      "totalTimeUnit": "นาที"
     }
   },
   "KanbanList": {

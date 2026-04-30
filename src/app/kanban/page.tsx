@@ -34,7 +34,7 @@ export default async function Page() {
 
   const translatedColumns = mockColumns.map(col => ({
     ...col,
-    title: t(`columns.${col.id}`) || col.title
+    // title: t(`columns.${col.id}`) || col.title
   }));
 
   return (
