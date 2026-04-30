@@ -236,7 +236,10 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
               dueDate: data.dueDate,
               subtasks: data.subtasks,
               progress: newProgress,
-              dueDateClasses: dueDateClasses
+              dueDateClasses: dueDateClasses,
+              startDateTime: data.startDateTime,
+              endDateTime: data.endDateTime,
+              totalWorkTime: data.totalWorkTime
             };
             if (editingTask.columnId !== data.columnId) {
               updatedTask.columnId = data.columnId;
@@ -291,6 +294,9 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
           subtasks: data.subtasks,
           progress: newProgress,
           order: savedTask.order,
+          startDateTime: data.startDateTime,
+          endDateTime: data.endDateTime,
+          totalWorkTime: data.totalWorkTime,
         };
         setTasks([...tasks, newTask]);
 
