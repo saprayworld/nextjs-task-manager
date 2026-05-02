@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info } from "lucide-react";
+import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -33,6 +33,7 @@ export function Navbar() {
   const { data: session } = useSession(); // ดึงข้อมูลผู้ใช้ปัจจุบัน
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isLicenseOpen, setIsLicenseOpen] = useState(false);
   const t = useTranslations("Navbar");
 
   const handleLogout = async () => {
@@ -239,13 +240,64 @@ export function Navbar() {
                 </span>
               </div>
             </div>
+            <div className="flex justify-between items-center py-3 border-b border-border/50">
+              <span className="text-sm font-medium text-muted-foreground">License</span>
+              <button
+                onClick={() => setIsLicenseOpen(true)}
+                className="group flex items-center gap-1.5 text-sm font-mono bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1 rounded-md transition-all cursor-pointer active:scale-95 ring-1 ring-primary/20 hover:ring-primary/40 shadow-sm"
+                title="View License Details"
+              >
+                <span>MIT</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </div>
           </div>
 
           <div className="mt-2 flex flex-col gap-3">
             <div className="bg-muted/40 p-3 rounded-lg text-xs text-center text-muted-foreground">
-              &copy; {new Date().getFullYear()} Saprayworld. All rights reserved.
+              &copy; {new Date().getFullYear()} Sapray Minase. Licensed under MIT.
             </div>
             <Button className="w-full" variant="outline" onClick={() => setIsAboutOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* License Dialog */}
+      <Dialog open={isLicenseOpen} onOpenChange={setIsLicenseOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>MIT License</DialogTitle>
+            <DialogDescription>
+              License details for this project.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-muted/50 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-[60vh] overflow-y-auto text-muted-foreground scrollbar-thin">
+            {`MIT License
+
+Copyright (c) 2026 Sapray Minase (saprayworld)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`}
+          </div>
+          <div className="mt-2">
+            <Button className="w-full" variant="outline" onClick={() => setIsLicenseOpen(false)}>
               Close
             </Button>
           </div>
