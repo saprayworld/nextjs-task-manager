@@ -16,7 +16,10 @@
       "report": "Report",
       "logout": "Sign Out",
       "loggingOut": "Signing Out...",
-      "about": "About"
+      "about": "About",
+      "appearance": "Appearance",
+      "darkMode": "Dark Mode",
+      "language": "Language"
     }
   },
   "Login": {
@@ -308,5 +311,42 @@
     "save": "Save",
     "createTask": "Create task",
     "create": "Create"
+  },
+  "ReportDashboard": {
+    "title": "Reports & Statistics",
+    "description": "Summary of work performance and time spent (calculated from totalWorkTime)",
+    "currentData": "Current Data",
+    "cards": {
+      "totalTasks": "Total Tasks",
+      "totalTasksDesc": "All tasks in the system",
+      "completedTasks": "Completed Tasks",
+      "pendingTasks": "Pending Tasks",
+      "pendingTasksDesc": "Tasks awaiting action",
+      "totalWorkTime": "Total Work Time",
+      "totalWorkTimeDesc": "Only tasks with recorded time"
+    },
+    "timeBreakdown": {
+      "title": "Work Time Details (Per Task)",
+      "description": "Tasks with totalWorkTime greater than 0, sorted by time spent",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In Progress",
+      "statusLabel": "Status",
+      "emptyState": "No tasks with recorded work time (totalWorkTime = 0)"
+    },
+    "chart": {
+      "title": "Overall Task Status",
+      "chartLabelCount": "Task Count",
+      "chartLabelCompleted": "Completed",
+      "chartLabelPending": "Pending",
+      "completedOf": "Completed {completed} of {total} tasks",
+      "centerLabel": "Done",
+      "taskUnit": "tasks",
+      "legendCompleted": "Completed (Done)",
+      "legendPending": "Pending"
+    },
+    "time": {
+      "hours": "h",
+      "minutes": "m"
+    }
   }
 }

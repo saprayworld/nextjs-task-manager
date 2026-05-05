@@ -1,13 +1,5 @@
 import React from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  LayoutDashboard,
-  CalendarDays,
-  ListTodo,
-  CheckCircle2,
-  Clock,
-  Timer
-} from "lucide-react";
 
 export default function LoadingReportPage() {
   return (
@@ -15,44 +7,32 @@ export default function LoadingReportPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">รายงานและสถิติ (Report)</h1>
-          <p className="text-muted-foreground mt-1">
-            สรุปผลการทำงานและเวลาที่ใช้ (คำนวณจากข้อมูล totalWorkTime)
-          </p>
+          <Skeleton className="h-9 w-64 mb-2" />
+          <Skeleton className="h-5 w-96" />
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
-          <CalendarDays className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
+          <Skeleton className="w-4 h-4 rounded" />
           <Skeleton className="h-4 w-24" />
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {[
-          { icon: ListTodo, iconColor: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", title: "งานทั้งหมด" },
-          { icon: CheckCircle2, iconColor: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", title: "งานที่เสร็จแล้ว" },
-          { icon: Clock, iconColor: "text-orange-600 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", title: "งานที่กำลังทำ" },
-          { icon: Timer, iconColor: "text-purple-600 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", title: "เวลาทำงานรวม" }
-        ].map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div key={idx} className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">{item.title}</p>
-                <div className={`p-2 rounded-lg ${item.bgColor}`}>
-                  <Icon className={`w-5 h-5 ${item.iconColor}`} />
-                </div>
-              </div>
-              <div className="flex flex-col justify-end">
-                <Skeleton className="h-9 w-16 mb-2" />
-                <Skeleton className="h-3 w-32" />
-                {idx === 1 && (
-                  <Skeleton className="w-full h-1.5 mt-3 rounded-full" />
-                )}
-              </div>
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <div key={idx} className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="w-9 h-9 rounded-lg" />
             </div>
-          );
-        })}
+            <div className="flex flex-col justify-end">
+              <Skeleton className="h-9 w-16 mb-2" />
+              <Skeleton className="h-3 w-32" />
+              {idx === 1 && (
+                <Skeleton className="w-full h-1.5 mt-3 rounded-full" />
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Main Content Area */}
@@ -61,19 +41,17 @@ export default function LoadingReportPage() {
         {/* Task Time Detail List Skeleton */}
         <div className="lg:col-span-2 bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden flex flex-col">
           <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
-            <div>
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <LayoutDashboard className="w-5 h-5 text-purple-500" />
-                รายละเอียดเวลาทำงาน (รายชิ้นงาน)
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                แสดงงานที่มีค่า totalWorkTime มากกว่า 0 เรียงตามเวลาที่ใช้
-              </p>
+            <div className="w-full">
+              <div className="flex items-center gap-2 mb-2">
+                <Skeleton className="w-5 h-5 rounded" />
+                <Skeleton className="h-6 w-64" />
+              </div>
+              <Skeleton className="h-4 w-80" />
             </div>
           </div>
           <div className="divide-y divide-border/50 flex-1 overflow-y-auto" style={{ maxHeight: '450px' }}>
             {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors group">
+              <div key={idx} className="p-4 flex items-center justify-between">
                 <div className="flex items-start gap-3 w-full">
                   <div className="mt-1">
                     <Skeleton className="w-5 h-5 rounded-full" />
@@ -93,7 +71,8 @@ export default function LoadingReportPage() {
 
         {/* Visual Chart Placeholder Area Skeleton */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col">
-          <h3 className="font-semibold text-lg text-center mb-6">สถานะงานทั้งหมด</h3>
+          <Skeleton className="h-6 w-40 mx-auto mb-2" />
+          <Skeleton className="h-4 w-48 mx-auto mb-6" />
 
           <div className="flex-1 flex flex-col items-center justify-center -mt-4">
             {/* Fake Donut Chart Skeleton */}
@@ -108,20 +87,20 @@ export default function LoadingReportPage() {
             </div>
 
             <div className="w-full space-y-4 mt-8 px-2">
-              <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+              <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-muted/30 border border-border/50">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="font-medium text-green-700 dark:text-green-400">เสร็จสิ้น (Done)</span>
+                  <Skeleton className="w-3 h-3 rounded-full" />
+                  <Skeleton className="h-4 w-24" />
                 </div>
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-16" />
               </div>
 
-              <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
+              <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-muted/30 border border-border/50">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span className="font-medium text-orange-700 dark:text-orange-400">ยังไม่เสร็จ (Pending)</span>
+                  <Skeleton className="w-3 h-3 rounded-full" />
+                  <Skeleton className="h-4 w-28" />
                 </div>
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-16" />
               </div>
             </div>
           </div>
