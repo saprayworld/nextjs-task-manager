@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info, ExternalLink } from "lucide-react";
+import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info, ExternalLink, Sun, Moon, Globe, Check, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -14,7 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 
 import {
@@ -25,7 +29,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useTheme } from "next-themes";
+import { setUserLocale } from "@/actions/locale";
 
 export function Navbar() {
   const pathname = usePathname(); // ใช้เช็คว่าอยู่หน้าไหน
@@ -35,6 +41,19 @@ export function Navbar() {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false);
   const t = useTranslations("Navbar");
+
+  // Theme & Language (for inline mobile dropdown)
+  const { resolvedTheme, setTheme } = useTheme();
+  const locale = useLocale();
+  const [isPending, startTransition] = useTransition();
+  const isDarkMode = resolvedTheme === "dark";
+
+  const changeLanguage = (nextLocale: string) => {
+    startTransition(async () => {
+      await setUserLocale(nextLocale);
+      router.refresh();
+    });
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -132,12 +151,14 @@ export function Navbar() {
 
           <div className="w-px h-6 bg-border mx-1"></div>
 
-          {/* 3. ปุ่มสลับโหมดสี และ สลับภาษา */}
-          <ThemeToggle />
-          <LanguageSwitcher />
+          {/* 3. ปุ่มสลับโหมดสี และ สลับภาษา (แสดงเฉพาะ Desktop) */}
+          {/* <div className="hidden md:flex items-center gap-1">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div> */}
 
           {/* 4. เมนูโปรไฟล์ผู้ใช้และปุ่มออกจากระบบ */}
-          {session && (
+          {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer relative overflow-hidden">
@@ -156,19 +177,76 @@ export function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/profile">
-                    <UserIcon className="w-4 h-4 mr-2" />
-                    {t('userMenu.profile')}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/kanban/report">
-                    <ChartPie className="w-4 h-4 mr-2" />
-                    {t('userMenu.report')}
-                  </Link>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/profile">
+                      <UserIcon className="w-4 h-4 mr-2" />
+                      {t('userMenu.profile')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/kanban/report">
+                      <ChartPie className="w-4 h-4 mr-2" />
+                      {t('userMenu.report')}
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                {/* Appearance section — แสดงเฉพาะบนมือถือ */}
+                <div className="">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                    {t('userMenu.appearance')}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setTheme(isDarkMode ? "light" : "dark");
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {isDarkMode ? (
+                      <Moon className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Sun className="w-4 h-4 mr-2" />
+                    )}
+                    <span className="flex-1">{t('userMenu.darkMode')}</span>
+                    <div
+                      className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${isDarkMode ? 'bg-background' : 'bg-muted-foreground/30'
+                        }`}
+                    >
+                      <span
+                        className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform ${isDarkMode ? 'translate-x-[18px]' : 'translate-x-[3px]'
+                          }`}
+                      />
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer">
+                      <Globe className="w-4 h-4 mr-2" />
+                      {t('userMenu.language')}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem
+                        onClick={() => changeLanguage('th')}
+                        className={`cursor-pointer ${locale === 'th' ? 'bg-muted' : ''}`}
+                        disabled={isPending}
+                      >
+                        {locale === 'th' && <Check className="w-4 h-4 mr-2" />}
+                        <span className={locale !== 'th' ? 'ml-6' : ''}>ไทย (TH)</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => changeLanguage('en')}
+                        className={`cursor-pointer ${locale === 'en' ? 'bg-muted' : ''}`}
+                        disabled={isPending}
+                      >
+                        {locale === 'en' && <Check className="w-4 h-4 mr-2" />}
+                        <span className={locale !== 'en' ? 'ml-6' : ''}>English (EN)</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </div>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={(e) => {
@@ -192,7 +270,10 @@ export function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
+          ) : <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer relative overflow-hidden">
+            <UserIcon className="w-4 h-4" />
+          </Button>
+          }
         </div>
 
       </header>

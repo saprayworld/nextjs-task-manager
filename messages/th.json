@@ -16,7 +16,10 @@
       "report": "รายงาน",
       "logout": "ออกจากระบบ",
       "loggingOut": "กำลังออกจากระบบ...",
-      "about": "เกี่ยวกับ"
+      "about": "เกี่ยวกับ",
+      "appearance": "การแสดงผล",
+      "darkMode": "โหมดมืด",
+      "language": "ภาษา"
     }
   },
   "Login": {
@@ -308,5 +311,42 @@
     "save": "บันทึก",
     "createTask": "สร้างงาน",
     "create": "สร้าง"
+  },
+  "ReportDashboard": {
+    "title": "รายงานและสถิติ (Report)",
+    "description": "สรุปผลการทำงานและเวลาที่ใช้ (คำนวณจากข้อมูล totalWorkTime)",
+    "currentData": "ข้อมูล ณ ปัจจุบัน",
+    "cards": {
+      "totalTasks": "งานทั้งหมด",
+      "totalTasksDesc": "จำนวนงานในระบบทั้งหมด",
+      "completedTasks": "งานที่เสร็จแล้ว",
+      "pendingTasks": "งานที่กำลังทำ",
+      "pendingTasksDesc": "งานที่รอการดำเนินการ",
+      "totalWorkTime": "เวลาทำงานรวม",
+      "totalWorkTimeDesc": "รวมเฉพาะงานที่มีบันทึกเวลา"
+    },
+    "timeBreakdown": {
+      "title": "รายละเอียดเวลาทำงาน (รายชิ้นงาน)",
+      "description": "แสดงงานที่มีค่า totalWorkTime มากกว่า 0 เรียงตามเวลาที่ใช้",
+      "statusCompleted": "เสร็จสิ้น",
+      "statusInProgress": "กำลังดำเนินการ",
+      "statusLabel": "สถานะ",
+      "emptyState": "ไม่มีงานที่มีการบันทึกเวลา (totalWorkTime = 0)"
+    },
+    "chart": {
+      "title": "สถานะงานทั้งหมด",
+      "chartLabelCount": "จำนวนงาน",
+      "chartLabelCompleted": "เสร็จสิ้น",
+      "chartLabelPending": "ยังไม่เสร็จ",
+      "completedOf": "เสร็จสิ้น {completed} จาก {total} งาน",
+      "centerLabel": "สำเร็จ",
+      "taskUnit": "งาน",
+      "legendCompleted": "เสร็จสิ้น (Done)",
+      "legendPending": "ยังไม่เสร็จ (Pending)"
+    },
+    "time": {
+      "hours": "h",
+      "minutes": "m"
+    }
   }
 }

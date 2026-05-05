@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useTranslations } from "next-intl";
 
 type TaskData = {
   id: string;
@@ -31,6 +32,7 @@ interface ReportDashboardProps {
 }
 
 export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
+  const t = useTranslations("ReportDashboard");
   const totalTasks = dbTasks.length;
   // ถือว่า columnId === 'done' หรือ progress >= 100 คืองานที่เสร็จแล้ว
   const completedTasks = dbTasks.filter(t => t.columnId === 'done' || (t.progress && t.progress >= 100)).length;
@@ -61,14 +63,14 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
 
   const chartConfig = {
     count: {
-      label: "จำนวนงาน",
+      label: t('chart.chartLabelCount'),
     },
     completed: {
-      label: "เสร็จสิ้น",
+      label: t('chart.chartLabelCompleted'),
       color: "hsl(142, 71%, 45%)", // green-500
     },
     pending: {
-      label: "ยังไม่เสร็จ",
+      label: t('chart.chartLabelPending'),
       color: "hsl(24, 95%, 53%)",  // orange-500
     },
   } satisfies ChartConfig;
@@ -80,16 +82,16 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
 
   const formatWorkTime = (timeValue: number) => {
     // ปรับ Logic นี้ตามชนิดข้อมูลจริงที่เก็บใน DB (totalWorkTime) นิยมเก็บเป็น วินาที (Seconds) หรือ นาที (Minutes)
-    if (!timeValue) return "0h 0m";
+    if (!timeValue) return `0${t('time.hours')} 0${t('time.minutes')}`;
 
     // สมมติว่าเก็บเป็นนาที (ถ้า DB เป็นวินาที ให้แก้เป็น Math.floor(timeValue / 3600))
     const hours = Math.floor(timeValue / 60);
     const minutes = timeValue % 60; // ถ้าเป็นวินาทีแก้เป็น Math.floor((timeValue % 3600) / 60)
 
     if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}${t('time.hours')} ${minutes}${t('time.minutes')}`;
     }
-    return `${minutes}m`;
+    return `${minutes}${t('time.minutes')}`;
   };
 
   return (
@@ -97,14 +99,14 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">รายงานและสถิติ (Report)</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            สรุปผลการทำงานและเวลาที่ใช้ (คำนวณจากข้อมูล totalWorkTime)
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
           <CalendarDays className="w-4 h-4" />
-          <span>ข้อมูล ณ ปัจจุบัน</span>
+          <span>{t('currentData')}</span>
         </div>
       </div>
 
@@ -113,21 +115,21 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
         {/* Total Tasks */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">งานทั้งหมด</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('cards.totalTasks')}</p>
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
               <ListTodo className="w-5 h-5" />
             </div>
           </div>
           <div>
             <h2 className="text-3xl font-bold">{reportData.totalTasks}</h2>
-            <p className="text-xs text-muted-foreground mt-1">จำนวนงานในระบบทั้งหมด</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('cards.totalTasksDesc')}</p>
           </div>
         </div>
 
         {/* Completed Tasks */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">งานที่เสร็จแล้ว</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('cards.completedTasks')}</p>
             <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
               <CheckCircle2 className="w-5 h-5" />
             </div>
@@ -149,28 +151,28 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
         {/* Pending Tasks */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">งานที่กำลังทำ</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('cards.pendingTasks')}</p>
             <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
               <Clock className="w-5 h-5" />
             </div>
           </div>
           <div>
             <h2 className="text-3xl font-bold">{reportData.pendingTasks}</h2>
-            <p className="text-xs text-muted-foreground mt-1">งานที่รอการดำเนินการ</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('cards.pendingTasksDesc')}</p>
           </div>
         </div>
 
         {/* Total Time */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">เวลาทำงานรวม</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('cards.totalWorkTime')}</p>
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
               <Timer className="w-5 h-5" />
             </div>
           </div>
           <div>
             <h2 className="text-3xl font-bold">{formatWorkTime(reportData.totalWorkTime)}</h2>
-            <p className="text-xs text-muted-foreground mt-1">รวมเฉพาะงานที่มีบันทึกเวลา</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('cards.totalWorkTimeDesc')}</p>
           </div>
         </div>
       </div>
@@ -184,10 +186,10 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
             <div>
               <h3 className="font-semibold text-lg flex items-center gap-2">
                 <LayoutDashboard className="w-5 h-5 text-purple-500" />
-                รายละเอียดเวลาทำงาน (รายชิ้นงาน)
+                {t('timeBreakdown.title')}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                แสดงงานที่มีค่า totalWorkTime มากกว่า 0 เรียงตามเวลาที่ใช้
+                {t('timeBreakdown.description')}
               </p>
             </div>
           </div>
@@ -206,7 +208,7 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
                   <div>
                     <p className="font-medium text-sm md:text-base group-hover:text-primary transition-colors">{task.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      สถานะ: {task.isCompleted ? 'เสร็จสิ้น' : 'กำลังดำเนินการ'}
+                      {t('timeBreakdown.statusLabel')}: {task.isCompleted ? t('timeBreakdown.statusCompleted') : t('timeBreakdown.statusInProgress')}
                     </p>
                   </div>
                 </div>
@@ -222,7 +224,7 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
             {reportData.taskTimeBreakdown.length === 0 && (
               <div className="p-8 text-center text-muted-foreground flex flex-col items-center justify-center">
                 <Timer className="w-12 h-12 mb-3 text-muted-foreground/30" />
-                <p>ไม่มีงานที่มีการบันทึกเวลา (totalWorkTime = 0)</p>
+                <p>{t('timeBreakdown.emptyState')}</p>
               </div>
             )}
           </div>
@@ -230,9 +232,9 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
 
         {/* Task Status Donut Chart */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col">
-          <h3 className="font-semibold text-lg text-center mb-2">สถานะงานทั้งหมด</h3>
+          <h3 className="font-semibold text-lg text-center mb-2">{t('chart.title')}</h3>
           <p className="text-sm text-muted-foreground text-center mb-4">
-            เสร็จสิ้น {reportData.completedTasks} จาก {reportData.totalTasks} งาน
+            {t('chart.completedOf', { completed: reportData.completedTasks, total: reportData.totalTasks })}
           </p>
 
           <div className="flex-1 flex flex-col items-center justify-center">
@@ -258,7 +260,7 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
                             {chartConfig[name as keyof typeof chartConfig]?.label}
                           </span>
                           <span className="font-mono font-bold tabular-nums text-foreground">
-                            {value} งาน
+                            {value} {t('chart.taskUnit')}
                           </span>
                         </div>
                       )}
@@ -300,7 +302,7 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
                               y={(viewBox.cy || 0) + 24}
                               className="fill-muted-foreground text-sm"
                             >
-                              สำเร็จ
+                              {t('chart.centerLabel')}
                             </tspan>
                           </text>
                         );
@@ -315,10 +317,10 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
               <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-green-500/10 border border-green-500/20">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="font-medium text-green-700 dark:text-green-400">เสร็จสิ้น (Done)</span>
+                  <span className="font-medium text-green-700 dark:text-green-400">{t('chart.legendCompleted')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-green-700 dark:text-green-400 font-medium">{reportData.completedTasks} งาน</span>
+                  <span className="text-green-700 dark:text-green-400 font-medium">{reportData.completedTasks} {t('chart.taskUnit')}</span>
                   <span className="font-bold text-green-700 dark:text-green-400">({calculateCompletionRate()}%)</span>
                 </div>
               </div>
@@ -326,10 +328,10 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
               <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-orange-500/10 border border-orange-500/20">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span className="font-medium text-orange-700 dark:text-orange-400">ยังไม่เสร็จ (Pending)</span>
+                  <span className="font-medium text-orange-700 dark:text-orange-400">{t('chart.legendPending')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-orange-700 dark:text-orange-400 font-medium">{reportData.pendingTasks} งาน</span>
+                  <span className="text-orange-700 dark:text-orange-400 font-medium">{reportData.pendingTasks} {t('chart.taskUnit')}</span>
                   <span className="font-bold text-orange-700 dark:text-orange-400">({100 - calculateCompletionRate()}%)</span>
                 </div>
               </div>
