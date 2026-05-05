@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from "react";
 import {
   CheckCircle2,
   Clock,
@@ -8,6 +9,13 @@ import {
   LayoutDashboard,
   CalendarDays
 } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 type TaskData = {
   id: string;
@@ -50,6 +58,25 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
     if (reportData.totalTasks === 0) return 0;
     return Math.round((reportData.completedTasks / reportData.totalTasks) * 100);
   };
+
+  const chartConfig = {
+    count: {
+      label: "จำนวนงาน",
+    },
+    completed: {
+      label: "เสร็จสิ้น",
+      color: "hsl(142, 71%, 45%)", // green-500
+    },
+    pending: {
+      label: "ยังไม่เสร็จ",
+      color: "hsl(24, 95%, 53%)",  // orange-500
+    },
+  } satisfies ChartConfig;
+
+  const chartData = useMemo(() => [
+    { status: "completed", count: reportData.completedTasks, fill: "var(--color-completed)" },
+    { status: "pending", count: reportData.pendingTasks, fill: "var(--color-pending)" },
+  ], [reportData.completedTasks, reportData.pendingTasks]);
 
   const formatWorkTime = (timeValue: number) => {
     // ปรับ Logic นี้ตามชนิดข้อมูลจริงที่เก็บใน DB (totalWorkTime) นิยมเก็บเป็น วินาที (Seconds) หรือ นาที (Minutes)
@@ -201,37 +228,110 @@ export default function ReportDashboard({ dbTasks }: ReportDashboardProps) {
           </div>
         </div>
 
-        {/* Visual Chart Placeholder Area */}
+        {/* Task Status Donut Chart */}
         <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 flex flex-col">
-          <h3 className="font-semibold text-lg text-center mb-6">สถานะงานทั้งหมด</h3>
+          <h3 className="font-semibold text-lg text-center mb-2">สถานะงานทั้งหมด</h3>
+          <p className="text-sm text-muted-foreground text-center mb-4">
+            เสร็จสิ้น {reportData.completedTasks} จาก {reportData.totalTasks} งาน
+          </p>
 
-          <div className="flex-1 flex flex-col items-center justify-center -mt-4">
-            {/* Fake Donut Chart styling */}
-            <div className="relative w-48 h-48 rounded-full border-[20px] border-muted flex items-center justify-center shadow-inner">
-              <div className="absolute inset-0 rounded-full border-[20px] border-purple-500 border-t-transparent border-l-transparent -rotate-45 transition-transform duration-1000 hover:scale-105 cursor-default"></div>
-              <div className="absolute inset-0 rounded-full border-[20px] border-green-500 border-b-transparent border-r-transparent rotate-12 transition-transform duration-1000 hover:scale-105 cursor-default"></div>
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-[250px] w-full"
+            >
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      hideLabel
+                      formatter={(value, name) => (
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                            style={{
+                              backgroundColor: `var(--color-${name})`,
+                            }}
+                          />
+                          <span className="text-muted-foreground">
+                            {chartConfig[name as keyof typeof chartConfig]?.label}
+                          </span>
+                          <span className="font-mono font-bold tabular-nums text-foreground">
+                            {value} งาน
+                          </span>
+                        </div>
+                      )}
+                    />
+                  }
+                />
+                <Pie
+                  data={chartData}
+                  dataKey="count"
+                  nameKey="status"
+                  innerRadius={60}
+                  outerRadius={90}
+                  strokeWidth={3}
+                  stroke="hsl(var(--background))"
+                  paddingAngle={2}
+                  animationBegin={0}
+                  animationDuration={800}
+                  animationEasing="ease-out"
+                >
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-3xl font-bold"
+                            >
+                              {calculateCompletionRate()}%
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground text-sm"
+                            >
+                              สำเร็จ
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
 
-              <div className="text-center z-10">
-                <span className="text-3xl font-bold">{reportData.completedTasks}</span>
-                <span className="text-xs block text-muted-foreground mt-1 font-medium">งานเสร็จแล้ว</span>
-              </div>
-            </div>
-
-            <div className="w-full space-y-4 mt-8 px-2">
-              <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+            <div className="w-full space-y-3 mt-4 px-2">
+              <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-green-500/10 border border-green-500/20">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   <span className="font-medium text-green-700 dark:text-green-400">เสร็จสิ้น (Done)</span>
                 </div>
-                <span className="font-bold text-green-700 dark:text-green-400">{calculateCompletionRate()}%</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-700 dark:text-green-400 font-medium">{reportData.completedTasks} งาน</span>
+                  <span className="font-bold text-green-700 dark:text-green-400">({calculateCompletionRate()}%)</span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
+              <div className="flex items-center justify-between text-sm p-2.5 rounded-lg bg-orange-500/10 border border-orange-500/20">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   <span className="font-medium text-orange-700 dark:text-orange-400">ยังไม่เสร็จ (Pending)</span>
                 </div>
-                <span className="font-bold text-orange-700 dark:text-orange-400">{100 - calculateCompletionRate()}%</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-orange-700 dark:text-orange-400 font-medium">{reportData.pendingTasks} งาน</span>
+                  <span className="font-bold text-orange-700 dark:text-orange-400">({100 - calculateCompletionRate()}%)</span>
+                </div>
               </div>
             </div>
           </div>
