@@ -484,5 +484,76 @@
       "revokeSuccess": "ลบเซสชันออกจากระบบเรียบร้อยแล้ว",
       "revokeError": "เกิดข้อผิดพลาดในการนำออกเซสชัน"
     }
+  },
+  "RecurringTemplateDialog": {
+    "titleEdit": "แก้ไขงานประจำ",
+    "titleCreate": "สร้างงานประจำใหม่",
+    "form": {
+      "taskName": "ชื่องาน",
+      "taskNameRequired": "*",
+      "taskNamePlaceholder": "เช่น ส่งรายงานประจำเดือน",
+      "description": "คำอธิบาย",
+      "descriptionPlaceholder": "รายละเอียดเพิ่มเติม...",
+      "column": "สร้างลงคอลัมน์",
+      "columnRequired": "*",
+      "category": "หมวดหมู่"
+    },
+    "frequency": {
+      "title": "ตั้งค่าความถี่",
+      "frequencyLabel": "ความถี่",
+      "everyLabel": "ทุกๆ",
+      "daily": "รายวัน",
+      "weekly": "รายสัปดาห์",
+      "monthly": "รายเดือน",
+      "yearly": "รายปี",
+      "unitDaily": "วัน",
+      "unitWeekly": "สัปดาห์",
+      "unitMonthly": "เดือน",
+      "unitYearly": "ปี",
+      "dayOfMonth": "วันที่ในเดือน",
+      "dayOfMonthHint": "(ถ้าเดือนไม่มีวันที่นี้ จะใช้วันสุดท้ายของเดือนแทน)",
+      "advanceDays": "สร้างล่วงหน้า (วัน)",
+      "advanceDaysHint": "วันก่อนกำหนดส่ง (0 = สร้างในวัน due)"
+    },
+    "summary": {
+      "everyInterval": "ทุกๆ {interval} ",
+      "every": "ทุก",
+      "daily": "วัน",
+      "weekly": "สัปดาห์",
+      "monthly": "เดือน",
+      "monthlyDay": " วันที่ {day}",
+      "yearly": "ปี",
+      "advanceDays": " (สร้างล่วงหน้า {days} วัน)"
+    },
+    "period": {
+      "title": "ช่วงเวลา",
+      "startDate": "เริ่มตั้งแต่",
+      "startDateRequired": "*",
+      "endDate": "สิ้นสุด (ไม่บังคับ)",
+      "maxOccurrences": "จำนวนครั้งสูงสุด (ไม่บังคับ)",
+      "maxOccurrencesPlaceholder": "ไม่จำกัด"
+    },
+    "subtasks": {
+      "title": "รายการย่อยที่จะสร้างอัตโนมัติ",
+      "placeholder": "เพิ่มรายการย่อย...",
+      "add": "เพิ่ม"
+    },
+    "actions": {
+      "deleting": "กำลังลบ...",
+      "deleteTemplate": "ลบ Template",
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "creating": "กำลังสร้าง...",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "save": "บันทึก",
+      "createRecurring": "สร้างงานประจำ",
+      "create": "สร้าง"
+    },
+    "deleteDialog": {
+      "title": "ลบงานประจำนี้?",
+      "description": "Template นี้จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
+      "cancel": "ยกเลิก",
+      "confirm": "ลบ Template"
+    }
   }
 }

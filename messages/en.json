@@ -484,5 +484,76 @@
       "revokeSuccess": "Session removed successfully.",
       "revokeError": "An error occurred while removing the session."
     }
+  },
+  "RecurringTemplateDialog": {
+    "titleEdit": "Edit Recurring Task",
+    "titleCreate": "Create New Recurring Task",
+    "form": {
+      "taskName": "Task Name",
+      "taskNameRequired": "*",
+      "taskNamePlaceholder": "e.g. Submit monthly report",
+      "description": "Description",
+      "descriptionPlaceholder": "Additional details...",
+      "column": "Create in Column",
+      "columnRequired": "*",
+      "category": "Category"
+    },
+    "frequency": {
+      "title": "Frequency Settings",
+      "frequencyLabel": "Frequency",
+      "everyLabel": "Every",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "unitDaily": "day(s)",
+      "unitWeekly": "week(s)",
+      "unitMonthly": "month(s)",
+      "unitYearly": "year(s)",
+      "dayOfMonth": "Day of Month",
+      "dayOfMonthHint": "(if the month doesn't have this day, the last day of the month will be used)",
+      "advanceDays": "Create in Advance (days)",
+      "advanceDaysHint": "days before due date (0 = create on due day)"
+    },
+    "summary": {
+      "everyInterval": "Every {interval} ",
+      "every": "Every",
+      "daily": "day",
+      "weekly": "week",
+      "monthly": "month",
+      "monthlyDay": " on day {day}",
+      "yearly": "year",
+      "advanceDays": " (create {days} days in advance)"
+    },
+    "period": {
+      "title": "Time Period",
+      "startDate": "Start From",
+      "startDateRequired": "*",
+      "endDate": "End Date (optional)",
+      "maxOccurrences": "Maximum Occurrences (optional)",
+      "maxOccurrencesPlaceholder": "Unlimited"
+    },
+    "subtasks": {
+      "title": "Auto-created Subtasks",
+      "placeholder": "Add subtask...",
+      "add": "Add"
+    },
+    "actions": {
+      "deleting": "Deleting...",
+      "deleteTemplate": "Delete Template",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "creating": "Creating...",
+      "saveChanges": "Save Changes",
+      "save": "Save",
+      "createRecurring": "Create Recurring Task",
+      "create": "Create"
+    },
+    "deleteDialog": {
+      "title": "Delete this recurring task?",
+      "description": "This template will be permanently deleted, but tasks already created will not be affected.",
+      "cancel": "Cancel",
+      "confirm": "Delete Template"
+    }
   }
 }
