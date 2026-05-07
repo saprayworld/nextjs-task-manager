@@ -5,9 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Loader2, KeyRound, ShieldAlert, CheckCircle2, Mail, AlertTriangle, Send } from "lucide-react";
+import { Loader2, KeyRound, ShieldAlert, CheckCircle2, Mail, AlertTriangle, Send, Shield, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
@@ -103,49 +101,109 @@ export default function SecurityPage() {
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
 
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">รหัสผ่านและความปลอดภัย</h1>
-          <p className="text-muted-foreground text-sm max-w-xl">
-            จัดการรหัสผ่านและตรวจสอบความปลอดภัยของบัญชีของคุณเพื่อป้องกันการเข้าถึงที่ไม่ได้รับอนุญาต
+      {/* Header Section — Report Dashboard style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">รหัสผ่านและความปลอดภัย</h1>
+          <p className="text-muted-foreground mt-1">
+            จัดการรหัสผ่านและตรวจสอบความปลอดภัยของบัญชีเพื่อป้องกันการเข้าถึงที่ไม่ได้รับอนุญาต
           </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
+          <Shield className="w-4 h-4" />
+          <span>ความปลอดภัยของบัญชี</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 relative items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 relative items-start">
         {/* Left Side: Navigation */}
         <ProfileSidebar />
 
-        {/* Right Side: Form Area */}
+        {/* Right Side: Content */}
         <div className="md:col-span-8 lg:col-span-9 space-y-6">
 
-          {/* Email Verification Card */}
-          <Card className="shadow-sm border-border/60 bg-card overflow-hidden transition-all duration-300">
-            <div className="h-1 w-full bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400"></div>
-            <CardHeader className="pb-4 pt-6">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Email Status */}
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-blue-500" />
-                  <h2 className="text-xl font-semibold tracking-tight">สถานะการยืนยันอีเมล</h2>
+                <p className="text-sm font-medium text-muted-foreground">สถานะอีเมล</p>
+                <div className={`p-2 rounded-lg ${session?.user?.emailVerified
+                  ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                  : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
+                  }`}>
+                  {session?.user?.emailVerified ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
                 </div>
-                {session?.user?.emailVerified ? (
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
-                    <CheckCircle2 className="w-4 h-4" /> ยืนยันแล้ว
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
-                    <AlertTriangle className="w-4 h-4" /> ยังไม่ยืนยัน
-                  </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold">
+                  {session?.user?.emailVerified ? "ยืนยันแล้ว" : "ยังไม่ยืนยัน"}
+                </p>
+                {session?.user?.emailVerified && (
+                  <span className="text-sm text-emerald-500 font-medium">✓</span>
                 )}
               </div>
-              <CardDescription className="text-sm mt-1">
-                อีเมลของคุณคือ <span className="font-semibold text-foreground/80">{session?.user?.email}</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2 pb-6">
+            </div>
+
+            {/* Auth Provider */}
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">ประเภทการเข้าสู่ระบบ</p>
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                  <Lock className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-lg font-bold">Email & OTP</p>
+            </div>
+
+            {/* Security Level */}
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">ระดับความปลอดภัย</p>
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+                  <Shield className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-lg font-bold">
+                  {session?.user?.emailVerified ? "ดี" : "ปานกลาง"}
+                </p>
+                <div className="w-full bg-secondary rounded-full h-1.5 mt-3 overflow-hidden">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-1000 ease-in-out ${session?.user?.emailVerified ? "bg-emerald-500 w-4/5" : "bg-amber-500 w-2/5"
+                      }`}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Email Verification Card */}
+          <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
+              <div>
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-blue-500" />
+                  สถานะการยืนยันอีเมล
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  อีเมลของคุณคือ <span className="font-semibold text-foreground/80">{session?.user?.email}</span>
+                </p>
+              </div>
+              {session?.user?.emailVerified ? (
+                <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                  <CheckCircle2 className="w-4 h-4" /> ยืนยันแล้ว
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                  <AlertTriangle className="w-4 h-4" /> ยังไม่ยืนยัน
+                </div>
+              )}
+            </div>
+
+            <div className="p-6">
               {!session?.user?.emailVerified ? (
-                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
                     การยืนยันอีเมลช่วยเพิ่มความปลอดภัยให้บัญชีของคุณ และทำให้คุณสามารถกู้คืนรหัสผ่านได้ในกรณีที่ลืม
                   </p>
@@ -163,37 +221,37 @@ export default function SecurityPage() {
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground border border-border/40 rounded-xl p-4 bg-muted/20">
-                  บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้
-                </p>
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้
+                  </p>
+                </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Change Password Card */}
-          {
-            enablePasswordChange &&
-            <Card className="shadow-sm border-border/60 bg-card overflow-hidden transition-all duration-300">
-              {/* Top decorative gradient line */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-orange-400 via-rose-400 to-red-500"></div>
+          {enablePasswordChange && (
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
+              {/* Section Header */}
+              <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
+                <div>
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <KeyRound className="w-5 h-5 text-rose-500" />
+                    เปลี่ยนรหัสผ่าน
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    กรุณาตรวจสอบให้แน่ใจว่ารหัสผ่านใหม่มีความยาวอย่างน้อย 8 ตัวอักษรและคาดเดาได้ยาก
+                  </p>
+                </div>
+              </div>
 
               <form onSubmit={handlePasswordChange}>
-                <CardHeader className="pb-6 pt-8">
-                  <div className="flex items-center gap-2">
-                    <KeyRound className="w-5 h-5 text-rose-500" />
-                    <h2 className="text-2xl font-semibold tracking-tight">เปลี่ยนรหัสผ่าน</h2>
-                  </div>
-                  <CardDescription className="text-sm mt-1">
-                    กรุณาตรวจสอบให้แน่ใจว่ารหัสผ่านใหม่มีความยาวอย่างน้อย 8 ตัวอักษรและคาดเดาได้ยาก
-                  </CardDescription>
-                </CardHeader>
-
-                <Separator className="bg-border/40" />
-
-                <CardContent className="space-y-8 pt-8">
+                <div className="p-6 space-y-8">
 
                   {/* Information Box */}
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-muted/40 border border-muted/80">
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                     <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                     <div className="space-y-1">
                       <h3 className="text-sm font-semibold text-foreground">คำแนะนำความปลอดภัย</h3>
@@ -218,7 +276,7 @@ export default function SecurityPage() {
                       />
                     </div>
 
-                    <Separator className="my-4 border-dashed bg-transparent border-t" />
+                    <div className="border-t border-dashed border-border/50"></div>
 
                     {/* New Password */}
                     <div className="space-y-2.5">
@@ -245,8 +303,8 @@ export default function SecurityPage() {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           className={`transition-all duration-200 bg-background h-11 ${confirmPassword && newPassword !== confirmPassword
-                              ? "border-destructive focus-visible:ring-destructive/50"
-                              : "focus-visible:ring-rose-500/50"
+                            ? "border-destructive focus-visible:ring-destructive/50"
+                            : "focus-visible:ring-rose-500/50"
                             }`}
                           placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
                           required
@@ -263,23 +321,23 @@ export default function SecurityPage() {
                       )}
                     </div>
                   </div>
+                </div>
 
-                </CardContent>
-
-                <div className="bg-muted/30 px-6 py-5 border-t border-border/40 flex items-center justify-end gap-3 mt-4">
+                {/* Footer Actions */}
+                <div className="px-6 py-4 border-t border-border/50 bg-muted/10 flex items-center justify-end gap-3">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => router.back()}
                     disabled={isSaving}
-                    className="px-6 border-border/60 hover:bg-muted"
+                    className="px-6"
                   >
                     ยกเลิก
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSaving || (confirmPassword !== "" && newPassword !== confirmPassword)}
-                    className="px-8 shadow-md hover:shadow-lg transition-all active:scale-[0.98] bg-rose-600 hover:bg-rose-700 text-white"
+                    className="px-8 shadow-sm hover:shadow-md transition-all active:scale-[0.98] bg-rose-600 hover:bg-rose-700 text-white"
                   >
                     {isSaving ? (
                       <>
@@ -295,8 +353,8 @@ export default function SecurityPage() {
                   </Button>
                 </div>
               </form>
-            </Card>
-          }
+            </div>
+          )}
         </div>
       </div>
     </div>
