@@ -9,10 +9,12 @@ import { Loader2, KeyRound, ShieldAlert, CheckCircle2, Mail, AlertTriangle, Send
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { useTranslations } from "next-intl";
 
 export default function SecurityPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const t = useTranslations("SecurityPage");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -33,9 +35,9 @@ export default function SecurityPage() {
       } else {
         await new Promise(r => setTimeout(r, 1000));
       }
-      toast.success("ส่งลิงก์ยืนยันสำเร็จ! กรุณาตรวจสอบกล่องจดหมายของคุณ");
+      toast.success(t('toast.verificationSent'));
     } catch (err: any) {
-      toast.error(err.message || "ไม่สามารถส่งอีเมลยืนยันได้");
+      toast.error(err.message || t('toast.verificationError'));
     } finally {
       setIsSendingEmail(false);
     }
@@ -45,17 +47,17 @@ export default function SecurityPage() {
     e.preventDefault();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+      toast.error(t('toast.fillAll'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน");
+      toast.error(t('toast.passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 8) {
-      toast.error("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร");
+      toast.error(t('toast.passwordTooShort'));
       return;
     }
 
@@ -70,18 +72,18 @@ export default function SecurityPage() {
         });
 
         if (error) {
-          throw new Error(error.message || "รหัสผ่านปัจจุบันไม่ถูกต้อง หรือเกิดข้อผิดพลาด");
+          throw new Error(error.message || t('toast.currentPasswordWrong'));
         }
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      toast.success("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!");
+      toast.success(t('toast.passwordChangeSuccess'));
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error: any) {
-      toast.error(error.message || "เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน");
+      toast.error(error.message || t('toast.passwordChangeError'));
     } finally {
       setIsSaving(false);
     }
@@ -92,7 +94,7 @@ export default function SecurityPage() {
       <div className="flex h-[60vh] w-full items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="w-10 h-10 animate-spin text-primary/60" />
-          <p className="text-muted-foreground animate-pulse text-sm">กำลังตรวจสอบข้อมูล...</p>
+          <p className="text-muted-foreground animate-pulse text-sm">{t('loading')}</p>
         </div>
       </div>
     );
@@ -104,14 +106,14 @@ export default function SecurityPage() {
       {/* Header Section — Report Dashboard style */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">รหัสผ่านและความปลอดภัย</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            จัดการรหัสผ่านและตรวจสอบความปลอดภัยของบัญชีเพื่อป้องกันการเข้าถึงที่ไม่ได้รับอนุญาต
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
           <Shield className="w-4 h-4" />
-          <span>ความปลอดภัยของบัญชี</span>
+          <span>{t('headerBadge')}</span>
         </div>
       </div>
 
@@ -127,7 +129,7 @@ export default function SecurityPage() {
             {/* Email Status */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">สถานะอีเมล</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.emailStatus')}</p>
                 <div className={`p-2 rounded-lg ${session?.user?.emailVerified
                   ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                   : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
@@ -137,7 +139,7 @@ export default function SecurityPage() {
               </div>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold">
-                  {session?.user?.emailVerified ? "ยืนยันแล้ว" : "ยังไม่ยืนยัน"}
+                  {session?.user?.emailVerified ? t('cards.verified') : t('cards.notVerified')}
                 </p>
                 {session?.user?.emailVerified && (
                   <span className="text-sm text-emerald-500 font-medium">✓</span>
@@ -148,7 +150,7 @@ export default function SecurityPage() {
             {/* Auth Provider */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">ประเภทการเข้าสู่ระบบ</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.authProvider')}</p>
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                   <Lock className="w-4 h-4" />
                 </div>
@@ -159,14 +161,14 @@ export default function SecurityPage() {
             {/* Security Level */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">ระดับความปลอดภัย</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.securityLevel')}</p>
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
                   <Shield className="w-4 h-4" />
                 </div>
               </div>
               <div>
                 <p className="text-lg font-bold">
-                  {session?.user?.emailVerified ? "ดี" : "ปานกลาง"}
+                  {session?.user?.emailVerified ? t('cards.securityGood') : t('cards.securityModerate')}
                 </p>
                 <div className="w-full bg-secondary rounded-full h-1.5 mt-3 overflow-hidden">
                   <div
@@ -184,19 +186,19 @@ export default function SecurityPage() {
               <div>
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <Mail className="w-5 h-5 text-blue-500" />
-                  สถานะการยืนยันอีเมล
+                  {t('emailVerification.title')}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  อีเมลของคุณคือ <span className="font-semibold text-foreground/80">{session?.user?.email}</span>
+                  {t('emailVerification.emailIs')}<span className="font-semibold text-foreground/80">{session?.user?.email}</span>
                 </p>
               </div>
               {session?.user?.emailVerified ? (
                 <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
-                  <CheckCircle2 className="w-4 h-4" /> ยืนยันแล้ว
+                  <CheckCircle2 className="w-4 h-4" /> {t('emailVerification.badgeVerified')}
                 </div>
               ) : (
                 <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
-                  <AlertTriangle className="w-4 h-4" /> ยังไม่ยืนยัน
+                  <AlertTriangle className="w-4 h-4" /> {t('emailVerification.badgeNotVerified')}
                 </div>
               )}
             </div>
@@ -205,7 +207,7 @@ export default function SecurityPage() {
               {!session?.user?.emailVerified ? (
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-                    การยืนยันอีเมลช่วยเพิ่มความปลอดภัยให้บัญชีของคุณ และทำให้คุณสามารถกู้คืนรหัสผ่านได้ในกรณีที่ลืม
+                    {t('emailVerification.notVerifiedDesc')}
                   </p>
                   <Button
                     onClick={handleSendVerification}
@@ -217,14 +219,14 @@ export default function SecurityPage() {
                     ) : (
                       <Send className="w-4 h-4 mr-2" />
                     )}
-                    {isSendingEmail ? "กำลังส่งลิงก์..." : "ส่งลิงก์ยืนยันอีเมล"}
+                    {isSendingEmail ? t('emailVerification.sendingLink') : t('emailVerification.sendVerification')}
                   </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                   <p className="text-sm text-muted-foreground">
-                    บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้
+                    {t('emailVerification.verifiedDesc')}
                   </p>
                 </div>
               )}
@@ -239,10 +241,10 @@ export default function SecurityPage() {
                 <div>
                   <h3 className="font-semibold text-lg flex items-center gap-2">
                     <KeyRound className="w-5 h-5 text-rose-500" />
-                    เปลี่ยนรหัสผ่าน
+                    {t('changePassword.title')}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    กรุณาตรวจสอบให้แน่ใจว่ารหัสผ่านใหม่มีความยาวอย่างน้อย 8 ตัวอักษรและคาดเดาได้ยาก
+                    {t('changePassword.description')}
                   </p>
                 </div>
               </div>
@@ -254,9 +256,9 @@ export default function SecurityPage() {
                   <div className="flex items-start gap-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                     <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                     <div className="space-y-1">
-                      <h3 className="text-sm font-semibold text-foreground">คำแนะนำความปลอดภัย</h3>
+                      <h3 className="text-sm font-semibold text-foreground">{t('changePassword.securityAdviceTitle')}</h3>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        การเปลี่ยนรหัสผ่านอาจทำให้ระบบออกจากระบบ (Sign Out) ในอุปกรณ์อื่นๆ ทั้งหมดที่คุณเคยล็อคอินไว้ เพื่อความปลอดภัยของบัญชี
+                        {t('changePassword.securityAdviceDesc')}
                       </p>
                     </div>
                   </div>
@@ -264,14 +266,14 @@ export default function SecurityPage() {
                   <div className="space-y-6 max-w-xl">
                     {/* Current Password */}
                     <div className="space-y-2.5">
-                      <Label htmlFor="currentPassword" className="text-sm font-semibold">รหัสผ่านปัจจุบัน</Label>
+                      <Label htmlFor="currentPassword" className="text-sm font-semibold">{t('changePassword.currentPassword')}</Label>
                       <Input
                         id="currentPassword"
                         type="password"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         className="transition-all duration-200 focus-visible:ring-rose-500/50 bg-background h-11"
-                        placeholder="กรอกรหัสผ่านปัจจุบันของคุณ"
+                        placeholder={t('changePassword.currentPasswordPlaceholder')}
                         required
                       />
                     </div>
@@ -280,14 +282,14 @@ export default function SecurityPage() {
 
                     {/* New Password */}
                     <div className="space-y-2.5">
-                      <Label htmlFor="newPassword" className="text-sm font-semibold">รหัสผ่านใหม่</Label>
+                      <Label htmlFor="newPassword" className="text-sm font-semibold">{t('changePassword.newPassword')}</Label>
                       <Input
                         id="newPassword"
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         className="transition-all duration-200 focus-visible:ring-rose-500/50 bg-background h-11"
-                        placeholder="กรอกรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)"
+                        placeholder={t('changePassword.newPasswordPlaceholder')}
                         required
                         minLength={8}
                       />
@@ -295,7 +297,7 @@ export default function SecurityPage() {
 
                     {/* Confirm New Password */}
                     <div className="space-y-2.5">
-                      <Label htmlFor="confirmPassword" className="text-sm font-semibold">ยืนยันรหัสผ่านใหม่</Label>
+                      <Label htmlFor="confirmPassword" className="text-sm font-semibold">{t('changePassword.confirmPassword')}</Label>
                       <div className="relative">
                         <Input
                           id="confirmPassword"
@@ -306,7 +308,7 @@ export default function SecurityPage() {
                             ? "border-destructive focus-visible:ring-destructive/50"
                             : "focus-visible:ring-rose-500/50"
                             }`}
-                          placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
+                          placeholder={t('changePassword.confirmPasswordPlaceholder')}
                           required
                           minLength={8}
                         />
@@ -316,7 +318,7 @@ export default function SecurityPage() {
                       </div>
                       {confirmPassword && newPassword !== confirmPassword && (
                         <p className="text-xs text-destructive mt-1.5 font-medium">
-                          รหัสผ่านและข้อมูลการยืนยันไม่ตรงกัน
+                          {t('changePassword.passwordMismatch')}
                         </p>
                       )}
                     </div>
@@ -332,7 +334,7 @@ export default function SecurityPage() {
                     disabled={isSaving}
                     className="px-6"
                   >
-                    ยกเลิก
+                    {t('actions.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -342,12 +344,12 @@ export default function SecurityPage() {
                     {isSaving ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        กำลังบันทึก...
+                        {t('actions.saving')}
                       </>
                     ) : (
                       <>
                         <KeyRound className="w-4 h-4 mr-2" />
-                        อัปเดตรหัสผ่าน
+                        {t('actions.updatePassword')}
                       </>
                     )}
                   </Button>

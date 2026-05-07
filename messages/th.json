@@ -3,7 +3,7 @@
     "title": "TaskFlow - บอร์ดที่ทันสมัย"
   },
   "Navbar": {
-    "title": "Project System",
+    "title": "TaskFlow System",
     "links": {
       "board": "บอร์ด",
       "list": "รายการ",
@@ -347,6 +347,213 @@
     "time": {
       "hours": "h",
       "minutes": "m"
+    }
+  },
+  "ProfileSidebar": {
+    "menuTitle": "เมนูตั้งค่า",
+    "nav": {
+      "profile": "โปรไฟล์ทั่วไป",
+      "security": "รหัสผ่านและความปลอดภัย",
+      "sessions": "อุปกรณ์และเซสชัน"
+    },
+    "emailVerified": "ยืนยันอีเมลแล้ว",
+    "emailVerifiedDesc": "บัญชีของคุณมีความปลอดภัยและได้รับการปกป้องอย่างสมบูรณ์",
+    "emailNotVerified": "ยังไม่ยืนยันอีเมล",
+    "emailNotVerifiedDesc": "โปรดยืนยันที่อยู่อีเมลของคุณเพื่อเพิ่มความปลอดภัย ",
+    "clickToVerify": "คลิกเพื่อยืนยัน"
+  },
+  "ProfilePage": {
+    "title": "การตั้งค่าบัญชี",
+    "description": "จัดการข้อมูลส่วนตัว รูปโปรไฟล์ และการตั้งค่าที่เกี่ยวข้องกับบัญชีของคุณ",
+    "loading": "กำลังโหลดข้อมูลโปรไฟล์...",
+    "cards": {
+      "displayName": "ชื่อแสดงผล",
+      "email": "อีเมล",
+      "memberSince": "สมาชิกตั้งแต่"
+    },
+    "form": {
+      "title": "แก้ไขข้อมูลส่วนตัว",
+      "description": "อัปเดตข้อมูลส่วนตัวของคุณเพื่อให้เพื่อนร่วมงานรู้จักคุณมากขึ้น",
+      "avatarTitle": "เลือกรูปโปรไฟล์",
+      "avatarDescription": "เราแนะนำให้ใช้รูปภาพสี่เหลี่ยมจัตุรัส ขนาดอย่างน้อย 256x256 px เพื่อความคมชัด",
+      "changeAvatar": "เปลี่ยนรูปโปรไฟล์",
+      "displayNameLabel": "ชื่อแสดงผล",
+      "displayNamePlaceholder": "กรอกชื่อที่ต้องการแสดง",
+      "emailLabel": "อีเมล (Email)",
+      "emailHelp": "อีเมลใช้สำหรับเข้าสู่ระบบ ไม่สามารถเปลี่ยนได้",
+      "avatarUrlLabel": "ลิงก์รููปภาพ (Avatar URL)",
+      "avatarUrlOptional": "ทางเลือก",
+      "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
+      "avatarUrlHelp": "หากคุณมีลิงก์รูปภาพสาธารณะ สามารถนำมาใส่ที่นี่ได้ทันที เพื่ออัปเดตแทนการอัปโหลด"
+    },
+    "actions": {
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "save": "บันทึกการปรับปรุง"
+    },
+    "toast": {
+      "nameRequired": "กรุณากรอกชื่อแสดงผล",
+      "updateSuccess": "อัปเดตโปรไฟล์สำเร็จ! ข้อมูลของคุณได้รับการบันทึกแล้ว",
+      "updateError": "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์"
+    }
+  },
+  "SecurityPage": {
+    "title": "รหัสผ่านและความปลอดภัย",
+    "description": "จัดการรหัสผ่านและตรวจสอบความปลอดภัยของบัญชีเพื่อป้องกันการเข้าถึงที่ไม่ได้รับอนุญาต",
+    "headerBadge": "ความปลอดภัยของบัญชี",
+    "loading": "กำลังตรวจสอบข้อมูล...",
+    "cards": {
+      "emailStatus": "สถานะอีเมล",
+      "verified": "ยืนยันแล้ว",
+      "notVerified": "ยังไม่ยืนยัน",
+      "authProvider": "ประเภทการเข้าสู่ระบบ",
+      "securityLevel": "ระดับความปลอดภัย",
+      "securityGood": "ดี",
+      "securityModerate": "ปานกลาง"
+    },
+    "emailVerification": {
+      "title": "สถานะการยืนยันอีเมล",
+      "emailIs": "อีเมลของคุณคือ ",
+      "badgeVerified": "ยืนยันแล้ว",
+      "badgeNotVerified": "ยังไม่ยืนยัน",
+      "notVerifiedDesc": "การยืนยันอีเมลช่วยเพิ่มความปลอดภัยให้บัญชีของคุณ และทำให้คุณสามารถกู้คืนรหัสผ่านได้ในกรณีที่ลืม",
+      "sendingLink": "กำลังส่งลิงก์...",
+      "sendVerification": "ส่งลิงก์ยืนยันอีเมล",
+      "verifiedDesc": "บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้"
+    },
+    "changePassword": {
+      "title": "เปลี่ยนรหัสผ่าน",
+      "description": "กรุณาตรวจสอบให้แน่ใจว่ารหัสผ่านใหม่มีความยาวอย่างน้อย 8 ตัวอักษรและคาดเดาได้ยาก",
+      "securityAdviceTitle": "คำแนะนำความปลอดภัย",
+      "securityAdviceDesc": "การเปลี่ยนรหัสผ่านอาจทำให้ระบบออกจากระบบ (Sign Out) ในอุปกรณ์อื่นๆ ทั้งหมดที่คุณเคยล็อคอินไว้ เพื่อความปลอดภัยของบัญชี",
+      "currentPassword": "รหัสผ่านปัจจุบัน",
+      "currentPasswordPlaceholder": "กรอกรหัสผ่านปัจจุบันของคุณ",
+      "newPassword": "รหัสผ่านใหม่",
+      "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)",
+      "confirmPassword": "ยืนยันรหัสผ่านใหม่",
+      "confirmPasswordPlaceholder": "กรอกรหัสผ่านใหม่อีกครั้ง",
+      "passwordMismatch": "รหัสผ่านและข้อมูลการยืนยันไม่ตรงกัน"
+    },
+    "actions": {
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "updatePassword": "อัปเดตรหัสผ่าน"
+    },
+    "toast": {
+      "verificationSent": "ส่งลิงก์ยืนยันสำเร็จ! กรุณาตรวจสอบกล่องจดหมายของคุณ",
+      "verificationError": "ไม่สามารถส่งอีเมลยืนยันได้",
+      "fillAll": "กรุณากรอกข้อมูลให้ครบถ้วน",
+      "passwordMismatch": "รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน",
+      "passwordTooShort": "รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
+      "passwordChangeSuccess": "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!",
+      "passwordChangeError": "เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน",
+      "currentPasswordWrong": "รหัสผ่านปัจจุบันไม่ถูกต้อง หรือเกิดข้อผิดพลาด"
+    }
+  },
+  "SessionsPage": {
+    "title": "อุปกรณ์และเซสชัน",
+    "description": "ตรวจสอบและจัดการอุปกรณ์ที่คุณใช้เข้าสู่ระบบอยู่ในปัจจุบัน",
+    "headerBadge": "{count} เซสชันที่ใช้งานอยู่",
+    "loading": "กำลังตรวจสอบข้อมูลเซสชัน...",
+    "cards": {
+      "totalSessions": "เซสชันทั้งหมด",
+      "currentDevice": "อุปกรณ์ปัจจุบัน",
+      "otherDevices": "อุปกรณ์อื่น"
+    },
+    "sessionList": {
+      "title": "เซสชันทั้งหมดที่ใช้งานอยู่",
+      "description": "หากคุณพบอุปกรณ์ที่ไม่รู้จัก กรุณากด <b>ออกจากระบบ</b> และเปลี่ยนรหัสผ่าน",
+      "refresh": "รีเฟรชข้อมูล",
+      "loadingSessions": "กำลังดึงข้อมูลเซสชันจากเซิร์ฟเวอร์...",
+      "noDevices": "ไม่พบอุปกรณ์ที่เข้าสู่ระบบ"
+    },
+    "device": {
+      "unknown": "อุปกรณ์ที่ไม่รู้จัก (Unknown Device)",
+      "mobile": "สมาร์ทโฟน (Mobile Device)",
+      "desktop": "คอมพิวเตอร์ (Desktop/Laptop)",
+      "browser": "อุปกรณ์ Browser",
+      "currentBadge": "อุปกรณ์ปัจจุบัน",
+      "signedInAt": "ลงชื่อเข้าใช้: "
+    },
+    "actions": {
+      "revokeSession": "ออกจากระบบอุปกรณ์นี้"
+    },
+    "footer": "การคลิก \"ออกจากระบบอุปกรณ์นี้\" ระบบจะตัดการเชื่อมต่อทันที และอุปกรณ์ดังกล่าวจะต้องล็อคอินใหม่",
+    "toast": {
+      "fetchError": "ไม่สามารถดึงข้อมูลอุปกรณ์ที่เข้าสู่ระบบได้",
+      "revokeSuccess": "ลบเซสชันออกจากระบบเรียบร้อยแล้ว",
+      "revokeError": "เกิดข้อผิดพลาดในการนำออกเซสชัน"
+    }
+  },
+  "RecurringTemplateDialog": {
+    "titleEdit": "แก้ไขงานประจำ",
+    "titleCreate": "สร้างงานประจำใหม่",
+    "form": {
+      "taskName": "ชื่องาน",
+      "taskNameRequired": "*",
+      "taskNamePlaceholder": "เช่น ส่งรายงานประจำเดือน",
+      "description": "คำอธิบาย",
+      "descriptionPlaceholder": "รายละเอียดเพิ่มเติม...",
+      "column": "สร้างลงคอลัมน์",
+      "columnRequired": "*",
+      "category": "หมวดหมู่"
+    },
+    "frequency": {
+      "title": "ตั้งค่าความถี่",
+      "frequencyLabel": "ความถี่",
+      "everyLabel": "ทุกๆ",
+      "daily": "รายวัน",
+      "weekly": "รายสัปดาห์",
+      "monthly": "รายเดือน",
+      "yearly": "รายปี",
+      "unitDaily": "วัน",
+      "unitWeekly": "สัปดาห์",
+      "unitMonthly": "เดือน",
+      "unitYearly": "ปี",
+      "dayOfMonth": "วันที่ในเดือน",
+      "dayOfMonthHint": "(ถ้าเดือนไม่มีวันที่นี้ จะใช้วันสุดท้ายของเดือนแทน)",
+      "advanceDays": "สร้างล่วงหน้า (วัน)",
+      "advanceDaysHint": "วันก่อนกำหนดส่ง (0 = สร้างในวัน due)"
+    },
+    "summary": {
+      "everyInterval": "ทุกๆ {interval} ",
+      "every": "ทุก",
+      "daily": "วัน",
+      "weekly": "สัปดาห์",
+      "monthly": "เดือน",
+      "monthlyDay": " วันที่ {day}",
+      "yearly": "ปี",
+      "advanceDays": " (สร้างล่วงหน้า {days} วัน)"
+    },
+    "period": {
+      "title": "ช่วงเวลา",
+      "startDate": "เริ่มตั้งแต่",
+      "startDateRequired": "*",
+      "endDate": "สิ้นสุด (ไม่บังคับ)",
+      "maxOccurrences": "จำนวนครั้งสูงสุด (ไม่บังคับ)",
+      "maxOccurrencesPlaceholder": "ไม่จำกัด"
+    },
+    "subtasks": {
+      "title": "รายการย่อยที่จะสร้างอัตโนมัติ",
+      "placeholder": "เพิ่มรายการย่อย...",
+      "add": "เพิ่ม"
+    },
+    "actions": {
+      "deleting": "กำลังลบ...",
+      "deleteTemplate": "ลบ Template",
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "creating": "กำลังสร้าง...",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "save": "บันทึก",
+      "createRecurring": "สร้างงานประจำ",
+      "create": "สร้าง"
+    },
+    "deleteDialog": {
+      "title": "ลบงานประจำนี้?",
+      "description": "Template นี้จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
+      "cancel": "ยกเลิก",
+      "confirm": "ลบ Template"
     }
   }
 }

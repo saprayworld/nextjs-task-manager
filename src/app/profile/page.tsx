@@ -9,10 +9,13 @@ import { Camera, Loader2, Save, User as UserIcon, Mail, Calendar } from "lucide-
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function ProfilePage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const t = useTranslations("ProfilePage");
+  const locale = useLocale();
 
   const enableUploadProfilePicture = false;
 
@@ -32,7 +35,7 @@ export default function ProfilePage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("กรุณากรอกชื่อแสดงผล");
+      toast.error(t('toast.nameRequired'));
       return;
     }
 
@@ -46,16 +49,16 @@ export default function ProfilePage() {
         });
 
         if (error) {
-          throw new Error(error.message || "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์");
+          throw new Error(error.message || t('toast.updateError'));
         }
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      toast.success("อัปเดตโปรไฟล์สำเร็จ! ข้อมูลของคุณได้รับการบันทึกแล้ว");
+      toast.success(t('toast.updateSuccess'));
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์");
+      toast.error(error.message || t('toast.updateError'));
     } finally {
       setIsSaving(false);
     }
@@ -66,7 +69,7 @@ export default function ProfilePage() {
       <div className="flex h-[60vh] w-full items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="w-10 h-10 animate-spin text-primary/60" />
-          <p className="text-muted-foreground animate-pulse text-sm">กำลังโหลดข้อมูลโปรไฟล์...</p>
+          <p className="text-muted-foreground animate-pulse text-sm">{t('loading')}</p>
         </div>
       </div>
     );
@@ -78,9 +81,9 @@ export default function ProfilePage() {
       {/* Header Section — matches Report Dashboard style */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">การตั้งค่าบัญชี</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            จัดการข้อมูลส่วนตัว รูปโปรไฟล์ และการตั้งค่าที่เกี่ยวข้องกับบัญชีของคุณ
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
@@ -101,7 +104,7 @@ export default function ProfilePage() {
             {/* Display Name Card */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">ชื่อแสดงผล</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.displayName')}</p>
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                   <UserIcon className="w-4 h-4" />
                 </div>
@@ -112,7 +115,7 @@ export default function ProfilePage() {
             {/* Email Card */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">อีเมล</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.email')}</p>
                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
                   <Mail className="w-4 h-4" />
                 </div>
@@ -123,14 +126,14 @@ export default function ProfilePage() {
             {/* Created At Card */}
             <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">สมาชิกตั้งแต่</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.memberSince')}</p>
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
                   <Calendar className="w-4 h-4" />
                 </div>
               </div>
               <p className="text-lg font-bold">
                 {session?.user?.createdAt
-                  ? new Intl.DateTimeFormat("th-TH", { dateStyle: "medium" }).format(new Date(session.user.createdAt))
+                  ? new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-US", { dateStyle: "medium" }).format(new Date(session.user.createdAt))
                   : "—"}
               </p>
             </div>
@@ -143,10 +146,10 @@ export default function ProfilePage() {
               <div>
                 <h3 className="font-semibold text-lg flex items-center gap-2">
                   <UserIcon className="w-5 h-5 text-blue-500" />
-                  แก้ไขข้อมูลส่วนตัว
+                  {t('form.title')}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  อัปเดตข้อมูลส่วนตัวของคุณเพื่อให้เพื่อนร่วมงานรู้จักคุณมากขึ้น
+                  {t('form.description')}
                 </p>
               </div>
             </div>
@@ -168,16 +171,16 @@ export default function ProfilePage() {
                     </div>
                     {/* Visual cue for Upload */}
                     {enableUploadProfilePicture && (
-                      <div className="absolute bottom-1 right-1 p-2 bg-primary text-primary-foreground rounded-full shadow-lg z-10 transition-all hover:scale-110 cursor-pointer ring-2 ring-background hover:ring-primary/50" title="เปลี่ยนรูปโปรไฟล์">
+                      <div className="absolute bottom-1 right-1 p-2 bg-primary text-primary-foreground rounded-full shadow-lg z-10 transition-all hover:scale-110 cursor-pointer ring-2 ring-background hover:ring-primary/50" title={t('form.changeAvatar')}>
                         <Camera className="w-4 h-4" />
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2 text-center sm:text-left flex-1">
-                    <h3 className="text-sm font-semibold text-foreground">เลือกรูปโปรไฟล์</h3>
+                    <h3 className="text-sm font-semibold text-foreground">{t('form.avatarTitle')}</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto sm:mx-0">
-                      เราแนะนำให้ใช้รูปภาพสี่เหลี่ยมจัตุรัส ขนาดอย่างน้อย 256x256 px เพื่อความคมชัด
+                      {t('form.avatarDescription')}
                     </p>
                   </div>
                 </div>
@@ -185,19 +188,19 @@ export default function ProfilePage() {
                 {/* Form Fields */}
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2.5">
-                    <Label htmlFor="name" className="text-sm font-semibold">ชื่อแสดงผล</Label>
+                    <Label htmlFor="name" className="text-sm font-semibold">{t('form.displayNameLabel')}</Label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="transition-all duration-200 focus-visible:ring-primary bg-background h-11"
-                      placeholder="กรอกชื่อที่ต้องการแสดง"
+                      placeholder={t('form.displayNamePlaceholder')}
                       required
                     />
                   </div>
 
                   <div className="space-y-2.5">
-                    <Label htmlFor="email" className="text-sm font-semibold text-muted-foreground">อีเมล (Email)</Label>
+                    <Label htmlFor="email" className="text-sm font-semibold text-muted-foreground">{t('form.emailLabel')}</Label>
                     <Input
                       id="email"
                       type="email"
@@ -207,24 +210,24 @@ export default function ProfilePage() {
                       readOnly
                     />
                     <p className="text-[11px] text-muted-foreground ml-1">
-                      อีเมลใช้สำหรับเข้าสู่ระบบ ไม่สามารถเปลี่ยนได้
+                      {t('form.emailHelp')}
                     </p>
                   </div>
 
                   <div className="space-y-2.5 sm:col-span-2">
                     <Label htmlFor="image" className="text-sm font-semibold flex items-center gap-2">
-                      ลิงก์รููปภาพ (Avatar URL)
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary uppercase font-bold tracking-wider">ทางเลือก</span>
+                      {t('form.avatarUrlLabel')}
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary uppercase font-bold tracking-wider">{t('form.avatarUrlOptional')}</span>
                     </Label>
                     <Input
                       id="image"
                       value={image}
                       onChange={(e) => setImage(e.target.value)}
                       className="transition-all duration-200 focus-visible:ring-primary bg-background"
-                      placeholder="https://example.com/avatar.jpg"
+                      placeholder={t('form.avatarUrlPlaceholder')}
                     />
                     <p className="text-[11px] text-muted-foreground ml-1">
-                      หากคุณมีลิงก์รูปภาพสาธารณะ สามารถนำมาใส่ที่นี่ได้ทันที เพื่ออัปเดตแทนการอัปโหลด
+                      {t('form.avatarUrlHelp')}
                     </p>
                   </div>
                 </div>
@@ -239,7 +242,7 @@ export default function ProfilePage() {
                   disabled={isSaving}
                   className="px-6"
                 >
-                  ยกเลิก
+                  {t('actions.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -249,12 +252,12 @@ export default function ProfilePage() {
                   {isSaving ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      กำลังบันทึก...
+                      {t('actions.saving')}
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" />
-                      บันทึกการปรับปรุง
+                      {t('actions.save')}
                     </>
                   )}
                 </Button>
