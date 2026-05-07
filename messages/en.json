@@ -348,5 +348,141 @@
       "hours": "h",
       "minutes": "m"
     }
+  },
+  "ProfileSidebar": {
+    "menuTitle": "Settings Menu",
+    "nav": {
+      "profile": "General Profile",
+      "security": "Password & Security",
+      "sessions": "Devices & Sessions"
+    },
+    "emailVerified": "Email Verified",
+    "emailVerifiedDesc": "Your account is secure and fully protected.",
+    "emailNotVerified": "Email Not Verified",
+    "emailNotVerifiedDesc": "Please verify your email address for better security. ",
+    "clickToVerify": "Click to verify"
+  },
+  "ProfilePage": {
+    "title": "Account Settings",
+    "description": "Manage your personal information, profile picture, and account-related settings.",
+    "loading": "Loading profile data...",
+    "cards": {
+      "displayName": "Display Name",
+      "email": "Email",
+      "memberSince": "Member Since"
+    },
+    "form": {
+      "title": "Edit Personal Information",
+      "description": "Update your personal information so your colleagues can know you better.",
+      "avatarTitle": "Choose Profile Picture",
+      "avatarDescription": "We recommend using a square image, at least 256x256 px for clarity.",
+      "changeAvatar": "Change profile picture",
+      "displayNameLabel": "Display Name",
+      "displayNamePlaceholder": "Enter your desired display name",
+      "emailLabel": "Email",
+      "emailHelp": "Email is used for login and cannot be changed.",
+      "avatarUrlLabel": "Avatar URL",
+      "avatarUrlOptional": "Optional",
+      "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
+      "avatarUrlHelp": "If you have a public image URL, you can enter it here to update instead of uploading."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save Changes"
+    },
+    "toast": {
+      "nameRequired": "Please enter a display name.",
+      "updateSuccess": "Profile updated successfully! Your data has been saved.",
+      "updateError": "An error occurred while updating your profile."
+    }
+  },
+  "SecurityPage": {
+    "title": "Password & Security",
+    "description": "Manage your password and verify account security to prevent unauthorized access.",
+    "headerBadge": "Account Security",
+    "loading": "Verifying data...",
+    "cards": {
+      "emailStatus": "Email Status",
+      "verified": "Verified",
+      "notVerified": "Not Verified",
+      "authProvider": "Login Method",
+      "securityLevel": "Security Level",
+      "securityGood": "Good",
+      "securityModerate": "Moderate"
+    },
+    "emailVerification": {
+      "title": "Email Verification Status",
+      "emailIs": "Your email is ",
+      "badgeVerified": "Verified",
+      "badgeNotVerified": "Not Verified",
+      "notVerifiedDesc": "Email verification helps secure your account and enables password recovery if forgotten.",
+      "sendingLink": "Sending link...",
+      "sendVerification": "Send Verification Link",
+      "verifiedDesc": "Your account is secure and verified. If you encounter any issues, you can access additional help from the settings menu."
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Please make sure your new password is at least 8 characters long and hard to guess.",
+      "securityAdviceTitle": "Security Advice",
+      "securityAdviceDesc": "Changing your password may sign you out from all other devices you have logged in to, for account security.",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password (at least 8 characters)",
+      "confirmPassword": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Enter your new password again",
+      "passwordMismatch": "Passwords do not match."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "updatePassword": "Update Password"
+    },
+    "toast": {
+      "verificationSent": "Verification link sent! Please check your inbox.",
+      "verificationError": "Unable to send verification email.",
+      "fillAll": "Please fill in all fields.",
+      "passwordMismatch": "New password and confirmation do not match.",
+      "passwordTooShort": "New password must be at least 8 characters long.",
+      "passwordChangeSuccess": "Password changed successfully!",
+      "passwordChangeError": "An error occurred while changing your password.",
+      "currentPasswordWrong": "Current password is incorrect or an error occurred."
+    }
+  },
+  "SessionsPage": {
+    "title": "Devices & Sessions",
+    "description": "Review and manage devices that are currently logged in to your account.",
+    "headerBadge": "{count} active sessions",
+    "loading": "Checking session data...",
+    "cards": {
+      "totalSessions": "Total Sessions",
+      "currentDevice": "Current Device",
+      "otherDevices": "Other Devices"
+    },
+    "sessionList": {
+      "title": "All Active Sessions",
+      "description": "If you see an unfamiliar device, please click <b>Sign Out</b> and change your password.",
+      "refresh": "Refresh",
+      "loadingSessions": "Loading sessions from server...",
+      "noDevices": "No logged-in devices found"
+    },
+    "device": {
+      "unknown": "Unknown Device",
+      "mobile": "Mobile Device",
+      "desktop": "Desktop / Laptop",
+      "browser": "Browser Device",
+      "currentBadge": "Current Device",
+      "signedInAt": "Signed in: "
+    },
+    "actions": {
+      "revokeSession": "Sign out this device"
+    },
+    "footer": "Clicking \"Sign out this device\" will disconnect the device immediately. That device will need to log in again.",
+    "toast": {
+      "fetchError": "Unable to fetch logged-in device data.",
+      "revokeSuccess": "Session removed successfully.",
+      "revokeError": "An error occurred while removing the session."
+    }
   }
 }
