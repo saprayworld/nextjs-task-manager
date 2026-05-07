@@ -3,7 +3,7 @@
     "title": "TaskFlow - Modern Kanban Board"
   },
   "Navbar": {
-    "title": "Project System",
+    "title": "TaskFlow System",
     "links": {
       "board": "Board",
       "list": "List",
