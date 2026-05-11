@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 
 import { KanbanFacetedFilter } from "./kanban-faceted-filter";
 import { BoardColumn } from "./TaskDialog";
+import { tags } from "./mock-data";
 import { useTranslations } from 'next-intl';
 
 interface KanbanListTableProps<TData, TValue> {
@@ -36,9 +37,15 @@ interface KanbanListTableProps<TData, TValue> {
 export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: KanbanListTableProps<TData, TValue>) {
   const t = useTranslations('KanbanList.table');
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  // สร้าง options สำหรับ filter หมวดหมู่จาก tags
+  const categoryOptions = Object.entries(tags).map(([key, tag]) => ({
+    label: tag.text,
+    value: key,
+  }));
+
+  const [sorting, setSorting] = useState<SortingState>([{ id: "updatedAt", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ categoryId: false });
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
@@ -80,6 +87,15 @@ export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: 
               column={table.getColumn("columnId")}
               title="Status"
               options={boardColumns.map(col => ({ label: col.title, value: col.id.toString() }))}
+            />
+          )}
+
+          {/* ปุ่ม Filter หมวดหมู่ */}
+          {table.getColumn("categoryId") && (
+            <KanbanFacetedFilter
+              column={table.getColumn("categoryId")}
+              title={t('category')}
+              options={categoryOptions}
             />
           )}
 
