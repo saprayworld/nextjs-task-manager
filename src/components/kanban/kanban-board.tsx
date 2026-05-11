@@ -70,6 +70,8 @@ export interface Task {
   order?: number;
   recurringTemplateId?: string | null;
   recurrenceIndex?: number | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface KanbanBoardProps {

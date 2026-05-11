@@ -25,6 +25,8 @@ export default async function ListPage() {
       endDateTime: task.endDateTime ? task.endDateTime.toISOString() : undefined,
       totalWorkTime: task.totalWorkTime ?? undefined,
       isVisible: task.isVisible,
+      createdAt: task.createdAt ? task.createdAt.toISOString() : undefined,
+      updatedAt: task.updatedAt ? task.updatedAt.toISOString() : undefined,
     };
   });
 

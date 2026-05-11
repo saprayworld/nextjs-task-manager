@@ -247,6 +247,13 @@ export function Navbar() {
                   </DropdownMenuSub>
                 </div>
 
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setIsAboutOpen(true)} className="cursor-pointer">
+                  <Info className="w-4 h-4 mr-2" />
+                  {t('userMenu.about')}
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={(e) => {
@@ -263,11 +270,7 @@ export function Navbar() {
                   )}
                   {isLoggingOut ? t('userMenu.loggingOut') : t('userMenu.logout')}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => setIsAboutOpen(true)} className="cursor-pointer">
-                  <Info className="w-4 h-4 mr-2" />
-                  {t('userMenu.about')}
-                </DropdownMenuItem>
+
               </DropdownMenuContent>
             </DropdownMenu>
           ) : <Button variant="ghost" size="icon" className="rounded-full bg-muted/50 ml-1 cursor-pointer relative overflow-hidden">

@@ -27,6 +27,17 @@ const formatDateDisplay = (dateString?: string, locale: string = "th-TH") => {
   }
 };
 
+// ฟังก์ชันช่วยเหลือสำหรับแสดงผลวันที่พร้อมเวลา
+const formatDateTimeDisplay = (dateString?: string, locale: string = "th-TH") => {
+  if (!dateString) return "-";
+  try {
+    const d = new Date(dateString);
+    return d.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch (e) {
+    return dateString;
+  }
+};
+
 // ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns และ onEditTask จาก component แม่ได้
 export const getKanbanColumns = (
   boardColumns: BoardColumn[],
@@ -52,7 +63,7 @@ export const getKanbanColumns = (
         const tag = row.original.tag;
         const description = row.original.description;
         return (
-          <div 
+          <div
             className="flex flex-col gap-1 py-1 cursor-pointer group"
             onClick={() => onEditTask(row.original)}
           >
@@ -74,6 +85,17 @@ export const getKanbanColumns = (
             )}
           </div>
         );
+      },
+    },
+    {
+      // คอลัมน์ซ่อนสำหรับ Filter ตามหมวดหมู่
+      accessorKey: "categoryId",
+      header: () => null,
+      cell: () => null,
+      enableHiding: false,
+      enableSorting: false,
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
       },
     },
     {
@@ -102,29 +124,67 @@ export const getKanbanColumns = (
       },
     },
     {
-      id: "actions",
-      cell: ({ row }) => {
-        const task = row.original;
+      accessorKey: "createdAt",
+      header: ({ column }) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuLabel>{t('actions.manage')}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => onEditTask(task)}>
-                {t('actions.editTask')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                {t('actions.deleteTask')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-4 h-8 data-[state=open]:bg-accent mx-1"
+          >
+            {t('columns.createdAt')}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
         );
       },
+      cell: ({ row }) => {
+        const dateStr = row.getValue("createdAt") as string | undefined;
+        return <div className="text-muted-foreground text-sm whitespace-nowrap">{formatDateTimeDisplay(dateStr, locale)}</div>;
+      },
     },
+    {
+      accessorKey: "updatedAt",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-4 h-8 data-[state=open]:bg-accent mx-1"
+          >
+            {t('columns.updatedAt')}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const dateStr = row.getValue("updatedAt") as string | undefined;
+        return <div className="text-muted-foreground text-sm whitespace-nowrap">{formatDateTimeDisplay(dateStr, locale)}</div>;
+      },
+    },
+    // {
+    //   id: "actions",
+    //   cell: ({ row }) => {
+    //     const task = row.original;
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+    //             <MoreHorizontal className="h-4 w-4" />
+    //             <span className="sr-only">Open menu</span>
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end" className="w-[160px]">
+    //           <DropdownMenuLabel>{t('actions.manage')}</DropdownMenuLabel>
+    //           <DropdownMenuItem onClick={() => onEditTask(task)}>
+    //             {t('actions.editTask')}
+    //           </DropdownMenuItem>
+    //           <DropdownMenuSeparator />
+    //           <DropdownMenuItem className="text-destructive">
+    //             {t('actions.deleteTask')}
+    //           </DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
   ];
