@@ -19,7 +19,8 @@
       "about": "About",
       "appearance": "Appearance",
       "darkMode": "Dark Mode",
-      "language": "Language"
+      "language": "Language",
+      "setting": "Board Settings"
     }
   },
   "Login": {
@@ -557,6 +558,104 @@
       "description": "This template will be permanently deleted, but tasks already created will not be affected.",
       "cancel": "Cancel",
       "confirm": "Delete Template"
+    }
+  },
+  "SettingDashboard": {
+    "title": "Settings",
+    "description": "Manage categories, board preferences, notifications, and data.",
+    "mockDataBadge": "UI Mockup Only",
+    "tabs": {
+      "categories": "Categories",
+      "board": "Board",
+      "notifications": "Notifications",
+      "data": "Data"
+    },
+    "categories": {
+      "title": "Category Management",
+      "description": "Create, edit, or delete categories and choose which ones are included in reports.",
+      "addButton": "Add Category",
+      "reportBadge": "Report",
+      "emptyState": "No categories yet. Click \"Add Category\" to create one.",
+      "total": "Total: {count} categories",
+      "inReport": "Included in report: {count}",
+      "form": {
+        "name": "Category Name",
+        "namePlaceholder": "e.g. Design, Development",
+        "color": "Color",
+        "includeInReport": "Include in Report",
+        "includeInReportDesc": "This category will be included in report calculations."
+      },
+      "addDialog": {
+        "title": "Add Category",
+        "description": "Create a new category for organizing your tasks."
+      },
+      "editDialog": {
+        "title": "Edit Category",
+        "description": "Update category details."
+      },
+      "deleteDialog": {
+        "title": "Delete this category?",
+        "description": "\"{name}\" will be permanently deleted. Tasks using this category will not be affected."
+      }
+    },
+    "board": {
+      "title": "Board Display",
+      "description": "Customize how the Kanban board looks and behaves.",
+      "defaultColumn": "Default Column for New Tasks",
+      "defaultColumnDesc": "New tasks will be created in this column by default.",
+      "displayOptions": "Card Display Options",
+      "showProgress": "Show Progress Bar",
+      "showProgressDesc": "Display the progress bar on task cards.",
+      "showDueDate": "Show Due Date",
+      "showDueDateDesc": "Display the due date on task cards.",
+      "showAvatars": "Show Avatars",
+      "showAvatarsDesc": "Display assigned member avatars on task cards.",
+      "showSubtasks": "Show Subtask Count",
+      "showSubtasksDesc": "Display the number of subtasks on task cards.",
+      "enableDragDrop": "Enable Drag & Drop",
+      "enableDragDropDesc": "Allow reordering tasks by dragging cards between columns.",
+      "saveButton": "Save Board Settings"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Choose which notifications you want to receive.",
+      "dueDateReminder": "Due Date Reminder",
+      "dueDateReminderDesc": "Get notified before a task's due date.",
+      "overdueAlert": "Overdue Alert",
+      "overdueAlertDesc": "Get notified when a task is overdue.",
+      "statusChange": "Status Change",
+      "statusChangeDesc": "Get notified when a task's status changes.",
+      "reminderDays": "Reminder Timing",
+      "reminderDaysDesc": "How many days before the due date to send a reminder.",
+      "onDueDay": "On the due day",
+      "daysBefore": "{days} day(s) before",
+      "saveButton": "Save Notification Settings"
+    },
+    "data": {
+      "title": "Data Management",
+      "description": "Configure trash retention and manage your data.",
+      "autoDeleteTrash": "Auto-delete Trash",
+      "autoDeleteTrashDesc": "Automatically permanently delete items in trash after a period.",
+      "retentionDays": "Retention Period",
+      "daysOption": "{days} days",
+      "dangerZone": "Danger Zone",
+      "dangerZoneDesc": "These actions are irreversible. Please proceed with caution.",
+      "clearTrash": "Empty Trash",
+      "clearArchive": "Clear Archive",
+      "saveButton": "Save Data Settings"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save Changes",
+      "delete": "Delete"
+    },
+    "toast": {
+      "categoryAdded": "Category added successfully",
+      "categoryUpdated": "Category updated successfully",
+      "categoryDeleted": "Category deleted successfully",
+      "settingsSaved": "Settings saved successfully",
+      "mockOnly": "This is a mock-up only. No data was changed."
     }
   }
 }

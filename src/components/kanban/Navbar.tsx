@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info, ExternalLink, Sun, Moon, Globe, Check, ChevronRight } from "lucide-react";
+import { LayoutDashboard, List, User as UserIcon, LogOut, Trash2, Archive, Loader2, ChartPie, RefreshCw, Info, ExternalLink, Sun, Moon, Globe, Check, ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -188,6 +188,12 @@ export function Navbar() {
                     <Link href="/kanban/report">
                       <ChartPie className="w-4 h-4 mr-2" />
                       {t('userMenu.report')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/kanban/setting">
+                      <Settings className="w-4 h-4 mr-2" />
+                      {t('userMenu.setting')}
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

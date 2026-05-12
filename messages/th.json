@@ -19,7 +19,8 @@
       "about": "เกี่ยวกับ",
       "appearance": "การแสดงผล",
       "darkMode": "โหมดมืด",
-      "language": "ภาษา"
+      "language": "ภาษา",
+      "setting": "ตั้งค่าบอร์ด"
     }
   },
   "Login": {
@@ -557,6 +558,104 @@
       "description": "Template นี้จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
       "cancel": "ยกเลิก",
       "confirm": "ลบ Template"
+    }
+  },
+  "SettingDashboard": {
+    "title": "ตั้งค่า",
+    "description": "จัดการหมวดหมู่ การตั้งค่าบอร์ด การแจ้งเตือน และข้อมูล",
+    "mockDataBadge": "UI Mockup เท่านั้น",
+    "tabs": {
+      "categories": "หมวดหมู่",
+      "board": "บอร์ด",
+      "notifications": "การแจ้งเตือน",
+      "data": "ข้อมูล"
+    },
+    "categories": {
+      "title": "จัดการหมวดหมู่",
+      "description": "สร้าง แก้ไข หรือลบหมวดหมู่ และเลือกว่าจะนำไปคำนวณในรายงานด้วยหรือไม่",
+      "addButton": "เพิ่มหมวดหมู่",
+      "reportBadge": "รายงาน",
+      "emptyState": "ยังไม่มีหมวดหมู่ กด \"เพิ่มหมวดหมู่\" เพื่อสร้าง",
+      "total": "ทั้งหมด: {count} หมวดหมู่",
+      "inReport": "รวมในรายงาน: {count}",
+      "form": {
+        "name": "ชื่อหมวดหมู่",
+        "namePlaceholder": "เช่น Design, Development",
+        "color": "สี",
+        "includeInReport": "นำไปคำนวณในรายงาน",
+        "includeInReportDesc": "หมวดหมู่นี้จะถูกนำไปรวมในการคำนวณรายงาน"
+      },
+      "addDialog": {
+        "title": "เพิ่มหมวดหมู่",
+        "description": "สร้างหมวดหมู่ใหม่สำหรับจัดระเบียบงาน"
+      },
+      "editDialog": {
+        "title": "แก้ไขหมวดหมู่",
+        "description": "อัปเดตรายละเอียดหมวดหมู่"
+      },
+      "deleteDialog": {
+        "title": "ลบหมวดหมู่นี้?",
+        "description": "\"{name}\" จะถูกลบถาวร งานที่ใช้หมวดหมู่นี้จะไม่ได้รับผลกระทบ"
+      }
+    },
+    "board": {
+      "title": "การแสดงผลบอร์ด",
+      "description": "ปรับแต่งหน้าตาและพฤติกรรมของ Kanban Board",
+      "defaultColumn": "คอลัมน์เริ่มต้นสำหรับงานใหม่",
+      "defaultColumnDesc": "งานใหม่จะถูกสร้างในคอลัมน์นี้โดยอัตโนมัติ",
+      "displayOptions": "ตัวเลือกการแสดงผลการ์ด",
+      "showProgress": "แสดง Progress Bar",
+      "showProgressDesc": "แสดงแถบความคืบหน้าบนการ์ดงาน",
+      "showDueDate": "แสดงวันกำหนดส่ง",
+      "showDueDateDesc": "แสดงวันกำหนดส่งบนการ์ดงาน",
+      "showAvatars": "แสดงรูปสมาชิก",
+      "showAvatarsDesc": "แสดงรูปสมาชิกที่ได้รับมอบหมายบนการ์ดงาน",
+      "showSubtasks": "แสดงจำนวนรายการย่อย",
+      "showSubtasksDesc": "แสดงจำนวนรายการย่อยบนการ์ดงาน",
+      "enableDragDrop": "เปิดใช้ Drag & Drop",
+      "enableDragDropDesc": "อนุญาตให้ลากการ์ดเพื่อจัดเรียงระหว่างคอลัมน์",
+      "saveButton": "บันทึกการตั้งค่าบอร์ด"
+    },
+    "notifications": {
+      "title": "ตั้งค่าการแจ้งเตือน",
+      "description": "เลือกการแจ้งเตือนที่คุณต้องการรับ",
+      "dueDateReminder": "แจ้งเตือนก่อนกำหนดส่ง",
+      "dueDateReminderDesc": "ได้รับแจ้งเตือนก่อนถึงกำหนดส่งงาน",
+      "overdueAlert": "แจ้งเตือนงานเลยกำหนด",
+      "overdueAlertDesc": "ได้รับแจ้งเตือนเมื่องานเลยกำหนดส่ง",
+      "statusChange": "แจ้งเตือนเมื่อสถานะเปลี่ยน",
+      "statusChangeDesc": "ได้รับแจ้งเตือนเมื่อสถานะงานเปลี่ยนแปลง",
+      "reminderDays": "เวลาการแจ้งเตือน",
+      "reminderDaysDesc": "จำนวนวันก่อนถึงกำหนดส่งที่จะส่งการแจ้งเตือน",
+      "onDueDay": "ในวันกำหนดส่ง",
+      "daysBefore": "{days} วันก่อน",
+      "saveButton": "บันทึกการตั้งค่าแจ้งเตือน"
+    },
+    "data": {
+      "title": "จัดการข้อมูล",
+      "description": "ตั้งค่าการเก็บรักษาถังขยะและจัดการข้อมูลของคุณ",
+      "autoDeleteTrash": "ลบถังขยะอัตโนมัติ",
+      "autoDeleteTrashDesc": "ลบรายการในถังขยะถาวรโดยอัตโนมัติหลังจากระยะเวลาที่กำหนด",
+      "retentionDays": "ระยะเวลาเก็บรักษา",
+      "daysOption": "{days} วัน",
+      "dangerZone": "โซนอันตราย",
+      "dangerZoneDesc": "การดำเนินการเหล่านี้ไม่สามารถย้อนกลับได้ กรุณาดำเนินการด้วยความระมัดระวัง",
+      "clearTrash": "ล้างถังขยะ",
+      "clearArchive": "ล้าง Archive",
+      "saveButton": "บันทึกการตั้งค่าข้อมูล"
+    },
+    "actions": {
+      "cancel": "ยกเลิก",
+      "add": "เพิ่ม",
+      "save": "บันทึก",
+      "delete": "ลบ"
+    },
+    "toast": {
+      "categoryAdded": "เพิ่มหมวดหมู่สำเร็จ",
+      "categoryUpdated": "อัปเดตหมวดหมู่สำเร็จ",
+      "categoryDeleted": "ลบหมวดหมู่สำเร็จ",
+      "settingsSaved": "บันทึกการตั้งค่าสำเร็จ",
+      "mockOnly": "นี่เป็น Mock-up เท่านั้น ไม่มีข้อมูลถูกเปลี่ยนแปลง"
     }
   }
 }
