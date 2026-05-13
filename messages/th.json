@@ -567,7 +567,6 @@
     "tabs": {
       "categories": "หมวดหมู่",
       "board": "บอร์ด",
-      "notifications": "การแจ้งเตือน",
       "data": "ข้อมูล"
     },
     "categories": {
@@ -615,21 +614,6 @@
       "enableDragDrop": "เปิดใช้ Drag & Drop",
       "enableDragDropDesc": "อนุญาตให้ลากการ์ดเพื่อจัดเรียงระหว่างคอลัมน์",
       "saveButton": "บันทึกการตั้งค่าบอร์ด"
-    },
-    "notifications": {
-      "title": "ตั้งค่าการแจ้งเตือน",
-      "description": "เลือกการแจ้งเตือนที่คุณต้องการรับ",
-      "dueDateReminder": "แจ้งเตือนก่อนกำหนดส่ง",
-      "dueDateReminderDesc": "ได้รับแจ้งเตือนก่อนถึงกำหนดส่งงาน",
-      "overdueAlert": "แจ้งเตือนงานเลยกำหนด",
-      "overdueAlertDesc": "ได้รับแจ้งเตือนเมื่องานเลยกำหนดส่ง",
-      "statusChange": "แจ้งเตือนเมื่อสถานะเปลี่ยน",
-      "statusChangeDesc": "ได้รับแจ้งเตือนเมื่อสถานะงานเปลี่ยนแปลง",
-      "reminderDays": "เวลาการแจ้งเตือน",
-      "reminderDaysDesc": "จำนวนวันก่อนถึงกำหนดส่งที่จะส่งการแจ้งเตือน",
-      "onDueDay": "ในวันกำหนดส่ง",
-      "daysBefore": "{days} วันก่อน",
-      "saveButton": "บันทึกการตั้งค่าแจ้งเตือน"
     },
     "data": {
       "title": "จัดการข้อมูล",

@@ -5,12 +5,10 @@ import {
   Settings,
   Tags,
   LayoutDashboard,
-  Bell,
   Database,
   Plus,
   Pencil,
   Trash2,
-  GripVertical,
   BarChart3,
   Save,
 } from "lucide-react";
@@ -103,12 +101,6 @@ export default function SettingDashboard() {
   const [showAvatars, setShowAvatars] = useState(true);
   const [showSubtasks, setShowSubtasks] = useState(true);
   const [enableDragDrop, setEnableDragDrop] = useState(true);
-
-  // Notification Settings State
-  const [notifyDueDate, setNotifyDueDate] = useState(true);
-  const [notifyOverdue, setNotifyOverdue] = useState(true);
-  const [notifyStatusChange, setNotifyStatusChange] = useState(false);
-  const [dueDateReminder, setDueDateReminder] = useState("1");
 
   // Data Settings State
   const [autoDeleteTrash, setAutoDeleteTrash] = useState(false);
@@ -248,10 +240,6 @@ export default function SettingDashboard() {
           <TabsTrigger value="board" className="gap-1.5 cursor-pointer">
             <LayoutDashboard className="w-4 h-4" />
             <span className="hidden sm:inline">{t("tabs.board")}</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-1.5 cursor-pointer">
-            <Bell className="w-4 h-4" />
-            <span className="hidden sm:inline">{t("tabs.notifications")}</span>
           </TabsTrigger>
           <TabsTrigger value="data" className="gap-1.5 cursor-pointer">
             <Database className="w-4 h-4" />
@@ -397,63 +385,7 @@ export default function SettingDashboard() {
           </div>
         </TabsContent>
 
-        {/* ==========================================
-            Tab: Notifications
-        ========================================== */}
-        <TabsContent value="notifications">
-          <div className="flex flex-col gap-6">
-            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6">
-              <h3 className="font-semibold text-lg flex items-center gap-2 mb-1">
-                <Bell className="w-5 h-5 text-amber-500" />
-                {t("notifications.title")}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-6">{t("notifications.description")}</p>
 
-              <div className="flex flex-col gap-4">
-                {[
-                  { id: "dueDate", label: t("notifications.dueDateReminder"), desc: t("notifications.dueDateReminderDesc"), checked: notifyDueDate, onChange: setNotifyDueDate },
-                  { id: "overdue", label: t("notifications.overdueAlert"), desc: t("notifications.overdueAlertDesc"), checked: notifyOverdue, onChange: setNotifyOverdue },
-                  { id: "statusChange", label: t("notifications.statusChange"), desc: t("notifications.statusChangeDesc"), checked: notifyStatusChange, onChange: setNotifyStatusChange },
-                ].map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors">
-                    <div className="flex flex-col gap-0.5">
-                      <Label htmlFor={`notif-${item.id}`} className="cursor-pointer">{item.label}</Label>
-                      <span className="text-xs text-muted-foreground">{item.desc}</span>
-                    </div>
-                    <Switch id={`notif-${item.id}`} checked={item.checked} onCheckedChange={item.onChange} className="cursor-pointer" />
-                  </div>
-                ))}
-
-                <Separator />
-
-                <div className="flex flex-col gap-2 max-w-sm">
-                  <Label>{t("notifications.reminderDays")}</Label>
-                  <Select value={dueDateReminder} onValueChange={setDueDateReminder}>
-                    <SelectTrigger className="cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="0">{t("notifications.onDueDay")}</SelectItem>
-                        <SelectItem value="1">{t("notifications.daysBefore", { days: 1 })}</SelectItem>
-                        <SelectItem value="3">{t("notifications.daysBefore", { days: 3 })}</SelectItem>
-                        <SelectItem value="7">{t("notifications.daysBefore", { days: 7 })}</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <span className="text-xs text-muted-foreground">{t("notifications.reminderDaysDesc")}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <Button onClick={() => toast.success(t("toast.settingsSaved"))} className="cursor-pointer">
-                <Save data-icon="inline-start" />
-                {t("notifications.saveButton")}
-              </Button>
-            </div>
-          </div>
-        </TabsContent>
 
         {/* ==========================================
             Tab: Data Management

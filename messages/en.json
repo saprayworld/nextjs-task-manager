@@ -567,7 +567,6 @@
     "tabs": {
       "categories": "Categories",
       "board": "Board",
-      "notifications": "Notifications",
       "data": "Data"
     },
     "categories": {
@@ -615,21 +614,6 @@
       "enableDragDrop": "Enable Drag & Drop",
       "enableDragDropDesc": "Allow reordering tasks by dragging cards between columns.",
       "saveButton": "Save Board Settings"
-    },
-    "notifications": {
-      "title": "Notification Preferences",
-      "description": "Choose which notifications you want to receive.",
-      "dueDateReminder": "Due Date Reminder",
-      "dueDateReminderDesc": "Get notified before a task's due date.",
-      "overdueAlert": "Overdue Alert",
-      "overdueAlertDesc": "Get notified when a task is overdue.",
-      "statusChange": "Status Change",
-      "statusChangeDesc": "Get notified when a task's status changes.",
-      "reminderDays": "Reminder Timing",
-      "reminderDaysDesc": "How many days before the due date to send a reminder.",
-      "onDueDay": "On the due day",
-      "daysBefore": "{days} day(s) before",
-      "saveButton": "Save Notification Settings"
     },
     "data": {
       "title": "Data Management",
