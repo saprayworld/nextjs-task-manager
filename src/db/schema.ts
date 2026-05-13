@@ -128,3 +128,21 @@ export const subtask = pgTable("subtask", {
   isCompleted: boolean("isCompleted").notNull().default(false),
   createdAt: timestamp("createdAt").notNull(),
 });
+
+// ==========================================
+// ตารางสำหรับ Categories (หมวดหมู่งาน)
+// ==========================================
+export const category = pgTable("category", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  name: text("name").notNull(),                                       // ชื่อ Category เช่น "Design"
+  color: text("color").notNull(),                                     // Hex color เช่น "#3b82f6"
+  includeInReport: boolean("includeInReport").notNull().default(true), // นำไปคำนวณในรายงานหรือไม่
+  isDefault: boolean("isDefault").notNull().default(false),            // สงวนสำหรับ "Default" (ลบไม่ได้)
+  legacyKey: text("legacyKey"),                                       // Key เก่าจาก mock-data เช่น "design", "wr" (ใช้ map ตอน migration)
+  order: integer("order").notNull().default(0),                        // ลำดับการแสดงผล
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
