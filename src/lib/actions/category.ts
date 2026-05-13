@@ -45,8 +45,8 @@ export async function getCategories() {
     .where(eq(category.userId, user.id))
     .orderBy(asc(category.order), asc(category.createdAt));
 
-  // ถ้ายังไม่มี categories → trigger migration อัตโนมัติ
-  if (categories.length === 0) {
+  // ถ้ายังไม่มี categories → trigger migration อัตโนมัติ (ต้องเปิด ENV ก่อน)
+  if (categories.length === 0 && process.env.ENABLE_CATEGORY_MIGRATION === "true") {
     await migrateHardcodedCategories(user.id);
     categories = await db.select()
       .from(category)

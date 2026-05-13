@@ -1,5 +1,6 @@
 import KanbanBoard from '@/components/kanban/kanban-board'; // ปรับ Path ให้ตรงกับที่คุณเก็บไฟล์ Component ของคุณ
 import { mockColumns, tags } from '@/components/kanban/mock-data';
+import { getCategories } from '@/lib/actions/category';
 import { getTasks } from '@/lib/actions/task';
 import { getTranslations } from 'next-intl/server';
 export default async function Page() {
@@ -7,6 +8,8 @@ export default async function Page() {
 
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database (ปลอดภัย 100% เพราะเช็ค Session แล้ว)
   const dbTasks = await getTasks();
+
+  await getCategories(); // For auto migration
 
   // 2. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task ที่ Board ต้องการ
   const formattedTasks = dbTasks.map(task => {
