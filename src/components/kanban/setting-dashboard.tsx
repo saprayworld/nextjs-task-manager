@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   Settings,
   Tags,
@@ -11,6 +12,8 @@ import {
   Trash2,
   BarChart3,
   Save,
+  Loader2,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +51,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "@/lib/actions/category";
 
 // ==========================================
 // Types
@@ -57,21 +65,16 @@ interface Category {
   name: string;
   color: string;
   includeInReport: boolean;
+  isDefault: boolean;
+}
+
+interface SettingDashboardProps {
+  initialCategories: Category[];
 }
 
 // ==========================================
-// Mock Data
+// Color Options
 // ==========================================
-const initialCategories: Category[] = [
-  { id: "1", name: "Design", color: "#3b82f6", includeInReport: true },
-  { id: "2", name: "Development", color: "#10b981", includeInReport: true },
-  { id: "3", name: "Research", color: "#f59e0b", includeInReport: true },
-  { id: "4", name: "Marketing", color: "#8b5cf6", includeInReport: false },
-  { id: "5", name: "Work Request", color: "#ef4444", includeInReport: true },
-  { id: "6", name: "PM", color: "#f97316", includeInReport: false },
-  { id: "7", name: "CM", color: "#06b6d4", includeInReport: true },
-];
-
 const colorOptions = [
   "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ef4444",
   "#f97316", "#06b6d4", "#ec4899", "#6366f1", "#14b8a6",
@@ -81,8 +84,10 @@ const colorOptions = [
 // ==========================================
 // Main Component
 // ==========================================
-export default function SettingDashboard() {
+export default function SettingDashboard({ initialCategories }: SettingDashboardProps) {
   const t = useTranslations("SettingDashboard");
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   // Category State
   const [categories, setCategories] = useState<Category[]>(initialCategories);
@@ -93,6 +98,7 @@ export default function SettingDashboard() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryColor, setNewCategoryColor] = useState(colorOptions[0]);
   const [newCategoryIncludeInReport, setNewCategoryIncludeInReport] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Board Settings State
   const [defaultColumn, setDefaultColumn] = useState("todo");
@@ -107,38 +113,87 @@ export default function SettingDashboard() {
   const [trashRetentionDays, setTrashRetentionDays] = useState("30");
 
   // ==========================================
-  // Category CRUD Handlers
+  // Category CRUD Handlers (Server Actions)
   // ==========================================
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name: newCategoryName.trim(),
-      color: newCategoryColor,
-      includeInReport: newCategoryIncludeInReport,
-    };
-    setCategories([...categories, newCategory]);
-    resetCategoryForm();
-    setIsAddDialogOpen(false);
-    toast.success(t("toast.categoryAdded"), { description: `"${newCategory.name}"` });
+    setIsSaving(true);
+    try {
+      const newCategory = await createCategory({
+        name: newCategoryName.trim(),
+        color: newCategoryColor,
+        includeInReport: newCategoryIncludeInReport,
+      });
+      setCategories([...categories, {
+        id: newCategory.id,
+        name: newCategory.name,
+        color: newCategory.color,
+        includeInReport: newCategory.includeInReport,
+        isDefault: newCategory.isDefault,
+      }]);
+      resetCategoryForm();
+      setIsAddDialogOpen(false);
+      toast.success(t("toast.categoryAdded"), { description: `"${newCategory.name}"` });
+      startTransition(() => router.refresh());
+    } catch (error) {
+      toast.error(t("toast.error"), { description: String(error) });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleEditCategory = () => {
+  const handleEditCategory = async () => {
     if (!editingCategory || !newCategoryName.trim()) return;
-    setCategories(categories.map(c =>
-      c.id === editingCategory.id
-        ? { ...c, name: newCategoryName.trim(), color: newCategoryColor, includeInReport: newCategoryIncludeInReport }
-        : c
-    ));
-    setIsEditDialogOpen(false);
-    toast.success(t("toast.categoryUpdated"), { description: `"${newCategoryName.trim()}"` });
+    setIsSaving(true);
+    try {
+      const updated = await updateCategory(editingCategory.id, {
+        name: newCategoryName.trim(),
+        color: newCategoryColor,
+        includeInReport: newCategoryIncludeInReport,
+      });
+      setCategories(categories.map(c =>
+        c.id === editingCategory.id
+          ? { ...c, name: updated.name, color: updated.color, includeInReport: updated.includeInReport }
+          : c
+      ));
+      setIsEditDialogOpen(false);
+      toast.success(t("toast.categoryUpdated"), { description: `"${updated.name}"` });
+      startTransition(() => router.refresh());
+    } catch (error) {
+      toast.error(t("toast.error"), { description: String(error) });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDeleteCategory = () => {
+  const handleDeleteCategory = async () => {
     if (!editingCategory) return;
-    setCategories(categories.filter(c => c.id !== editingCategory.id));
-    setIsDeleteDialogOpen(false);
-    toast.success(t("toast.categoryDeleted"), { description: `"${editingCategory.name}"` });
+    setIsSaving(true);
+    try {
+      await deleteCategory(editingCategory.id);
+      setCategories(categories.filter(c => c.id !== editingCategory.id));
+      setIsDeleteDialogOpen(false);
+      toast.success(t("toast.categoryDeleted"), { description: `"${editingCategory.name}"` });
+      startTransition(() => router.refresh());
+    } catch (error) {
+      toast.error(t("toast.error"), { description: String(error) });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleIncludeInReport = async (cat: Category) => {
+    try {
+      const updated = await updateCategory(cat.id, {
+        includeInReport: !cat.includeInReport,
+      });
+      setCategories(categories.map(c =>
+        c.id === cat.id ? { ...c, includeInReport: updated.includeInReport } : c
+      ));
+      startTransition(() => router.refresh());
+    } catch (error) {
+      toast.error(t("toast.error"), { description: String(error) });
+    }
   };
 
   const openEditDialog = (category: Category) => {
@@ -163,12 +218,6 @@ export default function SettingDashboard() {
     setNewCategoryName("");
     setNewCategoryColor(colorOptions[0]);
     setNewCategoryIncludeInReport(true);
-  };
-
-  const toggleIncludeInReport = (id: string) => {
-    setCategories(categories.map(c =>
-      c.id === id ? { ...c, includeInReport: !c.includeInReport } : c
-    ));
   };
 
   // ==========================================
@@ -224,10 +273,6 @@ export default function SettingDashboard() {
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground mt-1">{t("description")}</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
-          <Settings className="w-4 h-4" />
-          <span>{t("mockDataBadge")}</span>
-        </div>
       </div>
 
       {/* Tabs */}
@@ -268,13 +313,18 @@ export default function SettingDashboard() {
 
             {/* Category List */}
             <div className="divide-y divide-border/50">
-              {categories.map(category => (
-                <div key={category.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors group">
+              {categories.map(cat => (
+                <div key={cat.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors group">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {/* <GripVertical className="w-4 h-4 text-muted-foreground/40 shrink-0 cursor-grab" /> */}
-                    <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: category.color }} />
-                    <span className="font-medium text-sm truncate">{category.name}</span>
-                    {category.includeInReport && (
+                    <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                    <span className="font-medium text-sm truncate">{cat.name}</span>
+                    {cat.isDefault && (
+                      <Badge variant="outline" className="gap-1 shrink-0 text-xs">
+                        <Shield className="w-3 h-3" />
+                        {t("categories.defaultBadge")}
+                      </Badge>
+                    )}
+                    {cat.includeInReport && (
                       <Badge variant="secondary" className="gap-1 shrink-0 text-xs">
                         <BarChart3 className="w-3 h-3" />
                         {t("categories.reportBadge")}
@@ -282,17 +332,22 @@ export default function SettingDashboard() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {/* <Checkbox
-                      checked={category.includeInReport}
-                      onCheckedChange={() => toggleIncludeInReport(category.id)}
+                    <Switch
+                      checked={cat.includeInReport}
+                      onCheckedChange={() => handleToggleIncludeInReport(cat)}
                       aria-label={t("categories.form.includeInReport")}
-                    /> */}
-                    <Button variant="ghost" size="icon" className="size-8 cursor-pointer" onClick={() => openEditDialog(category)}>
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="size-8 text-destructive hover:text-destructive cursor-pointer" onClick={() => openDeleteDialog(category)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                      className="cursor-pointer"
+                    />
+                    {!cat.isDefault && (
+                      <>
+                        <Button variant="ghost" size="icon" className="size-8 cursor-pointer" onClick={() => openEditDialog(cat)}>
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="size-8 text-destructive hover:text-destructive cursor-pointer" onClick={() => openDeleteDialog(cat)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -470,7 +525,10 @@ export default function SettingDashboard() {
           {renderCategoryForm()}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} className="cursor-pointer">{t("actions.cancel")}</Button>
-            <Button onClick={handleAddCategory} disabled={!newCategoryName.trim()} className="cursor-pointer">{t("actions.add")}</Button>
+            <Button onClick={handleAddCategory} disabled={!newCategoryName.trim() || isSaving} className="cursor-pointer">
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {t("actions.add")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -485,7 +543,10 @@ export default function SettingDashboard() {
           {renderCategoryForm()}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="cursor-pointer">{t("actions.cancel")}</Button>
-            <Button onClick={handleEditCategory} disabled={!newCategoryName.trim()} className="cursor-pointer">{t("actions.save")}</Button>
+            <Button onClick={handleEditCategory} disabled={!newCategoryName.trim() || isSaving} className="cursor-pointer">
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {t("actions.save")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -501,7 +562,8 @@ export default function SettingDashboard() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">{t("actions.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteCategory} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
+            <AlertDialogAction onClick={handleDeleteCategory} disabled={isSaving} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
               {t("actions.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>

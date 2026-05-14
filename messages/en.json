@@ -573,6 +573,7 @@
       "title": "Category Management",
       "description": "Create, edit, or delete categories and choose which ones are included in reports.",
       "addButton": "Add Category",
+      "defaultBadge": "Default",
       "reportBadge": "Report",
       "emptyState": "No categories yet. Click \"Add Category\" to create one.",
       "total": "Total: {count} categories",
@@ -639,7 +640,8 @@
       "categoryUpdated": "Category updated successfully",
       "categoryDeleted": "Category deleted successfully",
       "settingsSaved": "Settings saved successfully",
-      "mockOnly": "This is a mock-up only. No data was changed."
+      "mockOnly": "This is a mock-up only. No data was changed.",
+      "error": "Something went wrong"
     }
   }
 }
