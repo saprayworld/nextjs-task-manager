@@ -41,6 +41,7 @@ export type Id = string | number;
 export interface Tag {
   text: string;
   classes: string;
+  style?: React.CSSProperties;
 }
 
 export interface Subtask {

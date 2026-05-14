@@ -22,6 +22,7 @@ export function categoriesToTagMap(categories: CategoryRecord[]): Record<string,
     const tag: Tag = {
       text: cat.name,
       classes: generateTagClasses(cat.color),
+      style: getTagStyle(cat.color),
     };
 
     // Map ด้วย id (UUID)

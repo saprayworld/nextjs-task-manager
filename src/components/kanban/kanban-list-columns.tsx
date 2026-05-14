@@ -69,7 +69,7 @@ export const getKanbanColumns = (
           >
             <div className="flex space-x-2 items-center">
               {tag && (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border bg-muted/50 text-muted-foreground whitespace-nowrap`}>
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap ${tag.classes}`} style={tag.style}>
                   {tag.text}
                 </span>
               )}
