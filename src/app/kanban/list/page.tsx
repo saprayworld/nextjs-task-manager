@@ -1,14 +1,20 @@
 import KanbanList from '@/components/kanban/kanban-list';
-import { mockColumns, tags } from '@/components/kanban/mock-data';
+import { mockColumns } from '@/components/kanban/mock-data';
+import { getCategories } from '@/lib/actions/category';
 import { getTasks } from '@/lib/actions/task';
+import { categoriesToTagMap } from '@/lib/category-utils';
 
 export default async function ListPage() {
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database
   const dbTasks = await getTasks({ includeHidden: true });
 
-  // 2. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task
+  // 2. ดึง categories จาก DB แล้วแปลงเป็น tag map
+  const categories = await getCategories();
+  const tagMap = categoriesToTagMap(categories);
+
+  // 3. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task
   const formattedTasks = dbTasks.map(task => {
-    const tagInfo = tags[task.categoryId || 'design'] || tags.design;
+    const tagInfo = tagMap[task.categoryId || 'default'] || tagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
 
     return {
       id: task.id,
@@ -34,6 +40,7 @@ export default async function ListPage() {
     <KanbanList
       initialColumns={mockColumns}
       initialTasks={formattedTasks}
+      categories={categories}
     />
   );
 }

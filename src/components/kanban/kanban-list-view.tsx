@@ -5,15 +5,17 @@ import { Task } from "./kanban-board";
 import { BoardColumn } from "./TaskDialog";
 import { getKanbanColumns } from "./kanban-list-columns";
 import { KanbanListTable } from "./kanban-list-table";
+import { CategoryRecord } from "@/lib/category-utils";
 import { useTranslations, useLocale } from 'next-intl';
 
 interface KanbanListViewProps {
   tasks: Task[];
   columns: BoardColumn[];
+  categories: CategoryRecord[];
   onEditTask: (task: Task) => void;
 }
 
-export function KanbanListView({ tasks, columns, onEditTask }: KanbanListViewProps) {
+export function KanbanListView({ tasks, columns, categories, onEditTask }: KanbanListViewProps) {
   const t = useTranslations('KanbanList');
   const locale = useLocale();
 
@@ -27,7 +29,8 @@ export function KanbanListView({ tasks, columns, onEditTask }: KanbanListViewPro
     <KanbanListTable 
       columns={tableColumns} 
       data={tasks} 
-      boardColumns={columns} // เพิ่ม prop นี้เข้าไป
+      boardColumns={columns}
+      categories={categories}
     />
   );
 }

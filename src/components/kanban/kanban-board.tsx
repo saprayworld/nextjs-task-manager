@@ -31,7 +31,7 @@ import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderT
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
-import { tags } from './mock-data';
+import { CategoryRecord, categoriesToTagMap } from '@/lib/category-utils';
 
 // ==========================================
 // Types
@@ -77,6 +77,7 @@ export interface Task {
 interface KanbanBoardProps {
   initialColumns: BoardColumn[];
   initialTasks: Task[];
+  categories: CategoryRecord[];
 }
 
 // ==========================================
@@ -126,7 +127,7 @@ function Column({ column, tasks, onEditTask }: ColumnProps) {
 // ==========================================
 // Main Board Component
 // ==========================================
-export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoardProps) {
+export default function KanbanBoard({ initialColumns, initialTasks, categories }: KanbanBoardProps) {
   const t = useTranslations("KanbanBoard");
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -213,11 +214,9 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
   };
 
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
-    const categoryTagMap: Record<string, Tag> = {
-      ...tags
-    };
+    const categoryTagMap = categoriesToTagMap(categories);
 
-    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap.design;
+    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
@@ -488,6 +487,7 @@ export default function KanbanBoard({ initialColumns, initialTasks }: KanbanBoar
         onOpenChange={setIsDialogOpen}
         taskToEdit={editingTask}
         columns={columns}
+        categories={categories}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}

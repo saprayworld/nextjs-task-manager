@@ -1,7 +1,8 @@
-import KanbanBoard from '@/components/kanban/kanban-board'; // ปรับ Path ให้ตรงกับที่คุณเก็บไฟล์ Component ของคุณ
-import { mockColumns, tags } from '@/components/kanban/mock-data';
+import KanbanBoard from '@/components/kanban/kanban-board';
+import { mockColumns } from '@/components/kanban/mock-data';
 import { getCategories } from '@/lib/actions/category';
 import { getTasks } from '@/lib/actions/task';
+import { categoriesToTagMap } from '@/lib/category-utils';
 import { getTranslations } from 'next-intl/server';
 export default async function Page() {
   const t = await getTranslations("KanbanBoard");
@@ -9,11 +10,13 @@ export default async function Page() {
   // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database (ปลอดภัย 100% เพราะเช็ค Session แล้ว)
   const dbTasks = await getTasks();
 
-  await getCategories(); // For auto migration
+  // 2. ดึง categories จาก DB แล้วแปลงเป็น tag map
+  const categories = await getCategories();
+  const tagMap = categoriesToTagMap(categories);
 
-  // 2. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task ที่ Board ต้องการ
+  // 3. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task ที่ Board ต้องการ
   const formattedTasks = dbTasks.map(task => {
-    const tagInfo = tags[task.categoryId || 'design'] || tags.design;
+    const tagInfo = tagMap[task.categoryId || 'default'] || tagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
 
     return {
       id: task.id,
@@ -45,6 +48,7 @@ export default async function Page() {
     <KanbanBoard
       initialColumns={translatedColumns}
       initialTasks={formattedTasks}
+      categories={categories}
     />
   );
 }

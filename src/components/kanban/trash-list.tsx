@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
 import { restoreTask, permanentDeleteTask } from "@/lib/actions/task";
-import { tags } from "./mock-data";
+import { CategoryRecord, categoriesToTagMap, getTagStyle } from "@/lib/category-utils";
 
 interface TrashTask {
   id: string;
@@ -33,9 +33,10 @@ interface TrashTask {
 
 interface TrashListProps {
   initialTasks: TrashTask[];
+  categories: CategoryRecord[];
 }
 
-export default function TrashList({ initialTasks }: TrashListProps) {
+export default function TrashList({ initialTasks, categories }: TrashListProps) {
   const t = useTranslations("TrashList");
   const locale = useLocale();
 
@@ -148,7 +149,11 @@ export default function TrashList({ initialTasks }: TrashListProps) {
         ) : (
           <div className="space-y-2">
             {filteredTasks.map((task) => {
-              const tagInfo = tags[task.categoryId || "design"] || tags.design;
+              const tagMap = categoriesToTagMap(categories);
+              const tagInfo = tagMap[task.categoryId || "default"] || tagMap["default"] || { text: "Default", classes: "border rounded-full" };
+              const tagStyle = getTagStyle(
+                categories.find(c => c.id === task.categoryId || c.legacyKey === task.categoryId)?.color || "#6b7280"
+              );
               return (
                 <div
                   key={task.id}
@@ -160,6 +165,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
                       <h3 className="font-medium text-sm truncate">{task.title}</h3>
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tagInfo.classes}`}
+                        style={tagStyle}
                       >
                         {tagInfo.text}
                       </span>

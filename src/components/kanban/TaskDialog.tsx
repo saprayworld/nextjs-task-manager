@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { tags } from "./mock-data";
+import { CategoryRecord } from "@/lib/category-utils";
 import { format } from "date-fns";
 
 export interface BoardColumn {
@@ -57,16 +57,17 @@ interface TaskDialogProps {
   onOpenChange: (open: boolean) => void;
   taskToEdit?: any | null;
   columns: BoardColumn[];
+  categories: CategoryRecord[];
   onSave: (data: TaskFormData) => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
   onArchive?: () => void | Promise<void>;
   onToggleVisibility?: () => void | Promise<void>;
 }
 
-export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, taskToEdit, columns, categories, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
   const t = useTranslations("TaskDialog");
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("wr");
+  const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
   const [columnId, setColumnId] = useState("todo");
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
@@ -88,7 +89,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
       setIsSaving(false);
       if (taskToEdit) {
         setTitle(taskToEdit.title || "");
-        setCategoryId(taskToEdit.categoryId || "wr");
+        setCategoryId(taskToEdit.categoryId || categories[0]?.id || "");
         setColumnId(taskToEdit.columnId || "todo");
         setDueDate(taskToEdit.dueDate || "");
         setDescription(taskToEdit.description || "");
@@ -99,7 +100,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
         setSubtasks(taskToEdit.subtasks || []);
       } else {
         setTitle("");
-        setCategoryId("wr");
+        setCategoryId(categories[0]?.id || "");
         setColumnId("todo");
         setDueDate("");
         setDescription("");
@@ -251,9 +252,9 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, onSave, on
                     className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {
-                      Object.entries(tags).map(([key, value], index) => {
-                        return <option key={`tag-${index}`} value={key}>{value.text}</option>
-                      })
+                      categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))
                     }
                   </select>
                 </div>

@@ -1,9 +1,11 @@
 import React from "react";
 import ArchiveList from "@/components/kanban/archive-list";
 import { getArchivedTasks } from "@/lib/actions/task";
+import { getCategories } from "@/lib/actions/category";
 
 export default async function ArchivePage() {
   const dbTasks = await getArchivedTasks();
+  const categories = await getCategories();
 
   const formattedTasks = dbTasks.map((task) => ({
     id: task.id,
@@ -16,5 +18,5 @@ export default async function ArchivePage() {
     archivedAt: task.archivedAt,
   }));
 
-  return <ArchiveList initialTasks={formattedTasks} />;
+  return <ArchiveList initialTasks={formattedTasks} categories={categories} />;
 }
