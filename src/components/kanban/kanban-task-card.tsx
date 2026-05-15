@@ -61,7 +61,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
       <div className="flex items-center justify-between mb-3">
         <div className='flex items-center gap-2 text-xs'>
           {task.tag && (
-            <span className={`flex font-sans font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`} style={task.tag.style}>
+            <span className={`flex font-sans font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-md ${task.tag.classes}`} style={task.tag.style}>
               {task.tag.text}
             </span>
           )}
