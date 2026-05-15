@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useTranslations, useLocale } from "next-intl";
 import { restoreTask, permanentDeleteTask } from "@/lib/actions/task";
 import { tags } from "./mock-data";
 
@@ -35,6 +36,9 @@ interface TrashListProps {
 }
 
 export default function TrashList({ initialTasks }: TrashListProps) {
+  const t = useTranslations("TrashList");
+  const locale = useLocale();
+
   const [tasks, setTasks] = useState<TrashTask[]>(initialTasks);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -44,12 +48,12 @@ export default function TrashList({ initialTasks }: TrashListProps) {
     try {
       await restoreTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      toast.success("กู้คืนสำเร็จ", {
-        description: `"${title}" ถูกกู้คืนกลับไปที่ Board แล้ว`,
+      toast.success(t('toast.restoreSuccess'), {
+        description: t('toast.restoreSuccessDesc', { title }),
       });
     } catch {
-      toast.error("กู้คืนไม่สำเร็จ", {
-        description: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      toast.error(t('toast.restoreError'), {
+        description: t('toast.errorTryAgain'),
       });
     } finally {
       setLoadingId(null);
@@ -61,12 +65,12 @@ export default function TrashList({ initialTasks }: TrashListProps) {
     try {
       await permanentDeleteTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      toast.success("ลบถาวรสำเร็จ", {
-        description: `"${title}" ถูกลบถาวรเรียบร้อยแล้ว`,
+      toast.success(t('toast.deleteSuccess'), {
+        description: t('toast.deleteSuccessDesc', { title }),
       });
     } catch {
-      toast.error("ลบไม่สำเร็จ", {
-        description: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      toast.error(t('toast.deleteError'), {
+        description: t('toast.errorTryAgain'),
       });
     } finally {
       setLoadingId(null);
@@ -83,7 +87,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
   });
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("th-TH", {
+    return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -99,15 +103,15 @@ export default function TrashList({ initialTasks }: TrashListProps) {
         <div>
           <div className="flex items-center gap-2">
             <Trash2 className="w-5 h-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold tracking-tight">ถังขยะ</h2>
+            <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
             {tasks.length > 0 && (
               <span className="bg-destructive/10 text-destructive text-xs px-2 py-0.5 rounded-full font-medium">
-                {tasks.length} รายการ
+                {t('itemCount', { count: tasks.length })}
               </span>
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            งานที่ถูกลบจะอยู่ที่นี่ คุณสามารถกู้คืนหรือลบถาวรได้
+            {t('description')}
           </p>
         </div>
         {tasks.length > 0 && (
@@ -115,7 +119,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="ค้นหาในถังขยะ..."
+              placeholder={t('searchPlaceholder')}
               className="w-full pl-8 h-9 text-sm bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -131,15 +135,15 @@ export default function TrashList({ initialTasks }: TrashListProps) {
             <div className="p-4 bg-muted/50 rounded-full mb-4">
               <Trash2 className="w-10 h-10 text-muted-foreground/50" />
             </div>
-            <h3 className="font-semibold text-lg mb-1">ถังขยะว่างเปล่า</h3>
+            <h3 className="font-semibold text-lg mb-1">{t('emptyState')}</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              เมื่อคุณลบงานจาก Board หรือ List งานจะถูกย้ายมาที่นี่
+              {t('emptyStateDesc')}
             </p>
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <Search className="w-8 h-8 text-muted-foreground/50 mb-3" />
-            <p className="text-sm text-muted-foreground">ไม่พบงานที่ตรงกับคำค้นหา</p>
+            <p className="text-sm text-muted-foreground">{t('noResults')}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -161,7 +165,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      ย้ายไปถังขยะเมื่อ {formatDate(task.deletedAt!)}
+                      {t('deletedAt', { date: formatDate(task.deletedAt!) })}
                     </p>
                   </div>
 
@@ -175,7 +179,7 @@ export default function TrashList({ initialTasks }: TrashListProps) {
                       disabled={loadingId === task.id}
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">กู้คืน</span>
+                      <span className="hidden sm:inline">{t('actions.restore')}</span>
                     </Button>
 
                     <AlertDialog>
@@ -187,28 +191,27 @@ export default function TrashList({ initialTasks }: TrashListProps) {
                           disabled={loadingId === task.id}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">ลบถาวร</span>
+                          <span className="hidden sm:inline">{t('actions.permanentDelete')}</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle className="flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-destructive" />
-                            ลบงานถาวร?
+                            {t('actions.deleteTitle')}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            คุณแน่ใจหรือไม่ว่าต้องการลบ &quot;{task.title}&quot; ถาวร?
-                            การดำเนินการนี้ไม่สามารถกู้คืนได้
+                            {t('actions.deleteDesc', { title: task.title })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                          <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handlePermanentDelete(task.id, task.title)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             <Trash2 className="w-4 h-4 mr-1.5" />
-                            ลบถาวร
+                            {t('actions.permanentDelete')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

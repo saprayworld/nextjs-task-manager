@@ -3,11 +3,10 @@
 import { useSession, authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Loader2, Laptop, LogOut, ShieldAlert, Globe, CalendarClock, Phone } from "lucide-react";
+import { Loader2, Laptop, LogOut, ShieldAlert, Globe, CalendarClock, Phone, MonitorSmartphone, Wifi } from "lucide-react";
 import { toast } from "sonner";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { useTranslations, useLocale } from "next-intl";
 
 type ActiveSession = {
   id: string;
@@ -20,7 +19,9 @@ type ActiveSession = {
 
 export default function SessionsPage() {
   const { data: currentSessionData, isPending } = useSession();
-  
+  const t = useTranslations("SessionsPage");
+  const locale = useLocale();
+
   const [sessions, setSessions] = useState<ActiveSession[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
@@ -50,12 +51,12 @@ export default function SessionsPage() {
       } else {
         // Fallback for cases where standard method isn't loaded or configured
         if (currentSessionData?.session) {
-           setSessions([currentSessionData.session as any]);
+          setSessions([currentSessionData.session as any]);
         }
       }
     } catch (err: any) {
       console.error(err);
-      toast.error("ไม่สามารถดึงข้อมูลอุปกรณ์ที่เข้าสู่ระบบได้");
+      toast.error(t('toast.fetchError'));
     } finally {
       setIsLoadingSessions(false);
     }
@@ -71,11 +72,11 @@ export default function SessionsPage() {
       } else {
         await new Promise(res => setTimeout(res, 800));
       }
-      
-      toast.success("ลบเซสชันออกจากระบบเรียบร้อยแล้ว");
+
+      toast.success(t('toast.revokeSuccess'));
       setSessions((prev) => prev.filter((s) => s.id !== sessionToRevoke.id));
     } catch (err: any) {
-      toast.error(err.message || "เกิดข้อผิดพลาดในการนำออกเซสชัน");
+      toast.error(err.message || t('toast.revokeError'));
     } finally {
       setRevokingId(null);
     }
@@ -83,28 +84,31 @@ export default function SessionsPage() {
 
   // Helper เพื่อดึงชื่ออุปกรณ์จาก userAgent
   const getDeviceName = (userAgent?: string | null) => {
-    if (!userAgent) return "อุปกรณ์ที่ไม่รู้จัก (Unknown Device)";
-    if (userAgent.includes("Mobile") || userAgent.includes("Android") || userAgent.includes("iPhone")) return "สมาร์ทโฟน (Mobile Device)";
-    if (userAgent.includes("Mac") || userAgent.includes("Windows") || userAgent.includes("Linux")) return "คอมพิวเตอร์ (Desktop/Laptop)";
-    return "อุปกรณ์ Browser";
+    if (!userAgent) return t('device.unknown');
+    if (userAgent.includes("Mobile") || userAgent.includes("Android") || userAgent.includes("iPhone")) return t('device.mobile');
+    if (userAgent.includes("Mac") || userAgent.includes("Windows") || userAgent.includes("Linux")) return t('device.desktop');
+    return t('device.browser');
   };
 
   // Format date helper
   const formatDate = (dateString: string | Date) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("th-TH", {
+    return new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-US", {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(date);
   };
+
+  const currentSessionCount = sessions.filter(s => currentSessionData?.session?.id === s.id).length;
+  const otherSessionCount = sessions.length - currentSessionCount;
 
   if (isPending) {
     return (
       <div className="flex h-[60vh] w-full items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="w-10 h-10 animate-spin text-primary/60" />
-          <p className="text-muted-foreground animate-pulse text-sm">กำลังตรวจสอบข้อมูลเซสชัน...</p>
+          <p className="text-muted-foreground animate-pulse text-sm">{t('loading')}</p>
         </div>
       </div>
     );
@@ -112,146 +116,183 @@ export default function SessionsPage() {
 
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
-      
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">อุปกรณ์และเซสชัน (Sessions)</h1>
-          <p className="text-muted-foreground text-sm max-w-xl">
-            ตรวจสอบและจัดการอุปกรณ์ที่คุณใช้เข้าสู่ระบบ (Sign In) อยู่ในปัจจุบัน 
+
+      {/* Header Section — Report Dashboard style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-muted-foreground mt-1">
+            {t('description')}
           </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg border border-border/50">
+          <MonitorSmartphone className="w-4 h-4" />
+          <span>{t('headerBadge', { count: sessions.length })}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 relative items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 relative items-start">
         {/* Left Side: Navigation */}
         <ProfileSidebar />
 
-        {/* Right Side: Content Area */}
+        {/* Right Side: Content */}
         <div className="md:col-span-8 lg:col-span-9 space-y-6">
-          <Card className="shadow-sm border-border/60 bg-card overflow-hidden transition-all duration-300">
-            {/* Top decorative gradient line */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500"></div>
-            
-            <CardHeader className="pb-6 pt-8">
+
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Laptop className="w-5 h-5 text-indigo-500" />
-                  <h2 className="text-2xl font-semibold tracking-tight">เซสชันทั้งหมดที่ใช้งานอยู่</h2>
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.totalSessions')}</p>
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                  <Laptop className="w-4 h-4" />
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="hidden sm:flex"
-                  onClick={fetchSessions}
-                  disabled={isLoadingSessions}
-                >
-                  {isLoadingSessions ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  รีเฟรชข้อมูล
-                </Button>
               </div>
-              <CardDescription className="text-sm mt-1">
-                หากคุณพบอุปกรณ์ที่ไม่รู้จัก กรุณากดปุ่ม <b>ออกจากระบบ</b> และเปลี่ยนรหัสผ่านเพื่อความปลอดภัยของบัญชี
-              </CardDescription>
-            </CardHeader>
+              <h2 className="text-3xl font-bold">{sessions.length}</h2>
+            </div>
 
-            <Separator className="bg-border/40" />
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.currentDevice')}</p>
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                  <Wifi className="w-4 h-4" />
+                </div>
+              </div>
+              <h2 className="text-3xl font-bold">{currentSessionCount}</h2>
+            </div>
 
-            <CardContent className="space-y-6 pt-8">
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-5 flex flex-col space-y-3 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">{t('cards.otherDevices')}</p>
+                <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                  <MonitorSmartphone className="w-4 h-4" />
+                </div>
+              </div>
+              <h2 className="text-3xl font-bold">{otherSessionCount}</h2>
+            </div>
+          </div>
+
+          {/* Sessions List — Report Dashboard card style */}
+          <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
+            {/* Section Header */}
+            <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
+              <div>
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <Laptop className="w-5 h-5 text-purple-500" />
+                  {t('sessionList.title')}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t.rich('sessionList.description', {
+                    b: (chunks) => <b>{chunks}</b>
+                  })}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex"
+                onClick={fetchSessions}
+                disabled={isLoadingSessions}
+              >
+                {isLoadingSessions ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                {t('sessionList.refresh')}
+              </Button>
+            </div>
+
+            {/* Session Items */}
+            <div className="divide-y divide-border/50">
               {isLoadingSessions ? (
-                <div className="flex flex-col items-center justify-center py-10 space-y-3">
+                <div className="flex flex-col items-center justify-center py-12 space-y-3">
                   <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">กำลังดึงข้อมูลเซสชันจากเซิร์ฟเวอร์...</p>
+                  <p className="text-sm text-muted-foreground">{t('sessionList.loadingSessions')}</p>
                 </div>
               ) : sessions.length === 0 ? (
-                <div className="text-center py-12 border rounded-xl bg-muted/20 border-dashed">
-                  <Laptop className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">ไม่พบอุปกรณ์ที่เข้าสู่ระบบ</h3>
+                <div className="p-8 text-center text-muted-foreground flex flex-col items-center justify-center">
+                  <Laptop className="w-12 h-12 mb-3 text-muted-foreground/30" />
+                  <h3 className="text-lg font-medium">{t('sessionList.noDevices')}</h3>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {sessions.map((sess) => {
-                    const isCurrentSession = currentSessionData?.session?.id === sess.id;
-                    const deviceType = getDeviceName(sess.userAgent);
-                    const Icon = deviceType.includes("สมาร์ทโฟน") ? Phone : Laptop;
+                sessions.map((sess) => {
+                  const isCurrentSession = currentSessionData?.session?.id === sess.id;
+                  const deviceType = getDeviceName(sess.userAgent);
+                  const isMobile = sess.userAgent && (sess.userAgent.includes("Mobile") || sess.userAgent.includes("Android") || sess.userAgent.includes("iPhone"));
+                  const Icon = isMobile ? Phone : Laptop;
 
-                    return (
-                      <div 
-                        key={sess.id} 
-                        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-xl border transition-all duration-200 ${
-                          isCurrentSession 
-                            ? "bg-indigo-50/50 border-indigo-200/60 dark:bg-indigo-950/20 dark:border-indigo-800/60" 
-                            : "bg-card border-border hover:shadow-sm"
-                        }`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className={`p-3 rounded-full mt-1 shrink-0 ${isCurrentSession ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300" : "bg-muted text-muted-foreground"}`}>
-                            <Icon className="w-5 h-5" />
-                          </div>
-                          
-                          <div className="space-y-1.5">
-                            <h3 className="text-base font-semibold flex items-center gap-2">
-                              {deviceType}
-                              {isCurrentSession && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500 text-white font-bold tracking-wider">
-                                  อุปกรณ์ปัจจุบัน
-                                </span>
-                              )}
-                            </h3>
-                            
-                            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-4 text-xs text-muted-foreground">
-                              {sess.ipAddress && (
-                                <span className="flex items-center gap-1.5 line-clamp-1 break-all">
-                                  <Globe className="w-3.5 h-3.5 shrink-0" />
-                                  IP: {sess.ipAddress}
-                                </span>
-                              )}
-                              {sess.createdAt && (
-                                <span className="flex items-center gap-1.5 shrink-0">
-                                  <CalendarClock className="w-3.5 h-3.5" />
-                                  ลงชื่อเข้าใช้: {formatDate(sess.createdAt)}
-                                </span>
-                              )}
-                            </div>
-
-                            {sess.userAgent && (
-                              <div className="text-[11px] text-muted-foreground/70 line-clamp-1 pt-1 break-all max-w-[300px] lg:max-w-md">
-                                {sess.userAgent}
-                              </div>
-                            )}
-                          </div>
+                  return (
+                    <div
+                      key={sess.id}
+                      className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 rounded-lg mt-0.5 shrink-0 ${isCurrentSession
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                            : "bg-muted text-muted-foreground"
+                          }`}>
+                          <Icon className="w-5 h-5" />
                         </div>
 
-                        {!isCurrentSession && (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full sm:w-auto text-destructive border-transparent hover:border-destructive/20 hover:bg-destructive/10 shrink-0"
-                            disabled={revokingId === sess.id}
-                            onClick={() => handleRevoke(sess)}
-                          >
-                            {revokingId === sess.id ? (
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            ) : (
-                              <LogOut className="w-4 h-4 mr-2" />
+                        <div className="space-y-1.5">
+                          <h3 className="text-base font-semibold flex items-center gap-2 group-hover:text-primary transition-colors">
+                            {deviceType}
+                            {isCurrentSession && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500 text-white font-bold tracking-wider">
+                                {t('device.currentBadge')}
+                              </span>
                             )}
-                            ออกจากระบบอุปกรณ์นี้
-                          </Button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
+                          </h3>
 
-            <div className="bg-muted/20 px-6 py-4 border-t border-border/40 mt-2 flex items-center gap-3">
+                          <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-4 text-xs text-muted-foreground">
+                            {sess.ipAddress && (
+                              <span className="flex items-center gap-1.5 line-clamp-1 break-all">
+                                <Globe className="w-3.5 h-3.5 shrink-0" />
+                                IP: {sess.ipAddress}
+                              </span>
+                            )}
+                            {sess.createdAt && (
+                              <span className="flex items-center gap-1.5 shrink-0">
+                                <CalendarClock className="w-3.5 h-3.5" />
+                                {t('device.signedInAt')}{formatDate(sess.createdAt)}
+                              </span>
+                            )}
+                          </div>
+
+                          {sess.userAgent && (
+                            <div className="text-[11px] text-muted-foreground/70 line-clamp-1 pt-1 break-all max-w-[300px] lg:max-w-md">
+                              {sess.userAgent}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {!isCurrentSession && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto text-destructive border-transparent hover:border-destructive/20 hover:bg-destructive/10 shrink-0"
+                          disabled={revokingId === sess.id}
+                          onClick={() => handleRevoke(sess)}
+                        >
+                          {revokingId === sess.id ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <LogOut className="w-4 h-4 mr-2" />
+                          )}
+                          {t('actions.revokeSession')}
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer Note */}
+            <div className="px-6 py-4 border-t border-border/50 bg-muted/10 flex items-center gap-3">
               <ShieldAlert className="w-5 h-5 text-muted-foreground shrink-0" />
               <p className="text-xs text-muted-foreground">
-                การคลิก "ออกจากระบบอุปกรณ์นี้" ระบบจะตัดการเชื่อมต่อทันที และอุปกรณ์ดังกล่าวจะต้องล็อคอินใหม่
+                {t('footer')}
               </p>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

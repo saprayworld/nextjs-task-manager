@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useTranslations, useLocale } from "next-intl";
 import { unarchiveTask, deleteTask } from "@/lib/actions/task";
 import { tags } from "./mock-data";
 
@@ -35,6 +36,9 @@ interface ArchiveListProps {
 }
 
 export default function ArchiveList({ initialTasks }: ArchiveListProps) {
+  const t = useTranslations("ArchiveList");
+  const locale = useLocale();
+
   const [tasks, setTasks] = useState<ArchiveTask[]>(initialTasks);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -44,12 +48,12 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
     try {
       await unarchiveTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      toast.success("นำกลับสำเร็จ", {
-        description: `"${title}" ถูกนำกลับไปที่ Board แล้ว`,
+      toast.success(t('toast.restoreSuccess'), {
+        description: t('toast.restoreSuccessDesc', { title }),
       });
     } catch {
-      toast.error("นำกลับไม่สำเร็จ", {
-        description: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      toast.error(t('toast.restoreError'), {
+        description: t('toast.errorTryAgain'),
       });
     } finally {
       setLoadingId(null);
@@ -61,12 +65,12 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
     try {
       await deleteTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      toast.success("ย้ายไปถังขยะสำเร็จ", {
-        description: `"${title}" ถูกย้ายไปถังขยะแล้ว`,
+      toast.success(t('toast.trashSuccess'), {
+        description: t('toast.trashSuccessDesc', { title }),
       });
     } catch {
-      toast.error("ย้ายไม่สำเร็จ", {
-        description: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      toast.error(t('toast.trashError'), {
+        description: t('toast.errorTryAgain'),
       });
     } finally {
       setLoadingId(null);
@@ -83,7 +87,7 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
   });
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("th-TH", {
+    return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -99,15 +103,15 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
         <div>
           <div className="flex items-center gap-2">
             <Archive className="w-5 h-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold tracking-tight">Archive</h2>
+            <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
             {tasks.length > 0 && (
               <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full font-medium">
-                {tasks.length} รายการ
+                {t('itemCount', { count: tasks.length })}
               </span>
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            งานที่ถูกเก็บเข้าคลังจะอยู่ที่นี่ คุณสามารถนำกลับมาได้ตลอด
+            {t('description')}
           </p>
         </div>
         {tasks.length > 0 && (
@@ -115,7 +119,7 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="ค้นหาใน Archive..."
+              placeholder={t('searchPlaceholder')}
               className="w-full pl-8 h-9 text-sm bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -131,15 +135,15 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
             <div className="p-4 bg-muted/50 rounded-full mb-4">
               <Archive className="w-10 h-10 text-muted-foreground/50" />
             </div>
-            <h3 className="font-semibold text-lg mb-1">Archive ว่างเปล่า</h3>
+            <h3 className="font-semibold text-lg mb-1">{t('emptyState')}</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              เมื่อคุณ archive งาน งานจะถูกเก็บมาที่นี่แทนที่จะแสดงบน Board
+              {t('emptyStateDesc')}
             </p>
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <Search className="w-8 h-8 text-muted-foreground/50 mb-3" />
-            <p className="text-sm text-muted-foreground">ไม่พบงานที่ตรงกับคำค้นหา</p>
+            <p className="text-sm text-muted-foreground">{t('noResults')}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -161,7 +165,7 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      เก็บเข้า Archive เมื่อ {formatDate(task.archivedAt!)}
+                      {t('archivedAt', { date: formatDate(task.archivedAt!) })}
                     </p>
                   </div>
 
@@ -175,7 +179,7 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
                       disabled={loadingId === task.id}
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">นำกลับ</span>
+                      <span className="hidden sm:inline">{t('actions.restore')}</span>
                     </Button>
 
                     <AlertDialog>
@@ -187,24 +191,24 @@ export default function ArchiveList({ initialTasks }: ArchiveListProps) {
                           disabled={loadingId === task.id}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">ย้ายไปถังขยะ</span>
+                          <span className="hidden sm:inline">{t('actions.moveToTrash')}</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>ย้ายไปถังขยะ?</AlertDialogTitle>
+                          <AlertDialogTitle>{t('actions.deleteTitle')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            ต้องการย้าย &quot;{task.title}&quot; ไปถังขยะหรือไม่?
+                            {t('actions.deleteDesc', { title: task.title })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                          <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleMoveToTrash(task.id, task.title)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             <Trash2 className="w-4 h-4 mr-1.5" />
-                            ย้ายไปถังขยะ
+                            {t('actions.moveToTrash')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

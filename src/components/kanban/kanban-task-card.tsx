@@ -2,7 +2,8 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit2, Paperclip, MessageSquare, Clock, RefreshCw } from 'lucide-react';
+import { Edit2, Paperclip, MessageSquare, Clock, RefreshCw, Timer, CalendarClock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Task } from './kanban-board'; // นำเข้า Type จากหน้า Board
 
 const formatDateDisplay = (dateString?: string) => {
@@ -21,6 +22,7 @@ interface KanbanTaskCardProps {
 }
 
 export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
+  const t = useTranslations("KanbanBoard");
   const {
     setNodeRef,
     attributes,
@@ -57,14 +59,14 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
       {...listeners}
     >
       <div className="flex items-center justify-between mb-3">
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 text-xs'>
           {task.tag && (
-            <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`}>
+            <span className={`flex font-sans font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${task.tag.classes}`}>
               {task.tag.text}
             </span>
           )}
           {task.recurringTemplateId && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={`งานประจำ รอบที่ ${task.recurrenceIndex ?? '?'}`}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-primary/10 text-primary flex items-center gap-1" title={t("taskCard.recurringRound", { round: task.recurrenceIndex ?? '?' })}>
               <RefreshCw className="w-3 h-3" />
               #{task.recurrenceIndex}
             </span>
@@ -74,7 +76,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(task); }}
             className="text-muted-foreground hover:text-foreground transition-opacity p-1"
-            title="แก้ไขงาน"
+            title={t("taskCard.editTask")}
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
@@ -118,9 +120,14 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
               <MessageSquare className="w-3 h-3" /> {task.comments}
             </span>
           )}
+          {(task.totalWorkTime ?? 0) > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 transition-colors">
+              <Timer className="w-3 h-3" /> {`${task.totalWorkTime} ${t("taskCard.totalTimeUnit")}`}
+            </span>
+          )}
           {task.dueDate && (
             <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${task.dueDateClasses || ''}`}>
-              <Clock className="w-3 h-3" /> {formatDateDisplay(task.dueDate)}
+              <CalendarClock className="w-3 h-3" /> {formatDateDisplay(task.dueDate)}
             </span>
           )}
         </div>

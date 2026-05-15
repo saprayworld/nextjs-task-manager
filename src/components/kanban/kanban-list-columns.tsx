@@ -17,11 +17,22 @@ import { Task, Tag } from "./kanban-board";
 import { BoardColumn } from "./TaskDialog";
 
 // ฟังก์ชันช่วยเหลือสำหรับแสดงผลวันที่
-const formatDateDisplay = (dateString?: string) => {
+const formatDateDisplay = (dateString?: string, locale: string = "th-TH") => {
   if (!dateString) return "-";
   try {
     const d = new Date(dateString);
-    return d.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" });
+    return d.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+  } catch (e) {
+    return dateString;
+  }
+};
+
+// ฟังก์ชันช่วยเหลือสำหรับแสดงผลวันที่พร้อมเวลา
+const formatDateTimeDisplay = (dateString?: string, locale: string = "th-TH") => {
+  if (!dateString) return "-";
+  try {
+    const d = new Date(dateString);
+    return d.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   } catch (e) {
     return dateString;
   }
@@ -30,7 +41,9 @@ const formatDateDisplay = (dateString?: string) => {
 // ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns และ onEditTask จาก component แม่ได้
 export const getKanbanColumns = (
   boardColumns: BoardColumn[],
-  onEditTask: (task: Task) => void
+  onEditTask: (task: Task) => void,
+  t: (key: string) => string,
+  locale: string
 ): ColumnDef<Task>[] => [
     {
       accessorKey: "title",
@@ -41,7 +54,7 @@ export const getKanbanColumns = (
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-4 h-8 data-[state=open]:bg-accent mx-1"
           >
-            Title
+            {t('columns.title')}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -50,7 +63,7 @@ export const getKanbanColumns = (
         const tag = row.original.tag;
         const description = row.original.description;
         return (
-          <div 
+          <div
             className="flex flex-col gap-1 py-1 cursor-pointer group"
             onClick={() => onEditTask(row.original)}
           >
@@ -75,15 +88,26 @@ export const getKanbanColumns = (
       },
     },
     {
+      // คอลัมน์ซ่อนสำหรับ Filter ตามหมวดหมู่
+      accessorKey: "categoryId",
+      header: () => null,
+      cell: () => null,
+      enableHiding: false,
+      enableSorting: false,
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    {
       accessorKey: "columnId",
-      header: "Status",
+      header: t('columns.status'),
       cell: ({ row }) => {
         const columnId = row.getValue("columnId") as string;
         const statusColumn = boardColumns.find((col) => col.id === columnId);
         return (
           <div className="flex w-[100px] items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${statusColumn?.dotColor || "bg-slate-500"}`}></div>
-            <span className="truncate">{statusColumn?.title || "ไม่ระบุ"}</span>
+            <span className="truncate">{statusColumn?.title || t('columns.notSpecified')}</span>
           </div>
         );
       },
@@ -93,36 +117,74 @@ export const getKanbanColumns = (
     },
     {
       accessorKey: "dueDate",
-      header: "Due Date",
+      header: t('columns.dueDate'),
       cell: ({ row }) => {
         const dateStr = row.getValue("dueDate") as string | undefined;
-        return <div className="text-muted-foreground">{formatDateDisplay(dateStr)}</div>;
+        return <div className="text-muted-foreground">{formatDateDisplay(dateStr, locale)}</div>;
       },
     },
     {
-      id: "actions",
-      cell: ({ row }) => {
-        const task = row.original;
+      accessorKey: "createdAt",
+      header: ({ column }) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuLabel>การจัดการ</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => onEditTask(task)}>
-                แก้ไขงาน
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                ลบงาน
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-4 h-8 data-[state=open]:bg-accent mx-1"
+          >
+            {t('columns.createdAt')}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
         );
       },
+      cell: ({ row }) => {
+        const dateStr = row.getValue("createdAt") as string | undefined;
+        return <div className="text-muted-foreground text-sm whitespace-nowrap">{formatDateTimeDisplay(dateStr, locale)}</div>;
+      },
     },
+    {
+      accessorKey: "updatedAt",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-4 h-8 data-[state=open]:bg-accent mx-1"
+          >
+            {t('columns.updatedAt')}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const dateStr = row.getValue("updatedAt") as string | undefined;
+        return <div className="text-muted-foreground text-sm whitespace-nowrap">{formatDateTimeDisplay(dateStr, locale)}</div>;
+      },
+    },
+    // {
+    //   id: "actions",
+    //   cell: ({ row }) => {
+    //     const task = row.original;
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+    //             <MoreHorizontal className="h-4 w-4" />
+    //             <span className="sr-only">Open menu</span>
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end" className="w-[160px]">
+    //           <DropdownMenuLabel>{t('actions.manage')}</DropdownMenuLabel>
+    //           <DropdownMenuItem onClick={() => onEditTask(task)}>
+    //             {t('actions.editTask')}
+    //           </DropdownMenuItem>
+    //           <DropdownMenuSeparator />
+    //           <DropdownMenuItem className="text-destructive">
+    //             {t('actions.deleteTask')}
+    //           </DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
   ];

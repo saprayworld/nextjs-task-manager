@@ -1,0 +1,562 @@
+{
+  "Index": {
+    "title": "TaskFlow - บอร์ดที่ทันสมัย"
+  },
+  "Navbar": {
+    "title": "TaskFlow System",
+    "links": {
+      "board": "บอร์ด",
+      "list": "รายการ",
+      "trash": "ถังขยะ",
+      "archive": "Archive",
+      "recurring": "งานประจำ"
+    },
+    "userMenu": {
+      "profile": "โปรไฟล์",
+      "report": "รายงาน",
+      "logout": "ออกจากระบบ",
+      "loggingOut": "กำลังออกจากระบบ...",
+      "about": "เกี่ยวกับ",
+      "appearance": "การแสดงผล",
+      "darkMode": "โหมดมืด",
+      "language": "ภาษา"
+    }
+  },
+  "Login": {
+    "title": "เข้าสู่ระบบ",
+    "statusChecking": "กำลังตรวจสอบสถานะ...",
+    "emailNotFound": "ไม่มีอีเมลนี้ในระบบ โปรดตรวจสอบว่าคุณได้สมัครสมาชิกแล้ว",
+    "otpSendError": "ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่อีกครั้ง",
+    "otpSendSuccess": "ส่งรหัส OTP ไปที่อีเมลแล้ว กรุณาตรวจสอบกล่องจดหมายของคุณ",
+    "otpSendNewSuccess": "ส่งรหัส OTP ใหม่ไปที่อีเมลแล้ว",
+    "otpInvalid": "รหัส OTP ไม่ถูกต้อง",
+    "errorOccurred": "เกิดข้อผิดพลาด",
+    "descriptionCredentials": "กรอกอีเมลเพื่อรับรหัสผ่านแบบใช้ครั้งเดียว (OTP)",
+    "descriptionOtp": "กรอกรหัส OTP ที่ได้รับทางอีเมล",
+    "emailLabel": "อีเมล",
+    "emailPlaceholder": "m@example.com",
+    "processing": "กำลังดำเนินการ...",
+    "sendOtpButton": "ส่งรหัส OTP",
+    "goToRegister": "ไปหน้าสมัครสมาชิก",
+    "otpLabel": "รหัส OTP",
+    "otpPlaceholder": "123456",
+    "verifying": "กำลังตรวจสอบ...",
+    "verifyAndLoginButton": "ยืนยันและเข้าสู่ระบบ",
+    "backToChangeAccount": "ย้อนกลับไปเปลี่ยนบัญชี",
+    "requestNewOtp": "ขอรหัสใหม่"
+  },
+  "Register": {
+    "title": "สร้างบัญชีใหม่",
+    "description": "กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก",
+    "statusChecking": "กำลังตรวจสอบสถานะ...",
+    "emailExistsError": "อีเมลนี้ถูกใช้งานแล้ว กรุณาไปหน้าเข้าสู่ระบบ",
+    "registerError": "เกิดข้อผิดพลาดในการสมัครสมาชิก",
+    "registerSuccess": "สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันบัญชี",
+    "backToLoginButton": "กลับไปหน้าเข้าสู่ระบบ",
+    "nameLabel": "ชื่อ-นามสกุล",
+    "namePlaceholder": "John Doe",
+    "emailLabel": "อีเมล",
+    "emailPlaceholder": "m@example.com",
+    "processing": "กำลังดำเนินการ...",
+    "submitButton": "สมัครสมาชิก",
+    "alreadyHaveAccount": "มีบัญชีอยู่แล้ว?",
+    "loginLink": "เข้าสู่ระบบ"
+  },
+  "Home": {
+    "dashboardButton": "แดชบอร์ด",
+    "loginButton": "เข้าสู่ระบบ",
+    "getStartedButton": "เริ่มต้นใช้งาน",
+    "heroBadge": "Built with Next.js 16 & shadcn/ui",
+    "heroTitle1": "จัดการงานของคุณ",
+    "heroTitle2": "อย่างเป็นระบบ",
+    "heroDescription": "ระบบจัดการโปรเจกต์แบบ Full-Stack ที่ทันสมัย พร้อมฟีเจอร์ Kanban, Passwordless Auth, Session Control และอีกมากมาย",
+    "goToBoardButton": "เข้าสู่บอร์ดทำงาน",
+    "startFreeButton": "เริ่มต้นใช้งานฟรี",
+    "previewTodo": "To Do",
+    "previewInProgress": "In Progress",
+    "previewDone": "Done",
+    "featuresBadge": "✨ Features",
+    "featuresTitle": "ทุกอย่างที่คุณต้องการ",
+    "featuresDescription": "ฟีเจอร์ครบครันสำหรับการจัดการงาน ตั้งแต่ระบบ Auth ไปจนถึง Kanban Board แบบ Drag & Drop",
+    "feature1Title": "Passwordless Auth",
+    "feature1Desc": "เข้าสู่ระบบง่ายและปลอดภัยขั้นสุดด้วย Email OTP ส่งตรงถึงกล่องจดหมายของคุณ",
+    "feature2Title": "Kanban Board",
+    "feature2Desc": "จัดการงานแบบ Drag & Drop ด้วย @dnd-kit ลากย้ายการ์ดได้อย่างลื่นไหล",
+    "feature3Title": "Rich Text Editor",
+    "feature3Desc": "เขียนรายละเอียดงานและจัดรูปแบบได้อย่างครบครัน แบบ WYSIWYG ด้วย Tiptap",
+    "feature4Title": "List, Archive & Trash",
+    "feature4Desc": "มุมมองตารางสำหรับงานทั้งหมด พร้อมระบบจัดเก็บงานลง Archive และถังขยะ",
+    "feature5Title": "Server Actions",
+    "feature5Desc": "CRUD Operations ฝั่ง Server โดยไม่ต้องสร้าง API Endpoints แยก",
+    "feature6Title": "Device Sessions",
+    "feature6Desc": "ควบคุมทุกอุปกรณ์ที่เข้าใช้งาน ตรวจสอบและบังคับออกจากระบบจากระยะไกลได้ทันที",
+    "techBadge": "🛠️ Tech Stack",
+    "techTitle": "สร้างด้วยเทคโนโลยีที่ทันสมัย",
+    "techDescription": "เลือกใช้ Tools ที่ดีที่สุดในแต่ละด้าน เพื่อประสบการณ์ Developer ที่ยอดเยี่ยม",
+    "ctaTitle": "พร้อมจัดระเบียบงานแล้วหรือยัง?",
+    "ctaDescription": "สมัครฟรี เริ่มสร้าง Kanban Board ของคุณได้เลยวันนี้",
+    "ctaRegisterFree": "สมัครสมาชิกฟรี",
+    "ctaGithub": "ดูบน GitHub",
+    "footerText": "© {year} TaskFlow. สร้างด้วย Next.js & shadcn/ui"
+  },
+  "KanbanBoard": {
+    "title": "Kanban Board",
+    "description": "จัดการและติดตามสถานะงานทั้งหมด",
+    "searchPlaceholder": "ค้นหางาน, ป้ายกำกับ...",
+    "createNewTask": "สร้างงานใหม่",
+    "create": "สร้าง",
+    "columns": {
+      "todo": "ต้องทำ",
+      "inprogress": "กำลังทำ",
+      "review": "รอตรวจ",
+      "done": "เสร็จสิ้น"
+    },
+    "toast": {
+      "trashSuccess": "ย้ายไปถังขยะสำเร็จ",
+      "trashSuccessDesc": "\"{title}\" ถูกย้ายไปถังขยะแล้ว",
+      "trashError": "ย้ายไปถังขยะไม่สำเร็จ",
+      "errorTryAgain": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      "archiveSuccess": "เก็บเข้าคลังสำเร็จ",
+      "archiveSuccessDesc": "\"{title}\" ถูกเก็บเข้า Archive แล้ว",
+      "archiveError": "เก็บเข้าคลังไม่สำเร็จ",
+      "hideSuccess": "ซ่อนงานสำเร็จ",
+      "hideSuccessDesc": "\"{title}\" ถูกซ่อนจาก Board แล้ว",
+      "hideError": "ซ่อนงานไม่สำเร็จ",
+      "showSuccess": "แสดงงานในบอร์ดสำเร็จ",
+      "showSuccessDesc": "\"{title}\" จะแสดงใน Board แล้ว",
+      "saveSuccess": "บันทึกสำเร็จ",
+      "updateSuccessDesc": "\"{title}\" ถูกอัปเดตเรียบร้อยแล้ว",
+      "createSuccess": "สร้างงานสำเร็จ",
+      "createSuccessDesc": "\"{title}\" ถูกเพิ่มเรียบร้อยแล้ว",
+      "saveError": "บันทึกไม่สำเร็จ",
+      "reorderError": "บันทึกลำดับไม่สำเร็จ",
+      "reorderErrorDesc": "เกิดข้อผิดพลาดในการจัดเรียงการ์ด"
+    },
+    "taskCard": {
+      "editTask": "แก้ไขงาน",
+      "recurringRound": "งานประจำ รอบที่ {round}",
+      "totalTimeUnit": "นาที"
+    }
+  },
+  "KanbanList": {
+    "title": "Task List",
+    "description": "ดูและจัดการงานทั้งหมดในรูปแบบตาราง",
+    "createNewTask": "สร้างงานใหม่",
+    "create": "สร้าง",
+    "columns": {
+      "title": "Title",
+      "status": "Status",
+      "dueDate": "Due Date",
+      "createdAt": "สร้างเมื่อ",
+      "updatedAt": "อัปเดทเมื่อ",
+      "notSpecified": "ไม่ระบุ"
+    },
+    "actions": {
+      "manage": "การจัดการ",
+      "editTask": "แก้ไขงาน",
+      "deleteTask": "ลบงาน"
+    },
+    "table": {
+      "searchPlaceholder": "ค้นหางาน (Title)...",
+      "category": "หมวดหมู่",
+      "reset": "Reset",
+      "view": "View",
+      "toggleColumns": "Toggle columns",
+      "noTasksFound": "ไม่พบข้อมูลงาน",
+      "rowsPerPage": "Rows per page",
+      "rows": "Rows",
+      "page": "Page {pageIndex} of {pageCount}"
+    }
+  },
+  "ArchiveList": {
+    "title": "Archive",
+    "itemCount": "{count} รายการ",
+    "description": "งานที่ถูกเก็บเข้าคลังจะอยู่ที่นี่ คุณสามารถนำกลับมาได้ตลอด",
+    "searchPlaceholder": "ค้นหาใน Archive...",
+    "emptyState": "Archive ว่างเปล่า",
+    "emptyStateDesc": "เมื่อคุณ archive งาน งานจะถูกเก็บมาที่นี่แทนที่จะแสดงบน Board",
+    "noResults": "ไม่พบงานที่ตรงกับคำค้นหา",
+    "archivedAt": "เก็บเข้า Archive เมื่อ {date}",
+    "actions": {
+      "restore": "นำกลับ",
+      "moveToTrash": "ย้ายไปถังขยะ",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ย้ายไปถังขยะ?",
+      "deleteDesc": "ต้องการย้าย \"{title}\" ไปถังขยะหรือไม่?"
+    },
+    "toast": {
+      "restoreSuccess": "นำกลับสำเร็จ",
+      "restoreSuccessDesc": "\"{title}\" ถูกนำกลับไปที่ Board แล้ว",
+      "restoreError": "นำกลับไม่สำเร็จ",
+      "trashSuccess": "ย้ายไปถังขยะสำเร็จ",
+      "trashSuccessDesc": "\"{title}\" ถูกย้ายไปถังขยะแล้ว",
+      "trashError": "ย้ายไม่สำเร็จ",
+      "errorTryAgain": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+    }
+  },
+  "RecurringList": {
+    "title": "งานประจำ",
+    "itemCount": "{count} รายการ",
+    "description": "จัดการงานที่สร้างอัตโนมัติ เช่น ทุกเดือน ทุกสัปดาห์",
+    "searchPlaceholder": "ค้นหางานประจำ...",
+    "createNew": "สร้างงานประจำ",
+    "create": "สร้าง",
+    "createFirst": "สร้างงานประจำแรก",
+    "emptyState": "ยังไม่มีงานประจำ",
+    "emptyStateDesc": "สร้างงานประจำเพื่อให้ระบบสร้าง task ให้อัตโนมัติตามกำหนดเวลา",
+    "noResults": "ไม่พบงานประจำที่ตรงกับคำค้นหา",
+    "status": {
+      "paused": "หยุดชั่วคราว"
+    },
+    "recurrence": {
+      "every": "ทุก {interval} ",
+      "daily": "วัน",
+      "weekly": "สัปดาห์",
+      "monthly": "เดือน",
+      "monthlyOnDay": "เดือน วันที่ {day}",
+      "yearly": "ปี"
+    },
+    "labels": {
+      "next": "ถัดไป: ",
+      "createdCount": "สร้างไปแล้ว {count} ครั้ง",
+      "createdCountMax": "สร้างไปแล้ว {count} / {max} ครั้ง",
+      "latest": "ล่าสุด: "
+    },
+    "actions": {
+      "pause": "หยุด",
+      "resume": "เปิด",
+      "edit": "แก้ไข",
+      "delete": "ลบ",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ลบงานประจำนี้?",
+      "deleteDesc": "\"{title}\" จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
+      "deleteTemplate": "ลบ Template"
+    },
+    "toast": {
+      "saveSuccess": "บันทึกสำเร็จ",
+      "saveSuccessDesc": "\"{title}\" ถูกอัปเดตแล้ว",
+      "createSuccess": "สร้างงานประจำสำเร็จ",
+      "createSuccessDesc": "\"{title}\" พร้อมทำงานแล้ว",
+      "error": "เกิดข้อผิดพลาด",
+      "errorTryAgain": "กรุณาลองใหม่อีกครั้ง",
+      "deleteSuccess": "ลบสำเร็จ",
+      "deleteSuccessDesc": "\"{title}\" ถูกลบแล้ว",
+      "deleteError": "ลบไม่สำเร็จ",
+      "statusActive": "เปิดใช้งานแล้ว",
+      "statusActiveDesc": "\"{title}\" จะสร้างงานตามกำหนดต่อไป",
+      "statusPaused": "หยุดใช้งานแล้ว",
+      "statusPausedDesc": "\"{title}\" จะไม่สร้างงานจนกว่าจะเปิดใหม่"
+    }
+  },
+  "TrashList": {
+    "title": "ถังขยะ",
+    "itemCount": "{count} รายการ",
+    "description": "งานที่ถูกลบจะอยู่ที่นี่ คุณสามารถกู้คืนหรือลบถาวรได้",
+    "searchPlaceholder": "ค้นหาในถังขยะ...",
+    "emptyState": "ถังขยะว่างเปล่า",
+    "emptyStateDesc": "เมื่อคุณลบงานจาก Board หรือ List งานจะถูกย้ายมาที่นี่",
+    "noResults": "ไม่พบงานที่ตรงกับคำค้นหา",
+    "deletedAt": "ย้ายไปถังขยะเมื่อ {date}",
+    "actions": {
+      "restore": "กู้คืน",
+      "permanentDelete": "ลบถาวร",
+      "cancel": "ยกเลิก",
+      "deleteTitle": "ลบงานถาวร?",
+      "deleteDesc": "คุณแน่ใจหรือไม่ว่าต้องการลบ \"{title}\" ถาวร? การดำเนินการนี้ไม่สามารถกู้คืนได้"
+    },
+    "toast": {
+      "restoreSuccess": "กู้คืนสำเร็จ",
+      "restoreSuccessDesc": "\"{title}\" ถูกกู้คืนกลับไปที่ Board แล้ว",
+      "restoreError": "กู้คืนไม่สำเร็จ",
+      "deleteSuccess": "ลบถาวรสำเร็จ",
+      "deleteSuccessDesc": "\"{title}\" ถูกลบถาวรเรียบร้อยแล้ว",
+      "deleteError": "ลบไม่สำเร็จ",
+      "errorTryAgain": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+    }
+  },
+  "TaskDialog": {
+    "titleEdit": "แก้ไขงาน",
+    "titleCreate": "สร้างงานใหม่",
+    "recurring": "งานประจำ",
+    "recurringRound": "สร้างอัตโนมัติ รอบที่ {round}",
+    "taskName": "ชื่องาน",
+    "taskNameRequired": "*",
+    "taskNamePlaceholder": "เช่น อัปเดตโลโก้เว็บไซต์",
+    "status": "สถานะ",
+    "category": "หมวดหมู่",
+    "dueDate": "กำหนดส่ง",
+    "workPeriod": "ช่วงเวลาทำงาน",
+    "start": "เริ่มงาน",
+    "end": "สิ้นสุด",
+    "totalTime": "เวลาที่ใช้ทั้งหมด (นาที)",
+    "totalTimePlaceholder": "เช่น 120",
+    "hours": "ชั่วโมง",
+    "minutes": "นาที",
+    "details": "รายละเอียด",
+    "detailsPlaceholder": "เพิ่มรายละเอียดของงานนี้...",
+    "checklist": "รายการย่อย (Checklist)",
+    "completed": "สำเร็จ",
+    "addSubtaskPlaceholder": "เพิ่มรายการย่อย...",
+    "add": "เพิ่ม",
+    "processing": "กำลังดำเนินการ...",
+    "hideFromBoard": "ซ่อนจาก Board",
+    "showOnBoard": "แสดงใน Board",
+    "archiving": "กำลังเก็บ...",
+    "archive": "เก็บเข้าคลัง",
+    "moving": "กำลังย้าย...",
+    "moveToTrash": "ย้ายไปถังขยะ",
+    "deleteTitle": "ย้ายงานไปถังขยะ?",
+    "deleteDescription": "งานนี้จะถูกย้ายไปที่ถังขยะ คุณสามารถกู้คืนได้ภายหลัง",
+    "cancel": "ยกเลิก",
+    "saving": "กำลังบันทึก...",
+    "creating": "กำลังสร้าง...",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "save": "บันทึก",
+    "createTask": "สร้างงาน",
+    "create": "สร้าง"
+  },
+  "ReportDashboard": {
+    "title": "รายงานและสถิติ (Report)",
+    "description": "สรุปผลการทำงานและเวลาที่ใช้ (คำนวณจากข้อมูล totalWorkTime)",
+    "currentData": "ข้อมูล ณ ปัจจุบัน",
+    "cards": {
+      "totalTasks": "งานทั้งหมด",
+      "totalTasksDesc": "จำนวนงานในระบบทั้งหมด",
+      "completedTasks": "งานที่เสร็จแล้ว",
+      "pendingTasks": "งานที่กำลังทำ",
+      "pendingTasksDesc": "งานที่รอการดำเนินการ",
+      "totalWorkTime": "เวลาทำงานรวม",
+      "totalWorkTimeDesc": "รวมเฉพาะงานที่มีบันทึกเวลา"
+    },
+    "timeBreakdown": {
+      "title": "รายละเอียดเวลาทำงาน (รายชิ้นงาน)",
+      "description": "แสดงงานที่มีค่า totalWorkTime มากกว่า 0 เรียงตามเวลาที่ใช้",
+      "statusCompleted": "เสร็จสิ้น",
+      "statusInProgress": "กำลังดำเนินการ",
+      "statusLabel": "สถานะ",
+      "emptyState": "ไม่มีงานที่มีการบันทึกเวลา (totalWorkTime = 0)"
+    },
+    "chart": {
+      "title": "สถานะงานทั้งหมด",
+      "chartLabelCount": "จำนวนงาน",
+      "chartLabelCompleted": "เสร็จสิ้น",
+      "chartLabelPending": "ยังไม่เสร็จ",
+      "completedOf": "เสร็จสิ้น {completed} จาก {total} งาน",
+      "centerLabel": "สำเร็จ",
+      "taskUnit": "งาน",
+      "legendCompleted": "เสร็จสิ้น (Done)",
+      "legendPending": "ยังไม่เสร็จ (Pending)"
+    },
+    "time": {
+      "hours": "h",
+      "minutes": "m"
+    }
+  },
+  "ProfileSidebar": {
+    "menuTitle": "เมนูตั้งค่า",
+    "nav": {
+      "profile": "โปรไฟล์ทั่วไป",
+      "security": "รหัสผ่านและความปลอดภัย",
+      "sessions": "อุปกรณ์และเซสชัน"
+    },
+    "emailVerified": "ยืนยันอีเมลแล้ว",
+    "emailVerifiedDesc": "บัญชีของคุณมีความปลอดภัยและได้รับการปกป้องอย่างสมบูรณ์",
+    "emailNotVerified": "ยังไม่ยืนยันอีเมล",
+    "emailNotVerifiedDesc": "โปรดยืนยันที่อยู่อีเมลของคุณเพื่อเพิ่มความปลอดภัย ",
+    "clickToVerify": "คลิกเพื่อยืนยัน"
+  },
+  "ProfilePage": {
+    "title": "การตั้งค่าบัญชี",
+    "description": "จัดการข้อมูลส่วนตัว รูปโปรไฟล์ และการตั้งค่าที่เกี่ยวข้องกับบัญชีของคุณ",
+    "loading": "กำลังโหลดข้อมูลโปรไฟล์...",
+    "cards": {
+      "displayName": "ชื่อแสดงผล",
+      "email": "อีเมล",
+      "memberSince": "สมาชิกตั้งแต่"
+    },
+    "form": {
+      "title": "แก้ไขข้อมูลส่วนตัว",
+      "description": "อัปเดตข้อมูลส่วนตัวของคุณเพื่อให้เพื่อนร่วมงานรู้จักคุณมากขึ้น",
+      "avatarTitle": "เลือกรูปโปรไฟล์",
+      "avatarDescription": "เราแนะนำให้ใช้รูปภาพสี่เหลี่ยมจัตุรัส ขนาดอย่างน้อย 256x256 px เพื่อความคมชัด",
+      "changeAvatar": "เปลี่ยนรูปโปรไฟล์",
+      "displayNameLabel": "ชื่อแสดงผล",
+      "displayNamePlaceholder": "กรอกชื่อที่ต้องการแสดง",
+      "emailLabel": "อีเมล (Email)",
+      "emailHelp": "อีเมลใช้สำหรับเข้าสู่ระบบ ไม่สามารถเปลี่ยนได้",
+      "avatarUrlLabel": "ลิงก์รููปภาพ (Avatar URL)",
+      "avatarUrlOptional": "ทางเลือก",
+      "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
+      "avatarUrlHelp": "หากคุณมีลิงก์รูปภาพสาธารณะ สามารถนำมาใส่ที่นี่ได้ทันที เพื่ออัปเดตแทนการอัปโหลด"
+    },
+    "actions": {
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "save": "บันทึกการปรับปรุง"
+    },
+    "toast": {
+      "nameRequired": "กรุณากรอกชื่อแสดงผล",
+      "updateSuccess": "อัปเดตโปรไฟล์สำเร็จ! ข้อมูลของคุณได้รับการบันทึกแล้ว",
+      "updateError": "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์"
+    }
+  },
+  "SecurityPage": {
+    "title": "รหัสผ่านและความปลอดภัย",
+    "description": "จัดการรหัสผ่านและตรวจสอบความปลอดภัยของบัญชีเพื่อป้องกันการเข้าถึงที่ไม่ได้รับอนุญาต",
+    "headerBadge": "ความปลอดภัยของบัญชี",
+    "loading": "กำลังตรวจสอบข้อมูล...",
+    "cards": {
+      "emailStatus": "สถานะอีเมล",
+      "verified": "ยืนยันแล้ว",
+      "notVerified": "ยังไม่ยืนยัน",
+      "authProvider": "ประเภทการเข้าสู่ระบบ",
+      "securityLevel": "ระดับความปลอดภัย",
+      "securityGood": "ดี",
+      "securityModerate": "ปานกลาง"
+    },
+    "emailVerification": {
+      "title": "สถานะการยืนยันอีเมล",
+      "emailIs": "อีเมลของคุณคือ ",
+      "badgeVerified": "ยืนยันแล้ว",
+      "badgeNotVerified": "ยังไม่ยืนยัน",
+      "notVerifiedDesc": "การยืนยันอีเมลช่วยเพิ่มความปลอดภัยให้บัญชีของคุณ และทำให้คุณสามารถกู้คืนรหัสผ่านได้ในกรณีที่ลืม",
+      "sendingLink": "กำลังส่งลิงก์...",
+      "sendVerification": "ส่งลิงก์ยืนยันอีเมล",
+      "verifiedDesc": "บัญชีของคุณปลอดภัยและได้รับการยืนยันเรียบร้อยแล้ว หากพบปัญหาใด ๆ คุณสามารถใช้ความช่วยเหลือเพิ่มเติมจากเมนูตั้งค่าได้"
+    },
+    "changePassword": {
+      "title": "เปลี่ยนรหัสผ่าน",
+      "description": "กรุณาตรวจสอบให้แน่ใจว่ารหัสผ่านใหม่มีความยาวอย่างน้อย 8 ตัวอักษรและคาดเดาได้ยาก",
+      "securityAdviceTitle": "คำแนะนำความปลอดภัย",
+      "securityAdviceDesc": "การเปลี่ยนรหัสผ่านอาจทำให้ระบบออกจากระบบ (Sign Out) ในอุปกรณ์อื่นๆ ทั้งหมดที่คุณเคยล็อคอินไว้ เพื่อความปลอดภัยของบัญชี",
+      "currentPassword": "รหัสผ่านปัจจุบัน",
+      "currentPasswordPlaceholder": "กรอกรหัสผ่านปัจจุบันของคุณ",
+      "newPassword": "รหัสผ่านใหม่",
+      "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)",
+      "confirmPassword": "ยืนยันรหัสผ่านใหม่",
+      "confirmPasswordPlaceholder": "กรอกรหัสผ่านใหม่อีกครั้ง",
+      "passwordMismatch": "รหัสผ่านและข้อมูลการยืนยันไม่ตรงกัน"
+    },
+    "actions": {
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "updatePassword": "อัปเดตรหัสผ่าน"
+    },
+    "toast": {
+      "verificationSent": "ส่งลิงก์ยืนยันสำเร็จ! กรุณาตรวจสอบกล่องจดหมายของคุณ",
+      "verificationError": "ไม่สามารถส่งอีเมลยืนยันได้",
+      "fillAll": "กรุณากรอกข้อมูลให้ครบถ้วน",
+      "passwordMismatch": "รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน",
+      "passwordTooShort": "รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
+      "passwordChangeSuccess": "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!",
+      "passwordChangeError": "เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน",
+      "currentPasswordWrong": "รหัสผ่านปัจจุบันไม่ถูกต้อง หรือเกิดข้อผิดพลาด"
+    }
+  },
+  "SessionsPage": {
+    "title": "อุปกรณ์และเซสชัน",
+    "description": "ตรวจสอบและจัดการอุปกรณ์ที่คุณใช้เข้าสู่ระบบอยู่ในปัจจุบัน",
+    "headerBadge": "{count} เซสชันที่ใช้งานอยู่",
+    "loading": "กำลังตรวจสอบข้อมูลเซสชัน...",
+    "cards": {
+      "totalSessions": "เซสชันทั้งหมด",
+      "currentDevice": "อุปกรณ์ปัจจุบัน",
+      "otherDevices": "อุปกรณ์อื่น"
+    },
+    "sessionList": {
+      "title": "เซสชันทั้งหมดที่ใช้งานอยู่",
+      "description": "หากคุณพบอุปกรณ์ที่ไม่รู้จัก กรุณากด <b>ออกจากระบบ</b> และเปลี่ยนรหัสผ่าน",
+      "refresh": "รีเฟรชข้อมูล",
+      "loadingSessions": "กำลังดึงข้อมูลเซสชันจากเซิร์ฟเวอร์...",
+      "noDevices": "ไม่พบอุปกรณ์ที่เข้าสู่ระบบ"
+    },
+    "device": {
+      "unknown": "อุปกรณ์ที่ไม่รู้จัก (Unknown Device)",
+      "mobile": "สมาร์ทโฟน (Mobile Device)",
+      "desktop": "คอมพิวเตอร์ (Desktop/Laptop)",
+      "browser": "อุปกรณ์ Browser",
+      "currentBadge": "อุปกรณ์ปัจจุบัน",
+      "signedInAt": "ลงชื่อเข้าใช้: "
+    },
+    "actions": {
+      "revokeSession": "ออกจากระบบอุปกรณ์นี้"
+    },
+    "footer": "การคลิก \"ออกจากระบบอุปกรณ์นี้\" ระบบจะตัดการเชื่อมต่อทันที และอุปกรณ์ดังกล่าวจะต้องล็อคอินใหม่",
+    "toast": {
+      "fetchError": "ไม่สามารถดึงข้อมูลอุปกรณ์ที่เข้าสู่ระบบได้",
+      "revokeSuccess": "ลบเซสชันออกจากระบบเรียบร้อยแล้ว",
+      "revokeError": "เกิดข้อผิดพลาดในการนำออกเซสชัน"
+    }
+  },
+  "RecurringTemplateDialog": {
+    "titleEdit": "แก้ไขงานประจำ",
+    "titleCreate": "สร้างงานประจำใหม่",
+    "form": {
+      "taskName": "ชื่องาน",
+      "taskNameRequired": "*",
+      "taskNamePlaceholder": "เช่น ส่งรายงานประจำเดือน",
+      "description": "คำอธิบาย",
+      "descriptionPlaceholder": "รายละเอียดเพิ่มเติม...",
+      "column": "สร้างลงคอลัมน์",
+      "columnRequired": "*",
+      "category": "หมวดหมู่"
+    },
+    "frequency": {
+      "title": "ตั้งค่าความถี่",
+      "frequencyLabel": "ความถี่",
+      "everyLabel": "ทุกๆ",
+      "daily": "รายวัน",
+      "weekly": "รายสัปดาห์",
+      "monthly": "รายเดือน",
+      "yearly": "รายปี",
+      "unitDaily": "วัน",
+      "unitWeekly": "สัปดาห์",
+      "unitMonthly": "เดือน",
+      "unitYearly": "ปี",
+      "dayOfMonth": "วันที่ในเดือน",
+      "dayOfMonthHint": "(ถ้าเดือนไม่มีวันที่นี้ จะใช้วันสุดท้ายของเดือนแทน)",
+      "advanceDays": "สร้างล่วงหน้า (วัน)",
+      "advanceDaysHint": "วันก่อนกำหนดส่ง (0 = สร้างในวัน due)"
+    },
+    "summary": {
+      "everyInterval": "ทุกๆ {interval} ",
+      "every": "ทุก",
+      "daily": "วัน",
+      "weekly": "สัปดาห์",
+      "monthly": "เดือน",
+      "monthlyDay": " วันที่ {day}",
+      "yearly": "ปี",
+      "advanceDays": " (สร้างล่วงหน้า {days} วัน)"
+    },
+    "period": {
+      "title": "ช่วงเวลา",
+      "startDate": "เริ่มตั้งแต่",
+      "startDateRequired": "*",
+      "endDate": "สิ้นสุด (ไม่บังคับ)",
+      "maxOccurrences": "จำนวนครั้งสูงสุด (ไม่บังคับ)",
+      "maxOccurrencesPlaceholder": "ไม่จำกัด"
+    },
+    "subtasks": {
+      "title": "รายการย่อยที่จะสร้างอัตโนมัติ",
+      "placeholder": "เพิ่มรายการย่อย...",
+      "add": "เพิ่ม"
+    },
+    "actions": {
+      "deleting": "กำลังลบ...",
+      "deleteTemplate": "ลบ Template",
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "creating": "กำลังสร้าง...",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "save": "บันทึก",
+      "createRecurring": "สร้างงานประจำ",
+      "create": "สร้าง"
+    },
+    "deleteDialog": {
+      "title": "ลบงานประจำนี้?",
+      "description": "Template นี้จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ",
+      "cancel": "ยกเลิก",
+      "confirm": "ลบ Template"
+    }
+  }
+}

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
-import { checkEmailExists } from "@/app/login/actions";
+import { checkEmailExists } from "@/app/login/actions"
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function RegisterPage() {
   const router = useRouter();
+  const t = useTranslations("Register");
   const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,7 +36,7 @@ export default function RegisterPage() {
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">กำลังตรวจสอบสถานะ...</p>
+          <p className="text-sm text-muted-foreground">{t("statusChecking")}</p>
         </div>
       </div>
     );
@@ -55,7 +57,7 @@ export default function RegisterPage() {
     }
 
     if (checkResult.exists) {
-      setError("อีเมลนี้ถูกใช้งานแล้ว กรุณาไปหน้าเข้าสู่ระบบ");
+      setError(t("emailExistsError"));
       setLoading(false);
       return;
     }
@@ -71,13 +73,13 @@ export default function RegisterPage() {
     });
 
     if (error) {
-      setError(error.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
+      setError(error.message || t("registerError"));
       setLoading(false);
       return;
     }
 
     // แจ้งเตือนให้ไปยืนยันอีเมล
-    setSuccessMsg("สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันบัญชี");
+    setSuccessMsg(t("registerSuccess"));
     setLoading(false);
   };
 
@@ -85,10 +87,10 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">สร้างบัญชีใหม่</CardTitle>
-          <CardDescription>กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight">{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
-        
+
         {successMsg ? (
           <CardContent className="space-y-4 py-8">
             <div className="p-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md text-center flex flex-col items-center gap-2">
@@ -100,33 +102,33 @@ export default function RegisterPage() {
               variant="outline"
               onClick={() => router.push("/login")}
             >
-              กลับไปหน้าเข้าสู่ระบบ
+              {t("backToLoginButton")}
             </Button>
           </CardContent>
         ) : (
           <form onSubmit={handleRegister}>
             <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                {error}
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="name">ชื่อ-นามสกุล</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  {error}
+                </div>
+              )}
               <div className="space-y-2">
-                <Label htmlFor="email">อีเมล</Label>
+                <Label htmlFor="name">{t("nameLabel")}</Label>
+                <Input
+                  id="name"
+                  placeholder={t("namePlaceholder")}
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -136,12 +138,12 @@ export default function RegisterPage() {
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {loading ? "กำลังดำเนินการ..." : "สมัครสมาชิก"}
+                {loading ? t("processing") : t("submitButton")}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
-                มีบัญชีอยู่แล้ว?{" "}
+                {t("alreadyHaveAccount")}{" "}
                 <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-                  เข้าสู่ระบบ
+                  {t("loginLink")}
                 </Link>
               </div>
             </CardFooter>

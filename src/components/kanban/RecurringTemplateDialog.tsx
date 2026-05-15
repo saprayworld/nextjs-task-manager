@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BoardColumn } from "./TaskDialog";
 import { tags } from "./mock-data";
+import { useTranslations } from "next-intl";
 
 interface RecurringTemplateFormData {
   title: string;
@@ -74,6 +75,8 @@ export function RecurringTemplateDialog({
   onSave,
   onDelete,
 }: RecurringTemplateDialogProps) {
+  const t = useTranslations("RecurringTemplateDialog");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("design");
@@ -187,16 +190,18 @@ export function RecurringTemplateDialog({
 
   // ข้อความสรุปสำหรับแสดง preview
   const getRecurrenceSummary = () => {
-    const intervalText = recurrenceInterval > 1 ? `ทุกๆ ${recurrenceInterval} ` : "ทุก";
+    const intervalText = recurrenceInterval > 1
+      ? t('summary.everyInterval', { interval: recurrenceInterval })
+      : t('summary.every');
     switch (recurrenceType) {
       case "daily":
-        return `${intervalText}วัน`;
+        return `${intervalText}${t('summary.daily')}`;
       case "weekly":
-        return `${intervalText}สัปดาห์`;
+        return `${intervalText}${t('summary.weekly')}`;
       case "monthly":
-        return `${intervalText}เดือน${recurrenceDayOfMonth ? ` วันที่ ${recurrenceDayOfMonth}` : ""}`;
+        return `${intervalText}${t('summary.monthly')}${recurrenceDayOfMonth ? t('summary.monthlyDay', { day: recurrenceDayOfMonth }) : ""}`;
       case "yearly":
-        return `${intervalText}ปี`;
+        return `${intervalText}${t('summary.yearly')}`;
       default:
         return "";
     }
@@ -204,7 +209,7 @@ export function RecurringTemplateDialog({
 
   const getAdvanceSummary = () => {
     if (advanceDays <= 0) return "";
-    return ` (สร้างล่วงหน้า ${advanceDays} วัน)`;
+    return t('summary.advanceDays', { days: advanceDays });
   };
 
   return (
@@ -218,7 +223,7 @@ export function RecurringTemplateDialog({
           <DialogTitle className="flex items-center justify-between flex-shrink-0">
             <span className="flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-primary" />
-              {isEditMode ? "แก้ไขงานประจำ" : "สร้างงานประจำใหม่"}
+              {isEditMode ? t('titleEdit') : t('titleCreate')}
             </span>
             <DialogClose asChild>
               <Button type="button" variant="ghost" className="sm:w-auto p-2!">
@@ -235,12 +240,12 @@ export function RecurringTemplateDialog({
               {/* ชื่องาน */}
               <div className="space-y-1.5">
                 <label htmlFor="recurring-title" className="text-sm font-medium">
-                  ชื่องาน <span className="text-destructive">*</span>
+                  {t('form.taskName')} <span className="text-destructive">{t('form.taskNameRequired')}</span>
                 </label>
                 <Input
                   id="recurring-title"
                   required
-                  placeholder="เช่น ส่งรายงานประจำเดือน"
+                  placeholder={t('form.taskNamePlaceholder')}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full"
@@ -249,10 +254,10 @@ export function RecurringTemplateDialog({
 
               {/* คำอธิบาย */}
               <div className="space-y-1.5">
-                <label htmlFor="recurring-desc" className="text-sm font-medium">คำอธิบาย</label>
+                <label htmlFor="recurring-desc" className="text-sm font-medium">{t('form.description')}</label>
                 <textarea
                   id="recurring-desc"
-                  placeholder="รายละเอียดเพิ่มเติม..."
+                  placeholder={t('form.descriptionPlaceholder')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
@@ -263,7 +268,7 @@ export function RecurringTemplateDialog({
               {/* สถานะ + หมวดหมู่ */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="recurring-column" className="text-sm font-medium">สร้างลงคอลัมน์ <span className="text-destructive">*</span></label>
+                  <label htmlFor="recurring-column" className="text-sm font-medium">{t('form.column')} <span className="text-destructive">{t('form.columnRequired')}</span></label>
                   <select
                     id="recurring-column"
                     value={columnId}
@@ -276,7 +281,7 @@ export function RecurringTemplateDialog({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="recurring-category" className="text-sm font-medium">หมวดหมู่</label>
+                  <label htmlFor="recurring-category" className="text-sm font-medium">{t('form.category')}</label>
                   <select
                     id="recurring-category"
                     value={categoryId}
@@ -296,26 +301,26 @@ export function RecurringTemplateDialog({
               <div className="space-y-3 pt-2 border-t mt-4">
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-4 h-4 text-muted-foreground" />
-                  <label className="text-sm font-medium">ตั้งค่าความถี่</label>
+                  <label className="text-sm font-medium">{t('frequency.title')}</label>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="recurring-type" className="text-xs text-muted-foreground">ความถี่</label>
+                    <label htmlFor="recurring-type" className="text-xs text-muted-foreground">{t('frequency.frequencyLabel')}</label>
                     <select
                       id="recurring-type"
                       value={recurrenceType}
                       onChange={(e) => setRecurrenceType(e.target.value)}
                       className={selectClasses}
                     >
-                      <option value="daily">รายวัน</option>
-                      <option value="weekly">รายสัปดาห์</option>
-                      <option value="monthly">รายเดือน</option>
-                      <option value="yearly">รายปี</option>
+                      <option value="daily">{t('frequency.daily')}</option>
+                      <option value="weekly">{t('frequency.weekly')}</option>
+                      <option value="monthly">{t('frequency.monthly')}</option>
+                      <option value="yearly">{t('frequency.yearly')}</option>
                     </select>
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="recurring-interval" className="text-xs text-muted-foreground">ทุกๆ</label>
+                    <label htmlFor="recurring-interval" className="text-xs text-muted-foreground">{t('frequency.everyLabel')}</label>
                     <div className="flex items-center gap-2">
                       <Input
                         id="recurring-interval"
@@ -327,10 +332,10 @@ export function RecurringTemplateDialog({
                         className="w-20"
                       />
                       <span className="text-sm text-muted-foreground">
-                        {recurrenceType === "daily" && "วัน"}
-                        {recurrenceType === "weekly" && "สัปดาห์"}
-                        {recurrenceType === "monthly" && "เดือน"}
-                        {recurrenceType === "yearly" && "ปี"}
+                        {recurrenceType === "daily" && t('frequency.unitDaily')}
+                        {recurrenceType === "weekly" && t('frequency.unitWeekly')}
+                        {recurrenceType === "monthly" && t('frequency.unitMonthly')}
+                        {recurrenceType === "yearly" && t('frequency.unitYearly')}
                       </span>
                     </div>
                   </div>
@@ -339,7 +344,7 @@ export function RecurringTemplateDialog({
                 {/* Conditional: วันที่ในเดือน (สำหรับ monthly) */}
                 {recurrenceType === "monthly" && (
                   <div className="space-y-1.5">
-                    <label htmlFor="recurring-day" className="text-xs text-muted-foreground">วันที่ในเดือน</label>
+                    <label htmlFor="recurring-day" className="text-xs text-muted-foreground">{t('frequency.dayOfMonth')}</label>
                     <div className="flex items-center gap-2">
                       <Input
                         id="recurring-day"
@@ -355,7 +360,7 @@ export function RecurringTemplateDialog({
                         className="w-24"
                       />
                       <span className="text-xs text-muted-foreground">
-                        (ถ้าเดือนไม่มีวันที่นี้ จะใช้วันสุดท้ายของเดือนแทน)
+                        {t('frequency.dayOfMonthHint')}
                       </span>
                     </div>
                   </div>
@@ -363,7 +368,7 @@ export function RecurringTemplateDialog({
 
                 {/* สร้างล่วงหน้า */}
                 <div className="space-y-1.5">
-                  <label htmlFor="recurring-advance" className="text-xs text-muted-foreground">สร้างล่วงหน้า (วัน)</label>
+                  <label htmlFor="recurring-advance" className="text-xs text-muted-foreground">{t('frequency.advanceDays')}</label>
                   <div className="flex items-center gap-2">
                     <Input
                       id="recurring-advance"
@@ -376,7 +381,7 @@ export function RecurringTemplateDialog({
                       className="w-24"
                     />
                     <span className="text-xs text-muted-foreground">
-                      วันก่อนกำหนดส่ง (0 = สร้างในวัน due)
+                      {t('frequency.advanceDaysHint')}
                     </span>
                   </div>
                 </div>
@@ -392,10 +397,10 @@ export function RecurringTemplateDialog({
 
               {/* ช่วงเวลา */}
               <div className="space-y-3 pt-2 border-t mt-4">
-                <label className="text-sm font-medium">ช่วงเวลา</label>
+                <label className="text-sm font-medium">{t('period.title')}</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="recurring-start" className="text-xs text-muted-foreground">เริ่มตั้งแต่ <span className="text-destructive">*</span></label>
+                    <label htmlFor="recurring-start" className="text-xs text-muted-foreground">{t('period.startDate')} <span className="text-destructive">{t('period.startDateRequired')}</span></label>
                     <Input
                       id="recurring-start"
                       type="date"
@@ -406,7 +411,7 @@ export function RecurringTemplateDialog({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="recurring-end" className="text-xs text-muted-foreground">สิ้นสุด (ไม่บังคับ)</label>
+                    <label htmlFor="recurring-end" className="text-xs text-muted-foreground">{t('period.endDate')}</label>
                     <Input
                       id="recurring-end"
                       type="date"
@@ -417,7 +422,7 @@ export function RecurringTemplateDialog({
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="recurring-max" className="text-xs text-muted-foreground">จำนวนครั้งสูงสุด (ไม่บังคับ)</label>
+                  <label htmlFor="recurring-max" className="text-xs text-muted-foreground">{t('period.maxOccurrences')}</label>
                   <Input
                     id="recurring-max"
                     type="number"
@@ -427,7 +432,7 @@ export function RecurringTemplateDialog({
                       const val = Number(e.target.value);
                       setMaxOccurrences(val > 0 ? val : undefined);
                     }}
-                    placeholder="ไม่จำกัด"
+                    placeholder={t('period.maxOccurrencesPlaceholder')}
                     className="w-full sm:w-48"
                   />
                 </div>
@@ -435,7 +440,7 @@ export function RecurringTemplateDialog({
 
               {/* Subtask Templates */}
               <div className="space-y-3 pt-2 border-t mt-4">
-                <label className="text-sm font-medium">รายการย่อยที่จะสร้างอัตโนมัติ</label>
+                <label className="text-sm font-medium">{t('subtasks.title')}</label>
                 <div className="space-y-2 max-h-[150px] overflow-y-auto pr-1">
                   {subtaskTemplates.map((st, index) => (
                     <div key={index} className="flex items-center gap-2 group">
@@ -457,7 +462,7 @@ export function RecurringTemplateDialog({
                 </div>
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="เพิ่มรายการย่อย..."
+                    placeholder={t('subtasks.placeholder')}
                     value={newSubtask}
                     onChange={(e) => setNewSubtask(e.target.value)}
                     onKeyDown={(e) => {
@@ -469,7 +474,7 @@ export function RecurringTemplateDialog({
                     className="h-8 text-sm"
                   />
                   <Button type="button" variant="secondary" size="sm" onClick={handleAddSubtask} className="h-8 shrink-0">
-                    <Plus className="w-4 h-4 mr-1" /> เพิ่ม
+                    <Plus className="w-4 h-4 mr-1" /> {t('subtasks.add')}
                   </Button>
                 </div>
               </div>
@@ -485,31 +490,31 @@ export function RecurringTemplateDialog({
                       {isDeleting ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span className="hidden sm:inline">กำลังลบ...</span>
+                          <span className="hidden sm:inline">{t('actions.deleting')}</span>
                         </>
                       ) : (
                         <>
                           <Trash2 className="w-4 h-4" />
-                          <span className="hidden sm:inline">ลบ Template</span>
+                          <span className="hidden sm:inline">{t('actions.deleteTemplate')}</span>
                         </>
                       )}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>ลบงานประจำนี้?</AlertDialogTitle>
+                      <AlertDialogTitle>{t('deleteDialog.title')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Template นี้จะถูกลบถาวร แต่งานที่สร้างไปแล้วจะไม่ได้รับผลกระทบ
+                        {t('deleteDialog.description')}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                      <AlertDialogCancel>{t('deleteDialog.cancel')}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDelete}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
                         <Trash2 className="w-4 h-4 mr-1.5" />
-                        ลบ Template
+                        {t('deleteDialog.confirm')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -520,21 +525,21 @@ export function RecurringTemplateDialog({
               <DialogClose asChild>
                 <Button type="button" variant="outline" disabled={isSaving} className="sm:w-auto">
                   <X className="w-4 h-4" />
-                  <span className="hidden sm:inline">ยกเลิก</span>
-                  <span className="sm:hidden">ยกเลิก</span>
+                  <span className="hidden sm:inline">{t('actions.cancel')}</span>
+                  <span className="sm:hidden">{t('actions.cancel')}</span>
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={isSaving} className="sm:w-auto">
                 {isSaving ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {isEditMode ? "กำลังบันทึก..." : "กำลังสร้าง..."}
+                    {isEditMode ? t('actions.saving') : t('actions.creating')}
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    <span className="hidden sm:inline">{isEditMode ? "บันทึกการเปลี่ยนแปลง" : "สร้างงานประจำ"}</span>
-                    <span className="sm:hidden">{isEditMode ? "บันทึก" : "สร้าง"}</span>
+                    <span className="hidden sm:inline">{isEditMode ? t('actions.saveChanges') : t('actions.createRecurring')}</span>
+                    <span className="sm:hidden">{isEditMode ? t('actions.save') : t('actions.create')}</span>
                   </>
                 )}
               </Button>
