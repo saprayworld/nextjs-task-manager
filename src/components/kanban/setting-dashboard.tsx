@@ -56,6 +56,8 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/lib/actions/category";
+import { updateUserSettings } from "@/lib/actions/setting";
+import { emptyTrash, moveAllArchiveToTrash } from "@/lib/actions/task";
 
 // ==========================================
 // Types
@@ -68,8 +70,20 @@ interface Category {
   isDefault: boolean;
 }
 
+interface UserSettings {
+  autoDeleteTrash: boolean;
+  trashRetentionDays: number;
+  defaultColumn: string;
+  showProgress: boolean;
+  showDueDate: boolean;
+  enableDragDrop: boolean;
+}
+
 interface SettingDashboardProps {
   initialCategories: Category[];
+  initialSettings: UserSettings;
+  trashCount: number;
+  archiveCount: number;
 }
 
 // ==========================================
@@ -84,7 +98,7 @@ const colorOptions = [
 // ==========================================
 // Main Component
 // ==========================================
-export default function SettingDashboard({ initialCategories }: SettingDashboardProps) {
+export default function SettingDashboard({ initialCategories, initialSettings, trashCount, archiveCount }: SettingDashboardProps) {
   const t = useTranslations("SettingDashboard");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -100,17 +114,21 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
   const [newCategoryIncludeInReport, setNewCategoryIncludeInReport] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Board Settings State
-  const [defaultColumn, setDefaultColumn] = useState("todo");
-  const [showProgress, setShowProgress] = useState(true);
-  const [showDueDate, setShowDueDate] = useState(true);
-  const [showAvatars, setShowAvatars] = useState(true);
-  const [showSubtasks, setShowSubtasks] = useState(true);
-  const [enableDragDrop, setEnableDragDrop] = useState(true);
+  // Board Settings State (จาก DB)
+  const [defaultColumn, setDefaultColumn] = useState(initialSettings.defaultColumn);
+  const [showProgress, setShowProgress] = useState(initialSettings.showProgress);
+  const [showDueDate, setShowDueDate] = useState(initialSettings.showDueDate);
+  const [enableDragDrop, setEnableDragDrop] = useState(initialSettings.enableDragDrop);
 
-  // Data Settings State
-  const [autoDeleteTrash, setAutoDeleteTrash] = useState(false);
-  const [trashRetentionDays, setTrashRetentionDays] = useState("30");
+  // Data Settings State (จาก DB)
+  const [autoDeleteTrash, setAutoDeleteTrash] = useState(initialSettings.autoDeleteTrash);
+  const [trashRetentionDays, setTrashRetentionDays] = useState(String(initialSettings.trashRetentionDays));
+
+  // Danger Zone Dialogs
+  const [isEmptyTrashDialogOpen, setIsEmptyTrashDialogOpen] = useState(false);
+  const [isClearArchiveDialogOpen, setIsClearArchiveDialogOpen] = useState(false);
+  const [currentTrashCount, setCurrentTrashCount] = useState(trashCount);
+  const [currentArchiveCount, setCurrentArchiveCount] = useState(archiveCount);
 
   // ==========================================
   // Category CRUD Handlers (Server Actions)
@@ -432,8 +450,23 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
             </div>
 
             <div className="flex justify-end">
-              <Button onClick={() => toast.success(t("toast.settingsSaved"))} className="cursor-pointer">
-                <Save data-icon="inline-start" />
+              <Button
+                disabled={isSaving}
+                className="cursor-pointer"
+                onClick={async () => {
+                  setIsSaving(true);
+                  try {
+                    await updateUserSettings({ defaultColumn, showProgress, showDueDate, enableDragDrop });
+                    toast.success(t("toast.boardSettingsSaved"));
+                    startTransition(() => router.refresh());
+                  } catch (error) {
+                    toast.error(t("toast.error"), { description: String(error) });
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save data-icon="inline-start" />}
                 {t("board.saveButton")}
               </Button>
             </div>
@@ -488,13 +521,25 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
                   <h4 className="font-medium text-sm text-destructive mb-1">{t("data.dangerZone")}</h4>
                   <p className="text-xs text-muted-foreground mb-3">{t("data.dangerZoneDesc")}</p>
                   <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10 cursor-pointer"
-                      onClick={() => toast.info(t("toast.mockOnly"))}>
-                      {t("data.clearTrash")}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive border-destructive/30 hover:bg-destructive/10 cursor-pointer"
+                      disabled={currentTrashCount === 0}
+                      onClick={() => setIsEmptyTrashDialogOpen(true)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1" />
+                      {t("data.clearTrash")} {currentTrashCount > 0 && `(${currentTrashCount})`}
                     </Button>
-                    <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10 cursor-pointer"
-                      onClick={() => toast.info(t("toast.mockOnly"))}>
-                      {t("data.clearArchive")}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive border-destructive/30 hover:bg-destructive/10 cursor-pointer"
+                      disabled={currentArchiveCount === 0}
+                      onClick={() => setIsClearArchiveDialogOpen(true)}
+                    >
+                      <Database className="w-3.5 h-3.5 mr-1" />
+                      {t("data.clearArchive")} {currentArchiveCount > 0 && `(${currentArchiveCount})`}
                     </Button>
                   </div>
                 </div>
@@ -502,8 +547,26 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
             </div>
 
             <div className="flex justify-end">
-              <Button onClick={() => toast.success(t("toast.settingsSaved"))} className="cursor-pointer">
-                <Save data-icon="inline-start" />
+              <Button
+                disabled={isSaving}
+                className="cursor-pointer"
+                onClick={async () => {
+                  setIsSaving(true);
+                  try {
+                    await updateUserSettings({
+                      autoDeleteTrash,
+                      trashRetentionDays: parseInt(trashRetentionDays),
+                    });
+                    toast.success(t("toast.dataSettingsSaved"));
+                    startTransition(() => router.refresh());
+                  } catch (error) {
+                    toast.error(t("toast.error"), { description: String(error) });
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save data-icon="inline-start" />}
                 {t("data.saveButton")}
               </Button>
             </div>
@@ -565,6 +628,75 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
             <AlertDialogAction onClick={handleDeleteCategory} disabled={isSaving} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
               {isSaving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
               {t("actions.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Empty Trash AlertDialog */}
+      <AlertDialog open={isEmptyTrashDialogOpen} onOpenChange={setIsEmptyTrashDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("data.emptyTrashConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("data.emptyTrashConfirmDesc", { count: currentTrashCount })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              onClick={async () => {
+                setIsSaving(true);
+                try {
+                  await emptyTrash();
+                  setCurrentTrashCount(0);
+                  toast.success(t("toast.trashEmptied"));
+                  startTransition(() => router.refresh());
+                } catch (error) {
+                  toast.error(t("toast.error"), { description: String(error) });
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              {t("data.clearTrash")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear Archive AlertDialog */}
+      <AlertDialog open={isClearArchiveDialogOpen} onOpenChange={setIsClearArchiveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("data.clearArchiveConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("data.clearArchiveConfirmDesc", { count: currentArchiveCount })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              onClick={async () => {
+                setIsSaving(true);
+                try {
+                  await moveAllArchiveToTrash();
+                  setCurrentTrashCount(prev => prev + currentArchiveCount);
+                  setCurrentArchiveCount(0);
+                  toast.success(t("toast.archiveMovedToTrash"));
+                  startTransition(() => router.refresh());
+                } catch (error) {
+                  toast.error(t("toast.error"), { description: String(error) });
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+            >
+              <Database className="w-4 h-4 mr-1" />
+              {t("data.clearArchive")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

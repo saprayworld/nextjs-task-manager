@@ -627,6 +627,10 @@
       "dangerZoneDesc": "การดำเนินการเหล่านี้ไม่สามารถย้อนกลับได้ กรุณาดำเนินการด้วยความระมัดระวัง",
       "clearTrash": "ล้างถังขยะ",
       "clearArchive": "ล้าง Archive",
+      "emptyTrashConfirmTitle": "ล้างถังขยะ?",
+      "emptyTrashConfirmDesc": "รายการทั้งหมด {count} รายการในถังขยะจะถูกลบถาวร ไม่สามารถกู้คืนได้",
+      "clearArchiveConfirmTitle": "ย้ายไปถังขยะทั้งหมด?",
+      "clearArchiveConfirmDesc": "รายการทั้งหมด {count} รายการใน Archive จะถูกย้ายไปถังขยะ สามารถกู้คืนได้จากหน้าถังขยะ",
       "saveButton": "บันทึกการตั้งค่าข้อมูล"
     },
     "actions": {
@@ -640,7 +644,10 @@
       "categoryUpdated": "อัปเดตหมวดหมู่สำเร็จ",
       "categoryDeleted": "ลบหมวดหมู่สำเร็จ",
       "settingsSaved": "บันทึกการตั้งค่าสำเร็จ",
-      "mockOnly": "นี่เป็น Mock-up เท่านั้น ไม่มีข้อมูลถูกเปลี่ยนแปลง",
+      "boardSettingsSaved": "บันทึกการตั้งค่าบอร์ดสำเร็จ",
+      "dataSettingsSaved": "บันทึกการตั้งค่าข้อมูลสำเร็จ",
+      "trashEmptied": "ล้างถังขยะสำเร็จ",
+      "archiveMovedToTrash": "ย้ายรายการ Archive ไปถังขยะทั้งหมดแล้ว",
       "error": "เกิดข้อผิดพลาด"
     }
   }
