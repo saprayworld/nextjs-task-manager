@@ -146,3 +146,27 @@ export const category = pgTable("category", {
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
 });
+
+// ==========================================
+// ตารางสำหรับ User Settings (ตั้งค่าบอร์ดและข้อมูล)
+// ==========================================
+export const userSetting = pgTable("user_setting", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: 'cascade' }),
+
+  // Data Settings (แท็บข้อมูล)
+  autoDeleteTrash: boolean("autoDeleteTrash").notNull().default(false),     // เปิด/ปิดลบถังขยะอัตโนมัติ
+  trashRetentionDays: integer("trashRetentionDays").notNull().default(30),  // จำนวนวันก่อนลบถาวร (7/14/30/90)
+
+  // Board Settings (แท็บบอร์ด)
+  defaultColumn: text("defaultColumn").notNull().default("todo"),           // คอลัมน์เริ่มต้นสำหรับงานใหม่
+  showProgress: boolean("showProgress").notNull().default(true),            // แสดง progress bar บนการ์ด
+  showDueDate: boolean("showDueDate").notNull().default(true),              // แสดงวันกำหนดส่งบนการ์ด
+  enableDragDrop: boolean("enableDragDrop").notNull().default(true),        // เปิด/ปิด drag & drop
+
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
