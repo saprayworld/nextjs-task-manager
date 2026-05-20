@@ -406,8 +406,8 @@ export default function SettingDashboard({ initialCategories }: SettingDashboard
                   {[
                     { id: "progress", label: t("board.showProgress"), desc: t("board.showProgressDesc"), checked: showProgress, onChange: setShowProgress },
                     { id: "dueDate", label: t("board.showDueDate"), desc: t("board.showDueDateDesc"), checked: showDueDate, onChange: setShowDueDate },
-                    { id: "avatars", label: t("board.showAvatars"), desc: t("board.showAvatarsDesc"), checked: showAvatars, onChange: setShowAvatars },
-                    { id: "subtasks", label: t("board.showSubtasks"), desc: t("board.showSubtasksDesc"), checked: showSubtasks, onChange: setShowSubtasks },
+                    // { id: "avatars", label: t("board.showAvatars"), desc: t("board.showAvatarsDesc"), checked: showAvatars, onChange: setShowAvatars },
+                    // { id: "subtasks", label: t("board.showSubtasks"), desc: t("board.showSubtasksDesc"), checked: showSubtasks, onChange: setShowSubtasks },
                   ].map(item => (
                     <div key={item.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors">
                       <div className="flex flex-col gap-0.5">
