@@ -19,9 +19,14 @@ export default async function ReportPage() {
       })
   );
 
-  const filteredTasks = dbTasks.filter(t =>
-    reportCategoryIds.has(t.categoryId ?? "")
-  );
+  // ตรวจว่า Default category เปิด includeInReport ไหม (สำหรับ task ที่ categoryId เป็น null)
+  const defaultCategory = categories.find(c => c.isDefault);
+  const includeNullCategory = defaultCategory?.includeInReport ?? false;
+
+  const filteredTasks = dbTasks.filter(t => {
+    if (!t.categoryId) return includeNullCategory;
+    return reportCategoryIds.has(t.categoryId);
+  });
 
   // โยนข้อมูลที่กรองแล้วให้ Component ไปจัดการ UI ต่อ
   return <ReportDashboard dbTasks={filteredTasks} />;
