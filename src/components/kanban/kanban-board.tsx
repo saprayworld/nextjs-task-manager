@@ -75,10 +75,18 @@ export interface Task {
   updatedAt?: string;
 }
 
+export interface BoardSettings {
+  defaultColumn: string;
+  showProgress: boolean;
+  showDueDate: boolean;
+  enableDragDrop: boolean;
+}
+
 interface KanbanBoardProps {
   initialColumns: BoardColumn[];
   initialTasks: Task[];
   categories: CategoryRecord[];
+  boardSettings: BoardSettings;
 }
 
 // ==========================================
@@ -88,9 +96,12 @@ interface ColumnProps {
   column: BoardColumn;
   tasks: Task[];
   onEditTask: (task: Task) => void;
+  showProgress: boolean;
+  showDueDate: boolean;
+  enableDragDrop: boolean;
 }
 
-function Column({ column, tasks, onEditTask }: ColumnProps) {
+function Column({ column, tasks, onEditTask, showProgress, showDueDate, enableDragDrop }: ColumnProps) {
   const { setNodeRef } = useSortable({
     id: column.id,
     data: { type: "Column", column },
@@ -117,7 +128,7 @@ function Column({ column, tasks, onEditTask }: ColumnProps) {
       <div className="p-4 pt-0 flex flex-col gap-3 overflow-y-auto min-h-[150px] flex-1 pb-4">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <KanbanTaskCard key={task.id} task={task} onEdit={onEditTask} />
+            <KanbanTaskCard key={task.id} task={task} onEdit={onEditTask} showProgress={showProgress} showDueDate={showDueDate} enableDragDrop={enableDragDrop} />
           ))}
         </SortableContext>
       </div>
@@ -128,7 +139,7 @@ function Column({ column, tasks, onEditTask }: ColumnProps) {
 // ==========================================
 // Main Board Component
 // ==========================================
-export default function KanbanBoard({ initialColumns, initialTasks, categories }: KanbanBoardProps) {
+export default function KanbanBoard({ initialColumns, initialTasks, categories, boardSettings }: KanbanBoardProps) {
   const t = useTranslations("KanbanBoard");
   const [columns] = useState<BoardColumn[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -138,10 +149,12 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories }
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  const sensors = useSensors(
+  const activeSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+  const emptySensors = useSensors();
+  const sensors = boardSettings.enableDragDrop ? activeSensors : emptySensors;
 
   const handleOpenCreateDialog = () => {
     setEditingTask(null);
@@ -471,6 +484,9 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories }
                 column={col}
                 tasks={filteredTasks.filter((task) => task.columnId === col.id)}
                 onEditTask={handleOpenEditDialog}
+                showProgress={boardSettings.showProgress}
+                showDueDate={boardSettings.showDueDate}
+                enableDragDrop={boardSettings.enableDragDrop}
               />
             ))}
           </div>
@@ -489,6 +505,7 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories }
         taskToEdit={editingTask}
         columns={columns}
         categories={categories}
+        defaultColumn={boardSettings.defaultColumn}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}

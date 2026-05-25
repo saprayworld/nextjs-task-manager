@@ -58,17 +58,18 @@ interface TaskDialogProps {
   taskToEdit?: any | null;
   columns: BoardColumn[];
   categories: CategoryRecord[];
+  defaultColumn?: string;
   onSave: (data: TaskFormData) => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
   onArchive?: () => void | Promise<void>;
   onToggleVisibility?: () => void | Promise<void>;
 }
 
-export function TaskDialog({ open, onOpenChange, taskToEdit, columns, categories, onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, taskToEdit, columns, categories, defaultColumn = "todo", onSave, onDelete, onArchive, onToggleVisibility }: TaskDialogProps) {
   const t = useTranslations("TaskDialog");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
-  const [columnId, setColumnId] = useState("todo");
+  const [columnId, setColumnId] = useState(defaultColumn);
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
   const [startDateTime, setStartDateTime] = useState("");
@@ -101,7 +102,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, categories
       } else {
         setTitle("");
         setCategoryId(categories[0]?.id || "");
-        setColumnId("todo");
+        setColumnId(defaultColumn);
         setDueDate("");
         setDescription("");
         setStartDateTime("");

@@ -19,9 +19,12 @@ const formatDateDisplay = (dateString?: string) => {
 interface KanbanTaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
+  showProgress?: boolean;
+  showDueDate?: boolean;
+  enableDragDrop?: boolean;
 }
 
-export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
+export function KanbanTaskCard({ task, onEdit, showProgress = true, showDueDate = true, enableDragDrop = true }: KanbanTaskCardProps) {
   const t = useTranslations("KanbanBoard");
   const {
     setNodeRef,
@@ -54,7 +57,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="group bg-card text-card-foreground p-4 rounded-lg border shadow-sm hover:border-primary/50 transition-colors cursor-grab active:cursor-grabbing"
+      className={`group bg-card text-card-foreground p-4 rounded-lg border shadow-sm hover:border-primary/50 transition-colors ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}`}
       {...attributes}
       {...listeners}
     >
@@ -91,7 +94,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
         />
       )}
 
-      {(task.subtasks && task.subtasks.length > 0) && task.progress !== undefined && (
+      {showProgress && (task.subtasks && task.subtasks.length > 0) && task.progress !== undefined && (
         <div className="w-full bg-secondary rounded-full h-1.5 mb-4 overflow-hidden">
           <div className="bg-primary h-1.5 rounded-full" style={{ width: `${task.progress}%` }}></div>
         </div>
@@ -125,7 +128,7 @@ export function KanbanTaskCard({ task, onEdit }: KanbanTaskCardProps) {
               <Timer className="w-3 h-3" /> {`${task.totalWorkTime} ${t("taskCard.totalTimeUnit")}`}
             </span>
           )}
-          {task.dueDate && (
+          {showDueDate && task.dueDate && (
             <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${task.dueDateClasses || ''}`}>
               <CalendarClock className="w-3 h-3" /> {formatDateDisplay(task.dueDate)}
             </span>

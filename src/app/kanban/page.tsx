@@ -1,17 +1,21 @@
 import KanbanBoard from '@/components/kanban/kanban-board';
 import { mockColumns } from '@/components/kanban/mock-data';
 import { getCategories } from '@/lib/actions/category';
+import { getUserSettings } from '@/lib/actions/setting';
 import { getTasks } from '@/lib/actions/task';
 import { categoriesToTagMap } from '@/lib/category-utils';
 import { getTranslations } from 'next-intl/server';
 export default async function Page() {
   const t = await getTranslations("KanbanBoard");
 
-  // 1. ดึงข้อมูลงานทั้งหมดของผู้ใช้คนนี้จาก Database (ปลอดภัย 100% เพราะเช็ค Session แล้ว)
-  const dbTasks = await getTasks();
+  // 1. ดึงข้อมูลทั้งหมดพร้อมกัน (Parallel Fetch)
+  const [dbTasks, categories, settings] = await Promise.all([
+    getTasks(),
+    getCategories(),
+    getUserSettings(),
+  ]);
 
-  // 2. ดึง categories จาก DB แล้วแปลงเป็น tag map
-  const categories = await getCategories();
+  // 2. แปลง categories เป็น tag map
   const tagMap = categoriesToTagMap(categories);
 
   // 3. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task ที่ Board ต้องการ
@@ -43,12 +47,21 @@ export default async function Page() {
     // title: t(`columns.${col.id}`) || col.title
   }));
 
+  // 4. สร้าง boardSettings จาก user settings
+  const boardSettings = {
+    defaultColumn: settings.defaultColumn,
+    showProgress: settings.showProgress,
+    showDueDate: settings.showDueDate,
+    enableDragDrop: settings.enableDragDrop,
+  };
+
   return (
     // โยนข้อมูลจริงลงไปใน Board แทน mockTasks
     <KanbanBoard
       initialColumns={translatedColumns}
       initialTasks={formattedTasks}
       categories={categories}
+      boardSettings={boardSettings}
     />
   );
 }
