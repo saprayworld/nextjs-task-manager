@@ -18,7 +18,8 @@ import {
 import { toast } from "sonner";
 import { createRecurringTemplate, updateRecurringTemplate, deleteRecurringTemplate, toggleRecurringTemplate } from "@/lib/actions/recurring-task";
 import { RecurringTemplateDialog } from "./RecurringTemplateDialog";
-import { mockColumns, tags } from "./mock-data";
+import { mockColumns } from "./mock-data";
+import { CategoryRecord, categoriesToTagMap, getTagStyle } from "@/lib/category-utils";
 import { useTranslations, useLocale } from "next-intl";
 
 interface RecurringTemplate {
@@ -45,9 +46,10 @@ interface RecurringTemplate {
 
 interface RecurringListProps {
   initialTemplates: RecurringTemplate[];
+  categories: CategoryRecord[];
 }
 
-export default function RecurringList({ initialTemplates }: RecurringListProps) {
+export default function RecurringList({ initialTemplates, categories }: RecurringListProps) {
   const t = useTranslations("RecurringList");
   const locale = useLocale();
 
@@ -274,7 +276,11 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
         ) : (
           <div className="space-y-2">
             {filteredTemplates.map((template) => {
-              const tagInfo = tags[template.categoryId || "default"] || tags.design;
+              const tagMap = categoriesToTagMap(categories);
+              const tagInfo = tagMap[template.categoryId || "default"] || tagMap["default"] || { text: "Default", classes: "border rounded-full" };
+              const tagStyle = getTagStyle(
+                categories.find(c => c.id === template.categoryId || c.legacyKey === template.categoryId)?.color || "#6b7280"
+              );
               return (
                 <div
                   key={template.id}
@@ -287,6 +293,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
                       <h3 className="font-medium text-sm truncate">{template.title}</h3>
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tagInfo.classes}`}
+                        style={tagStyle}
                       >
                         {tagInfo.text}
                       </span>
@@ -394,6 +401,7 @@ export default function RecurringList({ initialTemplates }: RecurringListProps) 
         onOpenChange={setDialogOpen}
         templateToEdit={editingTemplate}
         columns={mockColumns}
+        categories={categories}
         onSave={handleSave}
         onDelete={editingTemplate ? handleDelete : undefined}
       />

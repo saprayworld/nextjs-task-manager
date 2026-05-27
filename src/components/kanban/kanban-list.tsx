@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 // Imports Components ย่อย
 import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
-import { Task, Tag } from "./kanban-board";
+import { Task } from "./kanban-board";
+import { CategoryRecord, categoriesToTagMap } from "@/lib/category-utils";
 
 import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask } from "@/lib/actions/task";
 import { toast } from "sonner";
@@ -16,9 +17,10 @@ import { useTranslations } from 'next-intl';
 interface KanbanListProps {
   initialColumns: BoardColumn[];
   initialTasks: Task[];
+  categories: CategoryRecord[];
 }
 
-export default function KanbanList({ initialColumns, initialTasks }: KanbanListProps) {
+export default function KanbanList({ initialColumns, initialTasks, categories }: KanbanListProps) {
   const t = useTranslations('KanbanList');
   const tToast = useTranslations('KanbanBoard.toast');
 
@@ -105,14 +107,9 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
   };
 
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
-    const categoryTagMap: Record<string, Tag> = {
-      design: { text: "Design", classes: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400" },
-      development: { text: "Development", classes: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400" },
-      research: { text: "Research", classes: "text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400" },
-      marketing: { text: "Marketing", classes: "text-purple-600 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400" },
-    };
+    const categoryTagMap = categoriesToTagMap(categories);
 
-    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap.design;
+    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
@@ -220,6 +217,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         <KanbanListView
           tasks={tasks}
           columns={columns}
+          categories={categories}
           onEditTask={handleOpenEditDialog}
         />
       </main>
@@ -229,6 +227,7 @@ export default function KanbanList({ initialColumns, initialTasks }: KanbanListP
         onOpenChange={setIsDialogOpen}
         taskToEdit={editingTask}
         columns={columns}
+        categories={categories}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}

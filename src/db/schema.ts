@@ -128,3 +128,45 @@ export const subtask = pgTable("subtask", {
   isCompleted: boolean("isCompleted").notNull().default(false),
   createdAt: timestamp("createdAt").notNull(),
 });
+
+// ==========================================
+// ตารางสำหรับ Categories (หมวดหมู่งาน)
+// ==========================================
+export const category = pgTable("category", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  name: text("name").notNull(),                                       // ชื่อ Category เช่น "Design"
+  color: text("color").notNull(),                                     // Hex color เช่น "#3b82f6"
+  includeInReport: boolean("includeInReport").notNull().default(true), // นำไปคำนวณในรายงานหรือไม่
+  isDefault: boolean("isDefault").notNull().default(false),            // สงวนสำหรับ "Default" (ลบไม่ได้)
+  legacyKey: text("legacyKey"),                                       // Key เก่าจาก mock-data เช่น "design", "wr" (ใช้ map ตอน migration)
+  order: integer("order").notNull().default(0),                        // ลำดับการแสดงผล
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
+
+// ==========================================
+// ตารางสำหรับ User Settings (ตั้งค่าบอร์ดและข้อมูล)
+// ==========================================
+export const userSetting = pgTable("user_setting", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: 'cascade' }),
+
+  // Data Settings (แท็บข้อมูล)
+  autoDeleteTrash: boolean("autoDeleteTrash").notNull().default(false),     // เปิด/ปิดลบถังขยะอัตโนมัติ
+  trashRetentionDays: integer("trashRetentionDays").notNull().default(30),  // จำนวนวันก่อนลบถาวร (7/14/30/90)
+
+  // Board Settings (แท็บบอร์ด)
+  defaultColumn: text("defaultColumn").notNull().default("todo"),           // คอลัมน์เริ่มต้นสำหรับงานใหม่
+  showProgress: boolean("showProgress").notNull().default(true),            // แสดง progress bar บนการ์ด
+  showDueDate: boolean("showDueDate").notNull().default(true),              // แสดงวันกำหนดส่งบนการ์ด
+  enableDragDrop: boolean("enableDragDrop").notNull().default(true),        // เปิด/ปิด drag & drop
+
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});

@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BoardColumn } from "./TaskDialog";
-import { tags } from "./mock-data";
+import { CategoryRecord } from "@/lib/category-utils";
 import { useTranslations } from "next-intl";
 
 interface RecurringTemplateFormData {
@@ -61,6 +61,7 @@ interface RecurringTemplateDialogProps {
     subtaskTemplates?: string | null;
   } | null;
   columns: BoardColumn[];
+  categories: CategoryRecord[];
   onSave: (data: RecurringTemplateFormData) => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
 }
@@ -72,6 +73,7 @@ export function RecurringTemplateDialog({
   onOpenChange,
   templateToEdit,
   columns,
+  categories,
   onSave,
   onDelete,
 }: RecurringTemplateDialogProps) {
@@ -79,7 +81,7 @@ export function RecurringTemplateDialog({
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState("design");
+  const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
   const [columnId, setColumnId] = useState("todo");
   const [recurrenceType, setRecurrenceType] = useState("monthly");
   const [recurrenceInterval, setRecurrenceInterval] = useState(1);
@@ -103,7 +105,7 @@ export function RecurringTemplateDialog({
       if (templateToEdit) {
         setTitle(templateToEdit.title);
         setDescription(templateToEdit.description || "");
-        setCategoryId(templateToEdit.categoryId || "design");
+        setCategoryId(templateToEdit.categoryId || categories[0]?.id || "");
         setColumnId(templateToEdit.columnId);
         setRecurrenceType(templateToEdit.recurrenceType);
         setRecurrenceInterval(templateToEdit.recurrenceInterval);
@@ -124,7 +126,7 @@ export function RecurringTemplateDialog({
       } else {
         setTitle("");
         setDescription("");
-        setCategoryId("design");
+        setCategoryId(categories[0]?.id || "");
         setColumnId("todo");
         setRecurrenceType("monthly");
         setRecurrenceInterval(1);
@@ -289,9 +291,9 @@ export function RecurringTemplateDialog({
                     className={selectClasses}
                   >
                     {
-                      Object.entries(tags).map(([key, value], index) => {
-                        return <option key={`tag-${index}`} value={key}>{value.text}</option>
-                      })
+                      categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))
                     }
                   </select>
                 </div>

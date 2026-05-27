@@ -381,3 +381,50 @@ async function recalculateTaskProgress(taskId: string) {
 
   await db.update(task).set({ progress: progressPercent }).where(eq(task.id, taskId));
 }
+
+// ==========================================
+// 11. Empty Trash: ลบงานในถังขยะทั้งหมดถาวร
+// ==========================================
+export async function emptyTrash() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.delete(task)
+    .where(
+      and(
+        eq(task.userId, user.id),
+        isNotNull(task.deletedAt),
+      )
+    );
+
+  revalidatePath("/kanban/trash");
+  revalidatePath("/kanban/setting");
+  return true;
+}
+
+// ==========================================
+// 12. Move All Archive to Trash: ย้าย Archive ทั้งหมดไปถังขยะ
+//     (ไม่ลบถาวร — สามารถกู้คืนจากถังขยะได้)
+// ==========================================
+export async function moveAllArchiveToTrash() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await db.update(task)
+    .set({
+      deletedAt: new Date(),
+      archivedAt: null,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(task.userId, user.id),
+        isNotNull(task.archivedAt),
+      )
+    );
+
+  revalidatePath("/kanban/archive");
+  revalidatePath("/kanban/trash");
+  revalidatePath("/kanban/setting");
+  return true;
+}

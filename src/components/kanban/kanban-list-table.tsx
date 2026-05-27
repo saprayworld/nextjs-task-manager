@@ -25,23 +25,21 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 
 import { KanbanFacetedFilter } from "./kanban-faceted-filter";
 import { BoardColumn } from "./TaskDialog";
-import { tags } from "./mock-data";
+import { CategoryRecord, categoriesToOptions } from "@/lib/category-utils";
 import { useTranslations } from 'next-intl';
 
 interface KanbanListTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  boardColumns: BoardColumn[]; // เพิ่มบรรทัดนี้
+  boardColumns: BoardColumn[];
+  categories: CategoryRecord[];
 }
 
-export function KanbanListTable<TData, TValue>({ columns, data, boardColumns }: KanbanListTableProps<TData, TValue>) {
+export function KanbanListTable<TData, TValue>({ columns, data, boardColumns, categories }: KanbanListTableProps<TData, TValue>) {
   const t = useTranslations('KanbanList.table');
 
-  // สร้าง options สำหรับ filter หมวดหมู่จาก tags
-  const categoryOptions = Object.entries(tags).map(([key, tag]) => ({
-    label: tag.text,
-    value: key,
-  }));
+  // สร้าง options สำหรับ filter หมวดหมู่จาก categories (DB)
+  const categoryOptions = categoriesToOptions(categories);
 
   const [sorting, setSorting] = useState<SortingState>([{ id: "updatedAt", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
