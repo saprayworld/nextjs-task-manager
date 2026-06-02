@@ -32,18 +32,12 @@ import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderT
 import { KanbanTaskCard } from "./kanban-task-card";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { TaskDetailsDialog } from "./TaskDetailsDialog";
-import { CategoryRecord, categoriesToTagMap } from '@/lib/category-utils';
+import { CategoryRecord, categoriesToCategoryInfoMap, CategoryInfo } from '@/lib/category-utils';
 
 // ==========================================
 // Types
 // ==========================================
 export type Id = string | number;
-
-export interface Tag {
-  text: string;
-  classes: string;
-  style?: React.CSSProperties;
-}
 
 export interface Subtask {
   id?: string;
@@ -57,7 +51,7 @@ export interface Task {
   categoryId?: string;
   title: string;
   description?: string;
-  tag?: Tag;
+  category?: CategoryInfo;
   avatars?: string[];
   attachments?: number;
   comments?: number;
@@ -334,9 +328,9 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
   };
 
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
-    const categoryTagMap = categoriesToTagMap(categories);
+    const categoryMap = categoriesToCategoryInfoMap(categories);
 
-    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
+    const categoryInfo = categoryMap[data.categoryId] || categoryMap['default'] || { text: 'Default', classes: 'border rounded-full' };
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
@@ -353,7 +347,7 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
               title: data.title,
               description: data.description,
               categoryId: data.categoryId,
-              tag: tagInfo,
+              category: categoryInfo,
               dueDate: data.dueDate,
               subtasks: data.subtasks,
               progress: newProgress,
@@ -409,7 +403,7 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
           title: savedTask.title,
           description: savedTask.description || undefined,
           categoryId: savedTask.categoryId || undefined,
-          tag: tagInfo,
+          category: categoryInfo,
           dueDate: savedTask.dueDate || undefined,
           dueDateClasses: dueDateClasses,
           subtasks: data.subtasks,
@@ -542,7 +536,7 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
     return (
       task.title.toLowerCase().includes(lowerQuery) ||
       plainDescription.toLowerCase().includes(lowerQuery) ||
-      task.tag?.text.toLowerCase().includes(lowerQuery)
+      task.category?.text.toLowerCase().includes(lowerQuery)
     );
   });
 

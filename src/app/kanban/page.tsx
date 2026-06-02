@@ -3,7 +3,7 @@ import { mockColumns } from '@/components/kanban/mock-data';
 import { getCategories } from '@/lib/actions/category';
 import { getUserSettings } from '@/lib/actions/setting';
 import { getTasks } from '@/lib/actions/task';
-import { categoriesToTagMap } from '@/lib/category-utils';
+import { categoriesToCategoryInfoMap } from '@/lib/category-utils';
 import { getTranslations } from 'next-intl/server';
 export default async function Page() {
   const t = await getTranslations("KanbanBoard");
@@ -15,12 +15,12 @@ export default async function Page() {
     getUserSettings(),
   ]);
 
-  // 2. แปลง categories เป็น tag map
-  const tagMap = categoriesToTagMap(categories);
+  // 2. แปลง categories เป็น category map
+  const categoryMap = categoriesToCategoryInfoMap(categories);
 
   // 3. แปลงข้อมูลจาก DB ให้มีโครงสร้างตรงกับ Interface Task ที่ Board ต้องการ
   const formattedTasks = dbTasks.map(task => {
-    const tagInfo = tagMap[task.categoryId || 'default'] || tagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
+    const categoryInfo = categoryMap[task.categoryId || 'default'] || categoryMap['default'] || { text: 'Default', classes: 'border rounded-full' };
 
     return {
       id: task.id,
@@ -30,7 +30,7 @@ export default async function Page() {
       description: task.description || undefined,
       dueDate: task.dueDate || undefined,
       dueDateClasses: task.dueDate ? "text-destructive bg-destructive/10" : undefined,
-      tag: tagInfo,
+      category: categoryInfo,
       progress: task.progress ?? undefined,
       subtasks: task.subtasks || [],
       startDateTime: task.startDateTime ? task.startDateTime.toISOString() : undefined,

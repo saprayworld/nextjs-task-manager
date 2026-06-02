@@ -1,4 +1,4 @@
-import { Tag } from "@/components/kanban/kanban-board";
+import type { CSSProperties } from "react";
 
 // Type สำหรับ Category จาก DB
 export interface CategoryRecord {
@@ -10,27 +10,34 @@ export interface CategoryRecord {
   legacyKey: string | null;
 }
 
+// โครงสร้างของข้อมูล Category ที่จะส่งไปแสดงผลบน UI (เช่น Badge)
+export interface CategoryInfo {
+  text: string;
+  classes: string;
+  style?: CSSProperties;
+}
+
 /**
- * แปลง Category[] จาก DB ให้เป็น Record<string, Tag> format เดิมที่ UI ใช้
+ * แปลง Category[] จาก DB ให้เป็น Record<string, CategoryInfo> เพื่อให้ UI แสดงผล
  * ใช้ได้ทั้ง category.id (UUID) และ legacyKey เป็น key
  * เพื่อให้รองรับทั้ง task เก่า (categoryId = "design") และ task ใหม่ (categoryId = UUID)
  */
-export function categoriesToTagMap(categories: CategoryRecord[]): Record<string, Tag> {
-  const map: Record<string, Tag> = {};
+export function categoriesToCategoryInfoMap(categories: CategoryRecord[]): Record<string, CategoryInfo> {
+  const map: Record<string, CategoryInfo> = {};
 
   for (const cat of categories) {
-    const tag: Tag = {
+    const categoryInfo: CategoryInfo = {
       text: cat.name,
-      classes: generateTagClasses(cat.color),
-      style: getTagStyle(cat.color),
+      classes: generateCategoryClasses(cat.color),
+      style: getCategoryStyle(cat.color),
     };
 
     // Map ด้วย id (UUID)
-    map[cat.id] = tag;
+    map[cat.id] = categoryInfo;
 
     // Map ด้วย legacyKey ด้วย (สำหรับ task เก่าที่ยังใช้ key เดิม)
     if (cat.legacyKey) {
-      map[cat.legacyKey] = tag;
+      map[cat.legacyKey] = categoryInfo;
     }
   }
 
@@ -38,18 +45,16 @@ export function categoriesToTagMap(categories: CategoryRecord[]): Record<string,
 }
 
 /**
- * สร้าง CSS classes จาก hex color สำหรับแสดง tag badge
- * ใช้ inline color variable แทน Tailwind classes เพื่อรองรับสีจาก DB
+ * สร้าง CSS classes จาก hex color สำหรับแสดง category badge
  */
-function generateTagClasses(hexColor: string): string {
+function generateCategoryClasses(hexColor: string): string {
   return `border rounded-full`;
 }
 
 /**
- * สร้าง inline style object สำหรับ tag badge
- * ใช้คู่กับ classes จาก generateTagClasses
+ * สร้าง inline style object สำหรับ category badge
  */
-export function getTagStyle(hexColor: string): React.CSSProperties {
+export function getCategoryStyle(hexColor: string): CSSProperties {
   return {
     color: hexColor,
     backgroundColor: `${hexColor}15`,
@@ -66,3 +71,4 @@ export function categoriesToOptions(categories: CategoryRecord[]): { label: stri
     value: cat.id,
   }));
 }
+

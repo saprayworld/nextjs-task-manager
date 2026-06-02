@@ -9,7 +9,7 @@ import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
 import { TaskDetailsDialog } from "./TaskDetailsDialog";
 import { Task } from "./kanban-board";
-import { CategoryRecord, categoriesToTagMap } from "@/lib/category-utils";
+import { CategoryRecord, categoriesToCategoryInfoMap } from "@/lib/category-utils";
 
 import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, toggleSubtask } from "@/lib/actions/task";
 import { toast } from "sonner";
@@ -208,9 +208,9 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
   };
 
   const handleSaveTask = async (data: TaskFormData) => { // เปลี่ยนเป็น async
-    const categoryTagMap = categoriesToTagMap(categories);
+    const categoryMap = categoriesToCategoryInfoMap(categories);
 
-    const tagInfo = categoryTagMap[data.categoryId] || categoryTagMap['default'] || { text: 'Default', classes: 'border rounded-full' };
+    const categoryInfo = categoryMap[data.categoryId] || categoryMap['default'] || { text: 'Default', classes: 'border rounded-full' };
     const dueDateClasses = data.dueDate ? "text-destructive bg-destructive/10" : undefined;
 
     try {
@@ -228,7 +228,7 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
               description: data.description,
               categoryId: data.categoryId,
               columnId: data.columnId,
-              tag: tagInfo,
+              category: categoryInfo,
               dueDate: data.dueDate,
               subtasks: data.subtasks,
               progress: newProgress,
@@ -277,7 +277,7 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
           title: savedTask.title,
           description: savedTask.description || undefined,
           categoryId: savedTask.categoryId || undefined,
-          tag: tagInfo,
+          category: categoryInfo,
           dueDate: savedTask.dueDate || undefined,
           dueDateClasses: dueDateClasses,
           subtasks: data.subtasks,

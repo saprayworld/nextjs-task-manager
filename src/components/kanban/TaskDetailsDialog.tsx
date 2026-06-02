@@ -171,10 +171,10 @@ export function TaskDetailsDialog({
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground select-text leading-tight">
                 {task.title}
               </h2>
-              {task.tag && (
+              {task.category && (
                 <div className="inline-flex">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${task.tag.classes}`} style={task.tag.style}>
-                    {task.tag.text}
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${task.category.classes}`} style={task.category.style}>
+                    {task.category.text}
                   </span>
                 </div>
               )}

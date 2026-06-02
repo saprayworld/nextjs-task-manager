@@ -72,9 +72,9 @@ export function KanbanTaskCard({ task, onEdit, onView, showProgress = true, show
     >
       <div className="flex items-center justify-between mb-3">
         <div className='flex items-center gap-2 text-xs'>
-          {task.tag && (
-            <span className={`flex font-sans font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-md ${task.tag.classes}`} style={task.tag.style}>
-              {task.tag.text}
+          {task.category && (
+            <span className={`flex font-sans font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-md ${task.category.classes}`} style={task.category.style}>
+              {task.category.text}
             </span>
           )}
           {task.recurringTemplateId && (

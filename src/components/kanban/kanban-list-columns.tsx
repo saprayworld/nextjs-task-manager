@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Task, Tag } from "./kanban-board";
+import { Task } from "./kanban-board";
+import { CategoryInfo } from "@/lib/category-utils";
 import { BoardColumn } from "./TaskDialog";
 
 // ฟังก์ชันช่วยเหลือสำหรับแสดงผลวันที่
@@ -61,7 +62,7 @@ export const getKanbanColumns = (
         );
       },
       cell: ({ row }) => {
-        const tag = row.original.tag;
+        const category = row.original.category;
         const description = row.original.description;
         return (
           <div
@@ -69,9 +70,9 @@ export const getKanbanColumns = (
             onClick={() => onViewTask(row.original)}
           >
             <div className="flex space-x-2 items-center">
-              {tag && (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap ${tag.classes}`} style={tag.style}>
-                  {tag.text}
+              {category && (
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap ${category.classes}`} style={category.style}>
+                  {category.text}
                 </span>
               )}
               <span className="max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] truncate font-medium group-hover:text-primary group-hover:underline transition-colors">
