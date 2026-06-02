@@ -38,10 +38,11 @@ const formatDateTimeDisplay = (dateString?: string, locale: string = "th-TH") =>
   }
 };
 
-// ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns และ onEditTask จาก component แม่ได้
+// ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns, onEditTask และ onViewTask จาก component แม่ได้
 export const getKanbanColumns = (
   boardColumns: BoardColumn[],
   onEditTask: (task: Task) => void,
+  onViewTask: (task: Task) => void,
   t: (key: string) => string,
   locale: string
 ): ColumnDef<Task>[] => [
@@ -65,7 +66,7 @@ export const getKanbanColumns = (
         return (
           <div
             className="flex flex-col gap-1 py-1 cursor-pointer group"
-            onClick={() => onEditTask(row.original)}
+            onClick={() => onViewTask(row.original)}
           >
             <div className="flex space-x-2 items-center">
               {tag && (

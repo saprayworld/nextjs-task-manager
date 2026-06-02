@@ -316,6 +316,28 @@
     "createTask": "Create task",
     "create": "Create"
   },
+  "TaskDetailsDialog": {
+    "title": "Task Details",
+    "editTask": "Edit Task",
+    "noDescription": "No description provided for this task.",
+    "subtasks": "Subtasks",
+    "completed": "completed",
+    "status": "Status",
+    "category": "Category",
+    "dueDate": "Due Date",
+    "workPeriod": "Working Period",
+    "totalTime": "Total Work Time",
+    "hours": "hours",
+    "minutes": "minutes",
+    "created": "Created",
+    "updated": "Updated",
+    "close": "Close",
+    "recurring": "Recurring task",
+    "recurringRound": "Round {round}",
+    "toast": {
+      "subtaskToggled": "Subtask updated"
+    }
+  },
   "ReportDashboard": {
     "title": "Reports & Statistics",
     "description": "Summary of work performance and time spent (calculated from totalWorkTime)",

@@ -26,11 +26,12 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
-import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderTasks } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, reorderTasks, toggleSubtask } from "@/lib/actions/task";
 
 // Imports Components ย่อย
 import { KanbanTaskCard } from "./kanban-task-card";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
+import { TaskDetailsDialog } from "./TaskDetailsDialog";
 import { CategoryRecord, categoriesToTagMap } from '@/lib/category-utils';
 
 // ==========================================
@@ -73,6 +74,7 @@ export interface Task {
   recurrenceIndex?: number | null;
   createdAt?: string;
   updatedAt?: string;
+  isVisible?: boolean;
 }
 
 export interface BoardSettings {
@@ -96,12 +98,13 @@ interface ColumnProps {
   column: BoardColumn;
   tasks: Task[];
   onEditTask: (task: Task) => void;
+  onViewTask: (task: Task) => void;
   showProgress: boolean;
   showDueDate: boolean;
   enableDragDrop: boolean;
 }
 
-function Column({ column, tasks, onEditTask, showProgress, showDueDate, enableDragDrop }: ColumnProps) {
+function Column({ column, tasks, onEditTask, onViewTask, showProgress, showDueDate, enableDragDrop }: ColumnProps) {
   const { setNodeRef } = useSortable({
     id: column.id,
     data: { type: "Column", column },
@@ -128,7 +131,7 @@ function Column({ column, tasks, onEditTask, showProgress, showDueDate, enableDr
       <div className="p-4 pt-0 flex flex-col gap-3 overflow-y-auto min-h-[150px] flex-1 pb-4">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <KanbanTaskCard key={task.id} task={task} onEdit={onEditTask} showProgress={showProgress} showDueDate={showDueDate} enableDragDrop={enableDragDrop} />
+            <KanbanTaskCard key={task.id} task={task} onEdit={onEditTask} onView={onViewTask} showProgress={showProgress} showDueDate={showDueDate} enableDragDrop={enableDragDrop} />
           ))}
         </SortableContext>
       </div>
@@ -148,6 +151,8 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
 
   const activeSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -224,6 +229,107 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
           description: t("toast.errorTryAgain"),
         });
       }
+    }
+  };
+
+  const handleOpenDetailsDialog = (task: Task) => {
+    setViewingTask(task);
+    setIsDetailsOpen(true);
+  };
+
+  const handleDeleteFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const previousTasks = tasks;
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== targetTask.id));
+      setIsDetailsOpen(false);
+
+      try {
+        await deleteTask(targetTask.id as string);
+        toast.success(t("toast.trashSuccess"), {
+          description: t("toast.trashSuccessDesc", { title: targetTask.title }),
+        });
+      } catch {
+        setTasks(previousTasks);
+        toast.error(t("toast.trashError"), {
+          description: t("toast.errorTryAgain"),
+        });
+      }
+    }
+  };
+
+  const handleArchiveFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const previousTasks = tasks;
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== targetTask.id));
+      setIsDetailsOpen(false);
+
+      try {
+        await archiveTask(targetTask.id as string);
+        toast.success(t("toast.archiveSuccess"), {
+          description: t("toast.archiveSuccessDesc", { title: targetTask.title }),
+        });
+      } catch {
+        setTasks(previousTasks);
+        toast.error(t("toast.archiveError"), {
+          description: t("toast.errorTryAgain"),
+        });
+      }
+    }
+  };
+
+  const handleToggleVisibilityFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const currentVisibility = targetTask.isVisible !== false;
+      const newVisibility = !currentVisibility;
+
+      try {
+        setTasks(prevTasks => {
+          if (!newVisibility) {
+            return prevTasks.filter(t => t.id !== targetTask.id);
+          }
+          return prevTasks.map(t => t.id === targetTask.id ? { ...t, isVisible: newVisibility } : t);
+        });
+        setIsDetailsOpen(false);
+        await updateTask(targetTask.id as string, { isVisible: newVisibility });
+        toast.success(newVisibility ? t("toast.showSuccess") : t("toast.hideSuccess"), {
+          description: newVisibility ? t("toast.showSuccessDesc", { title: targetTask.title }) : t("toast.hideSuccessDesc", { title: targetTask.title }),
+        });
+      } catch {
+        toast.error(t("toast.hideError"), {
+          description: t("toast.errorTryAgain"),
+        });
+      }
+    }
+  };
+
+  const handleSubtaskToggle = async (taskId: string, subtaskId: string, isCompleted: boolean) => {
+    setTasks(prevTasks => prevTasks.map(t => {
+      if (t.id === taskId) {
+        const updatedSubtasks = t.subtasks?.map(st => st.id === subtaskId ? { ...st, isCompleted } : st) || [];
+        const completedCount = updatedSubtasks.filter(st => st.isCompleted).length;
+        const newProgress = updatedSubtasks.length > 0 ? Math.round((completedCount / updatedSubtasks.length) * 100) : 0;
+        const updatedTask = {
+          ...t,
+          subtasks: updatedSubtasks,
+          progress: newProgress
+        };
+        if (viewingTask && viewingTask.id === taskId) {
+          setViewingTask(updatedTask);
+        }
+        return updatedTask;
+      }
+      return t;
+    }));
+
+    try {
+      await toggleSubtask(subtaskId, isCompleted, taskId);
+    } catch {
+      toast.error(t("toast.saveError"), {
+        description: t("toast.errorTryAgain"),
+      });
     }
   };
 
@@ -484,6 +590,7 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
                 column={col}
                 tasks={filteredTasks.filter((task) => task.columnId === col.id)}
                 onEditTask={handleOpenEditDialog}
+                onViewTask={handleOpenDetailsDialog}
                 showProgress={boardSettings.showProgress}
                 showDueDate={boardSettings.showDueDate}
                 enableDragDrop={boardSettings.enableDragDrop}
@@ -510,6 +617,19 @@ export default function KanbanBoard({ initialColumns, initialTasks, categories, 
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}
         onToggleVisibility={handleToggleVisibility}
+      />
+
+      <TaskDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        task={viewingTask}
+        columns={columns}
+        categories={categories}
+        onEdit={handleOpenEditDialog}
+        onDelete={handleDeleteFromDetails}
+        onArchive={handleArchiveFromDetails}
+        onToggleVisibility={handleToggleVisibilityFromDetails}
+        onSubtaskToggle={handleSubtaskToggle}
       />
     </div>
   );

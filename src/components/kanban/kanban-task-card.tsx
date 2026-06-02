@@ -19,12 +19,13 @@ const formatDateDisplay = (dateString?: string) => {
 interface KanbanTaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
+  onView?: (task: Task) => void;
   showProgress?: boolean;
   showDueDate?: boolean;
   enableDragDrop?: boolean;
 }
 
-export function KanbanTaskCard({ task, onEdit, showProgress = true, showDueDate = true, enableDragDrop = true }: KanbanTaskCardProps) {
+export function KanbanTaskCard({ task, onEdit, onView, showProgress = true, showDueDate = true, enableDragDrop = true }: KanbanTaskCardProps) {
   const t = useTranslations("KanbanBoard");
   const {
     setNodeRef,
@@ -57,9 +58,17 @@ export function KanbanTaskCard({ task, onEdit, showProgress = true, showDueDate 
     <div
       ref={setNodeRef}
       style={style}
-      className={`group bg-card text-card-foreground p-4 rounded-lg border shadow-sm hover:border-primary/50 transition-colors ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}`}
+      className={`group bg-card text-card-foreground p-4 rounded-lg border shadow-sm hover:border-primary/50 transition-colors ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'} cursor-pointer`}
       {...attributes}
       {...listeners}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('a')) {
+          return;
+        }
+        if (onView) {
+          onView(task);
+        }
+      }}
     >
       <div className="flex items-center justify-between mb-3">
         <div className='flex items-center gap-2 text-xs'>

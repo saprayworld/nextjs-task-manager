@@ -13,16 +13,17 @@ interface KanbanListViewProps {
   columns: BoardColumn[];
   categories: CategoryRecord[];
   onEditTask: (task: Task) => void;
+  onViewTask: (task: Task) => void;
 }
 
-export function KanbanListView({ tasks, columns, categories, onEditTask }: KanbanListViewProps) {
+export function KanbanListView({ tasks, columns, categories, onEditTask, onViewTask }: KanbanListViewProps) {
   const t = useTranslations('KanbanList');
   const locale = useLocale();
 
   // ใช้ useMemo เพื่อจำลอง (Memoize) คอลัมน์ ไม่ให้ถูกสร้างใหม่ทุกครั้งที่ตารางรีเรนเดอร์
   const tableColumns = useMemo(
-    () => getKanbanColumns(columns, onEditTask, t, locale),
-    [columns, onEditTask, t, locale]
+    () => getKanbanColumns(columns, onEditTask, onViewTask, t, locale),
+    [columns, onEditTask, onViewTask, t, locale]
   );
 
   return (

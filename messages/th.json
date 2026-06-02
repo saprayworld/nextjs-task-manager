@@ -316,6 +316,28 @@
     "createTask": "สร้างงาน",
     "create": "สร้าง"
   },
+  "TaskDetailsDialog": {
+    "title": "รายละเอียดงาน",
+    "editTask": "แก้ไขงาน",
+    "noDescription": "ไม่มีคำอธิบายสำหรับงานนี้",
+    "subtasks": "รายการย่อย (Subtasks)",
+    "completed": "เสร็จสิ้น",
+    "status": "สถานะ",
+    "category": "หมวดหมู่",
+    "dueDate": "กำหนดส่ง",
+    "workPeriod": "ช่วงเวลาทำงาน",
+    "totalTime": "เวลาทำงานทั้งหมด",
+    "hours": "ชั่วโมง",
+    "minutes": "นาที",
+    "created": "สร้างเมื่อ",
+    "updated": "แก้ไขเมื่อ",
+    "close": "ปิด",
+    "recurring": "งานประจำ",
+    "recurringRound": "รอบที่ {round}",
+    "toast": {
+      "subtaskToggled": "อัปเดตงานย่อยเรียบร้อยแล้ว"
+    }
+  },
   "ReportDashboard": {
     "title": "รายงานและสถิติ (Report)",
     "description": "สรุปผลการทำงานและเวลาที่ใช้ (คำนวณจากข้อมูล totalWorkTime)",

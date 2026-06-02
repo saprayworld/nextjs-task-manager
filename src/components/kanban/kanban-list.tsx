@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 // Imports Components ย่อย
 import { KanbanListView } from "./kanban-list-view";
 import { TaskDialog, TaskFormData, BoardColumn } from "./TaskDialog";
+import { TaskDetailsDialog } from "./TaskDetailsDialog";
 import { Task } from "./kanban-board";
 import { CategoryRecord, categoriesToTagMap } from "@/lib/category-utils";
 
-import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask } from "@/lib/actions/task";
+import { createTask, updateTask, deleteTask, syncSubtasks, archiveTask, toggleSubtask } from "@/lib/actions/task";
 import { toast } from "sonner";
 import { useTranslations } from 'next-intl';
 
@@ -29,6 +30,8 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
 
   const handleOpenCreateDialog = () => {
     setEditingTask(null);
@@ -103,6 +106,104 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
           description: tToast('errorTryAgain'),
         });
       }
+    }
+  };
+
+  const handleOpenDetailsDialog = (task: Task) => {
+    setViewingTask(task);
+    setIsDetailsOpen(true);
+  };
+
+  const handleDeleteFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const previousTasks = tasks;
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== targetTask.id));
+      setIsDetailsOpen(false);
+
+      try {
+        await deleteTask(targetTask.id as string);
+        toast.success(tToast('trashSuccess'), {
+          description: tToast('trashSuccessDesc', { title: targetTask.title }),
+        });
+      } catch {
+        setTasks(previousTasks);
+        toast.error(tToast('trashError'), {
+          description: tToast('errorTryAgain'),
+        });
+      }
+    }
+  };
+
+  const handleArchiveFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const previousTasks = tasks;
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== targetTask.id));
+      setIsDetailsOpen(false);
+
+      try {
+        await archiveTask(targetTask.id as string);
+        toast.success(tToast('archiveSuccess'), {
+          description: tToast('archiveSuccessDesc', { title: targetTask.title }),
+        });
+      } catch {
+        setTasks(previousTasks);
+        toast.error(tToast('archiveError'), {
+          description: tToast('errorTryAgain'),
+        });
+      }
+    }
+  };
+
+  const handleToggleVisibilityFromDetails = async () => {
+    if (viewingTask) {
+      const targetTask = viewingTask;
+      const currentVisibility = (targetTask as any).isVisible !== false;
+      const newVisibility = !currentVisibility;
+
+      try {
+        setTasks(prevTasks => prevTasks.map(t =>
+          t.id === targetTask.id ? { ...t, isVisible: newVisibility } as any : t
+        ));
+        setIsDetailsOpen(false);
+        await updateTask(targetTask.id as string, { isVisible: newVisibility });
+        toast.success(newVisibility ? tToast('showSuccess') : tToast('hideSuccess'), {
+          description: newVisibility ? tToast('showSuccessDesc', { title: targetTask.title }) : tToast('hideSuccessDesc', { title: targetTask.title }),
+        });
+      } catch {
+        toast.error(tToast('hideError'), {
+          description: tToast('errorTryAgain'),
+        });
+      }
+    }
+  };
+
+  const handleSubtaskToggle = async (taskId: string, subtaskId: string, isCompleted: boolean) => {
+    setTasks(prevTasks => prevTasks.map(t => {
+      if (t.id === taskId) {
+        const updatedSubtasks = t.subtasks?.map(st => st.id === subtaskId ? { ...st, isCompleted } : st) || [];
+        const completedCount = updatedSubtasks.filter(st => st.isCompleted).length;
+        const newProgress = updatedSubtasks.length > 0 ? Math.round((completedCount / updatedSubtasks.length) * 100) : 0;
+        const updatedTask = {
+          ...t,
+          subtasks: updatedSubtasks,
+          progress: newProgress
+        };
+        if (viewingTask && viewingTask.id === taskId) {
+          setViewingTask(updatedTask);
+        }
+        return updatedTask;
+      }
+      return t;
+    }));
+
+    try {
+      await toggleSubtask(subtaskId, isCompleted, taskId);
+    } catch {
+      toast.error(tToast('saveError'), {
+        description: tToast('errorTryAgain'),
+      });
     }
   };
 
@@ -219,6 +320,7 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
           columns={columns}
           categories={categories}
           onEditTask={handleOpenEditDialog}
+          onViewTask={handleOpenDetailsDialog}
         />
       </main>
 
@@ -232,6 +334,19 @@ export default function KanbanList({ initialColumns, initialTasks, categories }:
         onDelete={handleDeleteTask}
         onArchive={handleArchiveTask}
         onToggleVisibility={handleToggleVisibility}
+      />
+
+      <TaskDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        task={viewingTask}
+        columns={columns}
+        categories={categories}
+        onEdit={handleOpenEditDialog}
+        onDelete={handleDeleteFromDetails}
+        onArchive={handleArchiveFromDetails}
+        onToggleVisibility={handleToggleVisibilityFromDetails}
+        onSubtaskToggle={handleSubtaskToggle}
       />
     </div>
   );
