@@ -39,6 +39,9 @@ export default async function Page() {
       order: task.order,
       recurringTemplateId: task.recurringTemplateId,
       recurrenceIndex: task.recurrenceIndex,
+      isVisible: task.isVisible,
+      createdAt: task.createdAt ? task.createdAt.toISOString() : undefined,
+      updatedAt: task.updatedAt ? task.updatedAt.toISOString() : undefined,
     };
   });
 

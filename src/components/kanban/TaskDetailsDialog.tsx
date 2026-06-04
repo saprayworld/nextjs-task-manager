@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  X, Edit2, Calendar, Clock, Timer, CheckSquare, Square, 
+import {
+  X, Edit2, Calendar, Clock, Timer, CheckSquare, Square,
   Archive, Trash2, Eye, EyeOff, RefreshCw, AlertCircle, CalendarDays
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
@@ -122,13 +122,18 @@ export function TaskDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="sm:max-w-[95vw] md:max-w-[85vw] lg:max-w-[960px] w-full max-h-[90vh] overflow-y-auto p-0 gap-0"
+      <DialogContent
+        className="sm:max-w-[95vw] md:max-w-[85vw] lg:max-w-[960px] w-full max-h-[90vh] flex flex-col overflow-hidden p-0 gap-0"
         onInteractOutside={(e) => e.preventDefault()}
         showCloseButton={false}
+        aria-describedby={undefined}
       >
+        <DialogTitle className="hidden">
+          {t("title")}
+        </DialogTitle>
+
         {/* Upper Action Bar / Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b shrink-0 bg-muted/20">
+        <div className="flex items-center justify-between px-6 py-4 border-b shrink-0 bg-background">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {t("title")}
@@ -152,7 +157,7 @@ export function TaskDetailsDialog({
               className="h-8 gap-1.5 text-xs font-medium cursor-pointer"
             >
               <Edit2 className="w-3.5 h-3.5" />
-              {t("editTask")}
+              <span className="hidden lg:block">{t("editTask")}</span>
             </Button>
             <DialogClose asChild>
               <Button type="button" variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
@@ -163,10 +168,10 @@ export function TaskDetailsDialog({
         </div>
 
         {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x">
-          
+        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x">
+
           {/* Left Column: Title, Description, Checklist */}
-          <div className="lg:col-span-2 p-6 space-y-6">
+          <div className="lg:col-span-2 p-6 space-y-6 lg:overflow-y-auto lg:max-h-full">
             <div className="space-y-3">
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground select-text leading-tight">
                 {task.title}
@@ -209,8 +214,8 @@ export function TaskDetailsDialog({
                 </div>
 
                 <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-500 ease-out" 
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -242,7 +247,7 @@ export function TaskDetailsDialog({
           </div>
 
           {/* Right Column: Metadata Sidebar */}
-          <div className="p-6 bg-muted/10 space-y-6">
+          <div className="p-6 bg-muted/10 space-y-6 lg:overflow-y-auto lg:max-h-full">
             <div className="space-y-4">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b pb-2">
                 Task Info
@@ -290,13 +295,13 @@ export function TaskDetailsDialog({
                   <div className="bg-background border rounded-lg p-2.5 space-y-1.5 shadow-sm">
                     {task.startDateTime && (
                       <div className="flex items-center gap-2 text-[11px]">
-                        <span className="text-muted-foreground w-8 font-medium">{tCommon("start")}</span>
+                        <span className="text-muted-foreground w-16 font-medium">{tCommon("start")}</span>
                         <span className="text-foreground font-semibold">{formatDateTime(task.startDateTime)}</span>
                       </div>
                     )}
                     {task.endDateTime && (
                       <div className="flex items-center gap-2 text-[11px]">
-                        <span className="text-muted-foreground w-8 font-medium">{tCommon("end")}</span>
+                        <span className="text-muted-foreground w-16 font-medium">{tCommon("end")}</span>
                         <span className="text-foreground font-semibold">{formatDateTime(task.endDateTime)}</span>
                       </div>
                     )}
