@@ -138,7 +138,6 @@ export async function reorderTasks(updates: { id: string; columnId: string; orde
         .set({
           columnId: item.columnId,
           order: item.order,
-          updatedAt: new Date(),
         })
         .where(and(eq(task.id, item.id), eq(task.userId, user.id)))
     )

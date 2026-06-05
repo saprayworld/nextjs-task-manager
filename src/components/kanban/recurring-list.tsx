@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { createRecurringTemplate, updateRecurringTemplate, deleteRecurringTemplate, toggleRecurringTemplate } from "@/lib/actions/recurring-task";
 import { RecurringTemplateDialog } from "./RecurringTemplateDialog";
 import { mockColumns } from "./mock-data";
-import { CategoryRecord, categoriesToTagMap, getTagStyle } from "@/lib/category-utils";
+import { CategoryRecord, categoriesToCategoryInfoMap } from "@/lib/category-utils";
 import { useTranslations, useLocale } from "next-intl";
 
 interface RecurringTemplate {
@@ -276,11 +276,8 @@ export default function RecurringList({ initialTemplates, categories }: Recurrin
         ) : (
           <div className="space-y-2">
             {filteredTemplates.map((template) => {
-              const tagMap = categoriesToTagMap(categories);
-              const tagInfo = tagMap[template.categoryId || "default"] || tagMap["default"] || { text: "Default", classes: "border rounded-full" };
-              const tagStyle = getTagStyle(
-                categories.find(c => c.id === template.categoryId || c.legacyKey === template.categoryId)?.color || "#6b7280"
-              );
+              const categoryMap = categoriesToCategoryInfoMap(categories);
+              const categoryInfo = categoryMap[template.categoryId || "default"] || categoryMap["default"] || { text: "Default", classes: "border rounded-full" };
               return (
                 <div
                   key={template.id}
@@ -292,10 +289,10 @@ export default function RecurringList({ initialTemplates, categories }: Recurrin
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="font-medium text-sm truncate">{template.title}</h3>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tagInfo.classes}`}
-                        style={tagStyle}
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${categoryInfo.classes}`}
+                        style={categoryInfo.style}
                       >
-                        {tagInfo.text}
+                        {categoryInfo.text}
                       </span>
                       {!template.isActive && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-muted text-muted-foreground">

@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
 import { restoreTask, permanentDeleteTask } from "@/lib/actions/task";
-import { CategoryRecord, categoriesToTagMap, getTagStyle } from "@/lib/category-utils";
+import { CategoryRecord, categoriesToCategoryInfoMap } from "@/lib/category-utils";
 
 interface TrashTask {
   id: string;
@@ -149,11 +149,8 @@ export default function TrashList({ initialTasks, categories }: TrashListProps) 
         ) : (
           <div className="space-y-2">
             {filteredTasks.map((task) => {
-              const tagMap = categoriesToTagMap(categories);
-              const tagInfo = tagMap[task.categoryId || "default"] || tagMap["default"] || { text: "Default", classes: "border rounded-full" };
-              const tagStyle = getTagStyle(
-                categories.find(c => c.id === task.categoryId || c.legacyKey === task.categoryId)?.color || "#6b7280"
-              );
+              const categoryMap = categoriesToCategoryInfoMap(categories);
+              const categoryInfo = categoryMap[task.categoryId || "default"] || categoryMap["default"] || { text: "Default", classes: "border rounded-full" };
               return (
                 <div
                   key={task.id}
@@ -164,10 +161,10 @@ export default function TrashList({ initialTasks, categories }: TrashListProps) 
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-medium text-sm truncate">{task.title}</h3>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tagInfo.classes}`}
-                        style={tagStyle}
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${categoryInfo.classes}`}
+                        style={categoryInfo.style}
                       >
-                        {tagInfo.text}
+                        {categoryInfo.text}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">

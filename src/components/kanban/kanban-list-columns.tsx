@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Task, Tag } from "./kanban-board";
+import { Task } from "./kanban-board";
+import { CategoryInfo } from "@/lib/category-utils";
 import { BoardColumn } from "./TaskDialog";
 
 // ฟังก์ชันช่วยเหลือสำหรับแสดงผลวันที่
@@ -38,10 +39,11 @@ const formatDateTimeDisplay = (dateString?: string, locale: string = "th-TH") =>
   }
 };
 
-// ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns และ onEditTask จาก component แม่ได้
+// ส่งออกเป็นฟังก์ชัน เพื่อให้รับค่า columns, onEditTask และ onViewTask จาก component แม่ได้
 export const getKanbanColumns = (
   boardColumns: BoardColumn[],
   onEditTask: (task: Task) => void,
+  onViewTask: (task: Task) => void,
   t: (key: string) => string,
   locale: string
 ): ColumnDef<Task>[] => [
@@ -60,17 +62,17 @@ export const getKanbanColumns = (
         );
       },
       cell: ({ row }) => {
-        const tag = row.original.tag;
+        const category = row.original.category;
         const description = row.original.description;
         return (
           <div
             className="flex flex-col gap-1 py-1 cursor-pointer group"
-            onClick={() => onEditTask(row.original)}
+            onClick={() => onViewTask(row.original)}
           >
             <div className="flex space-x-2 items-center">
-              {tag && (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap ${tag.classes}`} style={tag.style}>
-                  {tag.text}
+              {category && (
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap ${category.classes}`} style={category.style}>
+                  {category.text}
                 </span>
               )}
               <span className="max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] truncate font-medium group-hover:text-primary group-hover:underline transition-colors">

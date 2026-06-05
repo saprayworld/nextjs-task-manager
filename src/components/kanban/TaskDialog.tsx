@@ -188,6 +188,7 @@ export function TaskDialog({ open, onOpenChange, taskToEdit, columns, categories
         className="sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-[1024px] lg:w-full w-[95vw] max-h-[90vh] overflow-y-auto"
         onInteractOutside={(e) => e.preventDefault()}
         showCloseButton={false}
+        aria-describedby={undefined}
       >
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between flex-shrink-0">

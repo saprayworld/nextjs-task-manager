@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 function TaskCardSkeleton({ hasProgress = false }: { hasProgress?: boolean }) {
   return (
     <div className="bg-card p-4 rounded-lg border shadow-sm">
-      {/* Tag badge */}
+      {/* Category badge */}
       <div className="flex items-center justify-between mb-3">
         <Skeleton className="h-5 w-20 rounded-md" />
       </div>

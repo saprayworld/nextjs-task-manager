@@ -12,7 +12,7 @@ function TableRowSkeleton() {
       <td className="p-4 align-middle">
         <Skeleton className="h-4 w-[72px]" />
       </td>
-      {/* Title with tag badge */}
+      {/* Title with category badge */}
       <td className="p-4 align-middle">
         <div className="flex space-x-2 items-center">
           <Skeleton className="h-5 w-20 rounded-full" />
